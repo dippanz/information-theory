@@ -1,0 +1,91 @@
+<ns0:svg xmlns:ns0="http://www.w3.org/2000/svg" width="1200" height="900" viewBox="0 0 1200 900">
+  <ns0:defs>
+    <ns0:marker id="arrow" markerWidth="10" markerHeight="10" refX="5" refY="5" orient="auto-start-reverse">
+      <ns0:path d="M 0 0 L 10 5 L 0 10 z" fill="#333" />
+    </ns0:marker>
+    <ns0:style>
+      .bg { fill: #e7e7ef; }
+      .solid { stroke: #111; stroke-width: 6; fill: none; stroke-linecap: round; }
+      .dashed { stroke: #111; stroke-width: 6; fill: none; stroke-dasharray: 16 14; stroke-linecap: round; }
+      .node { fill: #111; }
+      .rednode { fill: #e31b23; }
+      .lbl { font-family: "Times New Roman", Times, serif; font-size: 46px; fill: #222; }
+      .redlbl { font-family: "Times New Roman", Times, serif; font-size: 50px; fill: #e31b23; }
+      .annot { stroke: #333; stroke-width: 2.8; fill: none; marker-start: url(#arrow); marker-end: url(#arrow); }
+      .anntext { font-family: "Times New Roman", Times, serif; font-size: 52px; fill: #333; font-style: italic; }
+      .sub { font-size: 34px; baseline-shift: sub; }
+    </ns0:style>
+  </ns0:defs>
+
+  <ns0:circle class="node" cx="530" cy="40" r="14" />
+
+  <ns0:circle class="node" cx="280" cy="235" r="14" />
+  <ns0:path class="solid" d="M 530 40 L 280 235" />
+  <ns0:text class="lbl" x="350" y="150">1</ns0:text>
+
+  <ns0:rect class="rednode" x="757" y="222" width="28" height="28" />
+  <ns0:path class="solid" d="M 530 40 L 771 236" />
+  <ns0:text class="lbl" x="680" y="150">0</ns0:text>
+
+  
+  <ns0:circle class="node" cx="160" cy="500" r="14" />
+  <ns0:path class="solid" d="M 280 235 L 160 500" />
+  <ns0:text class="lbl" x="145" y="345">1</ns0:text>
+
+  <ns0:rect class="rednode" x="386" y="487" width="28" height="28" />
+  <ns0:path class="solid" d="M 280 235 L 400 500" />
+  <ns0:text class="lbl" x="330" y="345">0</ns0:text>
+
+  
+  <ns0:rect class="rednode" x="56" y="736" width="28" height="28" />
+  <ns0:path class="solid" d="M 160 500 L 70 750" />
+  <ns0:text class="lbl" x="52" y="625">1</ns0:text>
+  <ns0:text class="redlbl" x="32" y="830">111</ns0:text>
+
+  <ns0:rect class="rednode" x="222" y="736" width="28" height="28" />
+  <ns0:path class="solid" d="M 160 500 L 236 750" />
+  <ns0:text class="lbl" x="228" y="625">0</ns0:text>
+  <ns0:text class="redlbl" x="198" y="830">110</ns0:text>
+
+  
+  <ns0:circle class="node" cx="320" cy="765" r="14" />
+  <ns0:path class="dashed" d="M 400 500 L 320 750" />
+
+  <ns0:circle class="node" cx="490" cy="765" r="14" />
+  <ns0:path class="dashed" d="M 400 500 L 490 750" />
+
+  <ns0:text class="redlbl" x="445" y="555">10</ns0:text>
+
+  
+  <ns0:circle class="node" cx="650" cy="585" r="14" />
+  <ns0:path class="dashed" d="M 771 236 L 650 570" />
+
+  <ns0:circle class="node" cx="920" cy="585" r="14" />
+  <ns0:path class="dashed" d="M 771 236 L 920 570" />
+
+  <ns0:text class="redlbl" x="818" y="260">0</ns0:text>
+
+  <ns0:circle class="node" cx="570" cy="765" r="14" />
+  <ns0:path class="dashed" d="M 650 585 L 570 750" />
+
+  <ns0:circle class="node" cx="740" cy="765" r="14" />
+  <ns0:path class="dashed" d="M 650 585 L 740 750" />
+
+  <ns0:circle class="node" cx="840" cy="765" r="14" />
+  <ns0:path class="dashed" d="M 920 585 L 840 750" />
+
+  <ns0:circle class="node" cx="1010" cy="765" r="14" />
+  <ns0:path class="dashed" d="M 920 585 L 1010 750" />
+
+  
+  <ns0:line class="annot" x1="920" y1="55" x2="920" y2="240" />
+  <ns0:line class="annot" x1="1055" y1="55" x2="1055" y2="760" />
+
+  <ns0:text class="anntext" x="950" y="170">
+    l<ns0:tspan class="sub">i</ns0:tspan>
+  </ns0:text>
+
+  <ns0:text class="anntext" x="1085" y="430">
+    l<ns0:tspan class="sub">max</ns0:tspan>
+  </ns0:text>
+</ns0:svg>
