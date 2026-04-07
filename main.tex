@@ -6,7 +6,6 @@
 \usepackage[a4paper,left=3cm,right=3cm,top=2.5cm,bottom=2.5cm]{geometry}
 \usepackage[hidelinks]{hyperref}
 \usepackage[normalem]{ulem}
-\usepackage{svg}
 \usepackage[edges]{forest}
 
 
@@ -20,7 +19,7 @@
 \renewcommand{\ULdepth}{1.2pt}     % distanza della linea dal testo per uline
 \renewcommand{\ULthickness}{0.4pt} % spessore della linea per uline
 
-\svgpath{{images/}}
+\graphicspath{{images/}}
 \setlength{\skip\footins}{25pt}
 \numberwithin{equation}{section}
 \title{Information theory}
@@ -374,7 +373,7 @@ Prima dimostriamo la \textbf{condizione sufficiente}. Indichiamo con $\{l_1,l_2,
    \[
    \sum_{i=1}^m d^{-l_i}=\sum_{i=1}^L n_id^{-i}\leq 1
    \]
-   questo ci permette di calcolare in una sola volta tutte le parole che condividono la stessa lunghezza\footnote{Per capire questo passaggio basta pensare a come è fatta la somma. Raggruppando tutti gli elementi che hanno lo stesso esponente e moltiplicando il loro numero per $d^{-i}$ dove $i$ rappresenta proprio il livello si ottiene proprio la formula iniziale ma compressa. Possiamo fare un esempio per essere ancora più chiari. Si considerino le lunghezze 1,3,3 con simboli binari allora la disuguaglianza si dovrebbe scrivere come $2^{-1}+ 2^{-3}+2^{-3}=0.75\leq1$ ma la stessa cosa si poteva benissimo scrivere anche come $1\cdot 2^{-1}+0\cdot 2^{-2}+2\cdot 2^{-3}$.}. Espandendo la somma si nota che moltiplicando per $d$ ottengo:
+   permettendoci di calcolare in una sola volta tutte le parole che condividono la stessa lunghezza.\footnote{Per capire questo passaggio basta pensare a come è fatta la somma. Raggruppando tutti gli elementi che hanno lo stesso esponente e moltiplicando il loro numero per $d^{-i}$ dove $i$ rappresenta proprio il livello si ottiene proprio la formula iniziale ma compressa. Possiamo fare un esempio per essere ancora più chiari. Si considerino le lunghezze 1,3,3 con simboli binari allora la disuguaglianza si dovrebbe scrivere come $2^{-1}+ 2^{-3}+2^{-3}=0.75\leq1$ ma la stessa cosa si poteva benissimo scrivere anche come $1\cdot 2^{-1}+0\cdot 2^{-2}+2\cdot 2^{-3}$.} Espandendo la somma si nota che moltiplicando per $d$ ottengo:
    \[
    n_1+n_2d^{-1}+n_3d^{-2}+\ldots+n_Ld^{-L+1}\leq d
    \]
@@ -405,7 +404,7 @@ Quindi, si costruisce un albero d-ario in cui i livelli di profondità rappresen
 
     \begin{figure}[htbp]
         \centering
-        \includesvg[width=0.5\linewidth]{kraft-mcmillan_vector}
+        \includegraphics[width=0.5\linewidth]{kraft-mcmillan_vector.pdf}
         \caption{Rappresentazione albero d-ario Kraft-McMillan.}
         \label{fig:kraft-mcmillan}
     \end{figure}

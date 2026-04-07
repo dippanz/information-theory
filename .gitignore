@@ -1,0 +1,31 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# LaTeX build artifacts
+*.aux
+*.fdb_latexmk
+*.fls
+*.log
+*.out
+*.synctex.gz
+*.toc
+*.lof
+*.lot
+*.bbl
+*.blg
+*.bcf
+*.run.xml
+*.nav
+*.snm
+*.xdv
+*.dvi
+
+# Main generated document
+/main.pdf
+
+# Keep source and committed figure assets
+!/images/*.pdf
+!/images/*.svg
+!/images/*.tex
