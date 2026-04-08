@@ -529,7 +529,23 @@ la disuguaglianza viene verificata si deduce che con questo alfabeto e queste lu
 \label{fig:albero-ternario}
 \end{figure}
 
-Come si nota in \autoref{fig:albero-ternario} la costruzione del codice a prefisso avviene selezionando i nodi dell'albero ternario in modo da rispettare le lunghezze specificate. Si parte dal livello più basso (lunghezza 1) e viene scelto uno dei nodi di questa lunghezza, ad esempio $0$. Questo nodo diventa una foglia e tutte le sue diramazioni (i suoi discendenti) vengono oscurati perché non possono più essere usati. Si passa poi al livello successivo (lunghezza 2) e si scelgono 5 nodi, ad esempio $10$, $11$, $12$, $20$ e $21$. Anche questi diventano foglie e i loro discendenti vengono oscurati. Infine, si passa all'ultimo livello (lunghezza 3) e si scelgono i 3 nodi rimanenti, ad esempio $220$, $221$ e $222$. In questo modo, si garantisce che il codice risultante sia a prefisso e quindi istantaneo. 
+Come si nota in \autoref{fig:albero-ternario} la costruzione del codice a prefisso avviene selezionando i nodi dell'albero ternario in modo da rispettare le lunghezze specificate. Si parte dal livello più basso (lunghezza 1) e viene scelto uno dei nodi di questa lunghezza, ad esempio $0$. Questo nodo diventa una foglia e tutte le sue diramazioni (i suoi discendenti) vengono oscurati perché non possono più essere usati. Si passa poi al livello successivo (lunghezza 2) e si scelgono 5 nodi, ad esempio $10$, $11$, $12$, $20$ e $21$. Anche questi diventano foglie e i loro discendenti vengono oscurati. Infine, si passa all'ultimo livello (lunghezza 3) e si scelgono i 3 nodi rimanenti, ad esempio $220$, $221$ e $222$. In questo modo, si garantisce che il codice risultante sia a prefisso e quindi istantaneo. Una possibile assegnazione dei simboli è:
+\begin{table}[htbp]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+\textbf{Simbolo} & \textbf{Codice} \\ \hline
+$s_1$  & \lbox{0} \\ \hline
+$s_2$  & \lbox{10} \\ \hline
+$s_3$  & \lbox{11} \\ \hline
+$s_4$  & \lbox{12} \\ \hline
+$s_5$  & \lbox{20} \\ \hline
+$s_6$  & \lbox{21} \\ \hline
+$s_7$  & \lbox{220} \\ \hline
+$s_8$  & \lbox{221} \\ \hline
+$s_9$  & \lbox{222} \\ \hline
+\end{tabular}
+\end{table}
 
 
 
