@@ -1,0 +1,95 @@
+\documentclass[tikz,border=4pt]{standalone} % Compila la figura da sola con un piccolo margine esterno.
+\usepackage[edges]{forest} % 'edges' aiuta a personalizzare in modo fine lo stile degli archi.
+
+\begin{document}
+\begin{forest}
+% Stile dei nodi scelti.
+% Basta aggiungere ', chosen' al nodo che vuoi evidenziare.
+chosen/.style={
+    fill=red!18, % Riempimento rosso tenue.
+    draw=red!70!black, % Bordo rosso piu' scuro.
+    text=red!70!black, % Testo nella stessa tinta del bordo.
+    very thick, % Bordo piu' marcato per far risaltare la scelta.
+    % edge={black!70}, % L'arco che porta al nodo scelto resta una linea normale.
+    for descendants={blocked} % Tutti i discendenti diventano automaticamente "bloccati".
+},
+% Stile dei nodi che non possono piu' essere scelti perche' stanno sotto un nodo rosso.
+blocked/.style={
+    fill=black!12, % Riempimento grigio chiaro.
+    draw=black!45, % Bordo attenuato.
+    text=black!60, % Testo meno evidente.
+    edge={black!35, dashed} % Gli archi verso i nodi bloccati sono tratteggiati.
+},
+% Configurazione di base applicata a tutto l'albero.
+for tree={
+    draw, % Disegna il bordo di ogni nodo.
+    circle, % Tutti i nodi hanno forma circolare.
+    minimum size=7mm, % Dimensione minima del nodo.
+    inner sep=1pt, % Spazio interno tra testo e bordo.
+    font=\scriptsize, % Dimensione del testo dentro i nodi.
+    l sep=8mm, % Distanza tra un livello e il successivo.
+    s sep=2mm, % Distanza orizzontale tra nodi fratelli.
+    grow'=south, % L'albero cresce verso il basso.
+    edge={black!70}, % Gli archi normali sono linee piene scure.
+    align=center, % Testo centrato nel nodo.
+    anchor=center, % Il punto di ancoraggio del nodo e' il suo centro.
+}
+% Sintassi dei nodi:
+% [$etichetta$]            -> nodo normale
+% [$etichetta$, chosen]    -> nodo scelto in rosso
+% I discendenti di un nodo 'chosen' diventano bloccati in automatico.
+[$\emptyset$
+    [$0$, chosen
+        [$00$
+            [$000$]
+            [$001$]
+            [$002$]
+        ]
+        [$01$
+            [$010$]
+            [$011$]
+            [$012$]
+        ]
+        [$02$
+            [$020$]
+            [$021$]
+            [$022$]
+        ]
+    ]
+    [$1$
+        [$10$, chosen
+            [$100$]
+            [$101$]
+            [$102$]
+        ]
+        [$11$, chosen
+            [$110$]
+            [$111$]
+            [$112$]
+        ]
+        [$12$, chosen
+            [$120$]
+            [$121$]
+            [$122$]
+        ]
+    ]
+    [$2$
+        [$20$, chosen
+            [$200$]
+            [$201$]
+            [$202$]
+        ]
+        [$21$, chosen
+            [$210$]
+            [$211$]
+            [$212$]
+        ]
+        [$22$
+            [$220$, chosen]
+            [$221$, chosen]
+            [$222$, chosen]
+        ]
+    ]
+]
+\end{forest}
+\end{document}
