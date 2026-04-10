@@ -21,6 +21,8 @@
 \graphicspath{{images/}}
 \setlength{\skip\footins}{25pt}
 \numberwithin{equation}{section}
+\setcounter{secnumdepth}{3} % Numera fino alle subsubsection.
+\setcounter{tocdepth}{3} % Mostra nell'indice fino alle subsubsection.
 \title{Information theory}
 \author{Emanuele Di Prima}
 \date{March 2026}
@@ -80,7 +82,8 @@ Shannon, inoltre, ha introdotto due ipotesi:
 \end{itemize}
 Nel processo di comunicazione la misura della quantità di informazione viene espressa attraverso i \textbf{bit}, l'unità di misura fondamentale dell'informazione, che permette una quantificazione esatta di quanta informazione si sta trasmettendo. 
 
-\subsection{Misura dell'informazione}
+\section{Misura dell'informazione}
+\subsection{Sorgente discreta}
 Una \textbf{sorgente} è caratterizzata da un alfabeto intrinseco, ogni elemento dell'alfabeto può essere di qualsiasi natura come lettere, numeri o eventi. La sorgente, come già accennato, è \textbf{discreta} e ad ogni unità di tempo viene prodotto un singolo elemento di questo alfabeto con una sua probabilità. Questa probabilità viene mappata come  $\pi:A\xrightarrow{}[0,1]$ per cui una sorgente discreta $S$ può essere rappresentata da:
 \begin{equation}\label{eq:discrete_source}S=
     \begin{pmatrix}
@@ -90,7 +93,7 @@ Una \textbf{sorgente} è caratterizzata da un alfabeto intrinseco, ogni elemento
 \end{equation}
 dove deve valere $\sum_{a\in A}\pi(a)=1$. Ogni colonna di questa matrice rappresenta un elemento con la sua probabilità associata; per cui, per esempio, al simbolo $a_1$ è associata una probabilità $p_1$.
 
-\subsubsection{Auto-informazione}
+\subsection{Auto-informazione}
 \begin{definizione}
     Dato un simbolo $a_i$ associato ad una sorgente $S$ di un determinato alfabeto $A$, si definisce \textbf{auto informazione} di $a_i$:
     \begin{equation}
@@ -114,7 +117,7 @@ Dalla definizione precedente si può assumere che se la probabilità di un simbo
         \item $I(a_ia_j)=I(a_i)+I(a_j)$
     \end{itemize}
 \end{itemize}
-\paragraph{Esempio}
+\subsubsection{Esempio}
 Se consideriamo il caso binario ($b=2$) allora $I_i=\log_2(\frac{1}{p_i})$ e per una sorgente $S$ di due simboli equiprobabili: 
 \begin{equation*}
     S=\begin{pmatrix}
@@ -123,7 +126,7 @@ Se consideriamo il caso binario ($b=2$) allora $I_i=\log_2(\frac{1}{p_i})$ e per
     \end{pmatrix}
 \end{equation*}
 il contenuto informativo sarà $I_1=I_2=\log_22=1 [bit$]. Come si nota, serve un bit per distinguere due messaggi equiprobabili.
-\subsubsection{Entropia di Shannon}
+\subsection{Entropia di Shannon}
 L'entropia può essere interpretata come la \textbf{quantità di informazione media} che ogni simbolo emesso da una sorgente trasporta o, in termini più formali, in media il numero minimo di bit necessari per codificare un simbolo emesso da una sorgente. Shannon attraverso un approccio assiomatico, stabilì preliminarmente che qualsiasi funzione matematica candidata a misurare il contenuto informativo dovesse necessariamente rispettare alcuni criteri fondamentali, dettati dalla logica e dalla coerenza matematica. Questi cinque assiomi impongono che la misura dell'informazione debba essere continua nel dominio delle probabilità, normalizzabile per definire l'unità di misura, invariante rispetto a come le probabilità vengono etichettate (permutazione), monotonicamente crescente al crescere del numero di eventi equiprobabili e, infine, coerente e additiva quando gli eventi vengono raggruppati in scelte successive 
 \begin{theorem}
     Consideriamo una sorgente $S$ come nella \eqref{eq:discrete_source}, allora \textbf{l'entropia} di $S$ è definita come:
@@ -172,7 +175,7 @@ Finita la definizione degli assiomi è "facile" verificare che la funziona \eqre
     \item Estendiamo la dimostrazione precedente a tutti gli $n$ per induzione e troviamo $ H(S)=C\sum_{i=1}^np_i\log_b\left(\frac{1}{p_i}\right)$.
 \end{enumerate}
 \end{proof}
-\subsubsection{Esempio}
+\subsubsection{Esempi}
 Vengono qui elencati alcuni esempi di calcolo di entropia. Consideriamo una sorgente $S$ con i seguenti simboli e probabilità associate:
 \begin{equation*}
     S=\begin{pmatrix}
@@ -198,6 +201,7 @@ allora:
     H(S)=0.4\log_2 \left(\frac{1}{0.4}\right)+0.3\log_2 \left(\frac{1}{0.3}\right)+0.3\log_2 \left(\frac{1}{0.3}\right)=0.84 \text{ bits/symbol}
 \end{equation*}
 
+\section{Codifica di sorgente}
 \subsection{Codici univocamente decodificabili}
 Solitamente, l'alfabeto di una sorgente non è trasmesso direttamente. Un encoder, prima di trasmettere, si occupa di codificare il messaggio trasformando i simboli del vecchio alfabeto in quelli del nuovo cosi da rendere agevole la loro trasmissione attraverso il canale di comunicazione. Una volta arrivato il messaggio deve essere decodificato per poter tornare al contenuto originale. 
 \begin{definizione}
@@ -220,7 +224,7 @@ questa tabella, come si nota, riporta delle \textbf{codifiche} tutte differenti 
 \begin{definizione}
     Un codice è detto \textbf{unicamente decodificabile} (UD) se ogni elemento della sequenza dell'alfabeto di codifica corrisponde ad una sola sequenza dell'alfabeto della sorgente. In pratica, la decodifica di ogni parola deve essere univoca.
 \end{definizione}
-\subsubsection{Algoritmo Sardinas-Patterson}
+\subsubsection{Algoritmo di Sardinas-Patterson}
 Verificare che un codice generico sia UD è complesso, per questo motivo si utilizza il teorema di Sardinas-Patterson dal quale è possibile dedurre un algoritmo adatto alla verifica di questi codici. Il suo costo computazionale è $O(rL)$ dove $r$ è il numero di simboli di codifica (codewords), o parole di una frase, e $L$ è la somma delle lunghezze delle stringhe di simboli, o la lunghezza delle frasi.
 \begin{theorem}\label{theorem_sardinas_patterson}
     Dato un codice $C$ basato su un'alfabeto $A$ e consideriamo gli insiemi $S_0,S_1,S_2,\ldots$ generati nel seguente modo:
@@ -279,7 +283,7 @@ sono presenti diversi tipi di codice. Partiamo dal \textbf{Codice D}, che non è
 \end{itemize}
 Per gli altri codici è facile provare che sono UD. Inoltre, il \textbf{codice A} è istantaneo.
 
-\subsubsection{Scelta del codice migliore.}
+\subsubsection{Scelta del codice migliore}
 Scegliere il codice più adatto a un certo ambito è una parte fondamentale della compressione dati. Cercando di minimizzare la lunghezza media dei messaggi trasmessi. Per ottenere la massima efficienza, il principio fondamentale è \textbf{assegnare le parole di codice più corte agli eventi più frequenti (più probabili)} e riservare le parole di codice più lunghe agli eventi più rari. Questo principio è strettamente legato al concetto di Entropia, che rappresenta il numero minimo di bit necessari in media per codificare un simbolo emesso da una sorgente. Consideriamo questi due eventi:
 \begin{table}[ht]
 \centering
@@ -365,8 +369,8 @@ Questa disuguaglianza stabilisce la condizione necessaria e sufficiente per l'es
     \item Se la disuguaglianza \uline{viene soddisfatta} allora c'è almeno un modo per creare un codice istantaneo con le parole di codifica che si hanno a disposizione. 
 \end{itemize}
 \end{theorem}
-\begin{proof}
-Prima dimostriamo la \textbf{condizione sufficiente}. Indichiamo con $\{l_1,l_2,\ldots,l_m\}$ le lunghezze delle rispettive parole di codifica $c_i$ che soddisfano l'equazione \eqref{eq:disequality_kraft_mcmillan} allora cerchiamo di provare che esiste un codice a prefisso che le rispetta. Denotiamo con $n_1$ il numero di parole di codifica che hanno lunghezza pari a 1, con $n_2$ il numero di parole di codifica che hanno lunghezza pari a 2 e cosi via fino alla lunghezza massima $L$. Una volta ottenuti questi valori $\{n_1,n_2,\ldots,n_L\}$ possiamo affermare che $\sum_{i=1}^L n_i=m$, dove $m$ è il numero di parole di codifica\footnote{Questo indica che la somma dei singoli raggruppamenti è uguale a tutti i gli elementi dell'insieme iniziale, ed è ovvio che sia così.}. 
+\begin{proof}[\textbf{Dimostrazione della condizione sufficiente}]
+Indichiamo con $\{l_1,l_2,\ldots,l_m\}$ le lunghezze delle rispettive parole di codifica $c_i$ che soddisfano l'equazione \eqref{eq:disequality_kraft_mcmillan} allora cerchiamo di provare che esiste un codice a prefisso che le rispetta. Denotiamo con $n_1$ il numero di parole di codifica che hanno lunghezza pari a 1, con $n_2$ il numero di parole di codifica che hanno lunghezza pari a 2 e cosi via fino alla lunghezza massima $L$. Una volta ottenuti questi valori $\{n_1,n_2,\ldots,n_L\}$ possiamo affermare che $\sum_{i=1}^L n_i=m$, dove $m$ è il numero di parole di codifica\footnote{Questo indica che la somma dei singoli raggruppamenti è uguale a tutti i gli elementi dell'insieme iniziale, ed è ovvio che sia così.}. 
    
    Una volta raggruppate tutte le parole di codifica con le stesse lunghezze possiamo scrivere:
    \[
@@ -397,22 +401,27 @@ otteniamo un insieme di disequazioni dove ogni raggruppamento $n_i$ rappresenta 
        \item E cosi via per tutti gli altri livelli.
    \end{itemize}
 
-Quindi, si costruisce un albero d-ario in cui i livelli di profondità rappresentano la lunghezza delle parole: al livello 1 troviamo i nodi per le parole di lunghezza 1, al livello 2 quelle di lunghezza 2, e così via fino alla profondità massima $L$. Ogni singola diramazione dell'albero rappresenta un simbolo specifico dell'alfabeto del codice (ad esempio, '0' o '1' per i codici binari). Le parole in codice si ottengono \textbf{concatenando i simboli dei rami} che si percorrono per raggiungere un determinato nodo.
+\noindent Queste regole mostrano che, \textbf{se la disequazione è verificata}, allora i rami non si esauriscono prima di aver posizionato tutte le parole; pertanto, il codice a prefisso può essere costruito assegnando ciascuna parola a una foglia.
+\end{proof}
 
-   Come si può notare in \autoref{fig:kraft-mcmillan}, ogni volta che si assegna una parola a un nodo, questo diventa una 'foglia' e l'intero sotto-albero sottostante viene 'tagliato'. Le sue diramazioni non possono più essere usate, poiché percorrere i rami successivi significherebbe aggiungere ulteriori caratteri a una parola già conclusa, questo taglio garantisce matematicamente che la parola non possa mai diventare l'inizio (il prefisso) di una parola più lunga.
+\subsubsection{Interpretazione sull'albero d-ario}
+Si costruisce quindi un albero d-ario in cui i livelli di profondità rappresentano la lunghezza delle parole: al livello 1 troviamo i nodi per le parole di lunghezza 1, al livello 2 quelle di lunghezza 2, e così via fino alla profondità massima $L$. Ogni singola diramazione dell'albero rappresenta un simbolo specifico dell'alfabeto del codice (ad esempio, '0' o '1' per i codici binari). Le parole in codice si ottengono \textbf{concatenando i simboli dei rami} che si percorrono per raggiungere un determinato nodo.
 
-    \begin{figure}[htbp]
-        \centering
-        \includegraphics[width=0.5\linewidth]{kraft-mcmillan_vector.pdf}
-        \caption{Rappresentazione albero d-ario Kraft-McMillan.}
-        \label{fig:kraft-mcmillan}
-    \end{figure}
+Come si può notare in \autoref{fig:kraft-mcmillan}, ogni volta che si assegna una parola a un nodo, questo diventa una 'foglia' e l'intero sotto-albero sottostante viene 'tagliato'. Le sue diramazioni non possono più essere usate, poiché percorrere i rami successivi significherebbe aggiungere ulteriori caratteri a una parola già conclusa; questo taglio garantisce matematicamente che la parola non possa mai diventare l'inizio (il prefisso) di una parola più lunga.
 
-   Scegliere un nodo significa 'consumare' una specifica porzione dell'albero. La disuguaglianza di Kraft-McMillan somma queste singole frazioni consumate per verificare che non superino il 100\% dello spazio disponibile. Per esempio, in un albero binario, usare un nodo al primo livello consuma fisicamente metà dell'albero; nella formula, questa scelta pesa esattamente per $2^{-1}$. 
-   
-   In conclusione, abbiamo dimostrato che, \textbf{se la disequazione è verificata}, allora, grazie alle regole stabilite per i singoli livelli, i rami non si esauriscono prima di aver posizionato tutte le parole; pertanto, il codice a prefisso può essere costruito assegnando ciascuna parola a una foglia.
+\begin{figure}[htbp]
+    \centering
+    \includegraphics[width=0.5\linewidth]{kraft-mcmillan_vector.pdf}
+    \caption{Rappresentazione albero d-ario Kraft-McMillan.}
+    \label{fig:kraft-mcmillan}
+\end{figure}
 
-Ora passiamo alla dimostrazione della \textbf{condizione necessaria}. Ipotizziamo che $C$ sia un codice univocamente decodificabile (UD) con $m$ parole di codifica con delle lunghezze rispettive di $\{l_1,l_2,\ldots,l_m\}$ su un alfabeto formato da $d$ simboli. Consideriamo la quantità:
+Scegliere un nodo significa 'consumare' una specifica porzione dell'albero. La disuguaglianza di Kraft-McMillan somma queste singole frazioni consumate per verificare che non superino il 100\% dello spazio disponibile. Per esempio, in un albero binario, usare un nodo al primo livello consuma fisicamente metà dell'albero; nella formula, questa scelta pesa esattamente per $2^{-1}$.
+
+Questa lettura rende più intuitiva la selezione dei nodi e il taglio dei discendenti usati nella costruzione di un codice a prefisso.
+
+\begin{proof}[\textbf{Dimostrazione della condizione necessaria}]
+Ipotizziamo che $C$ sia un codice univocamente decodificabile (UD) con $m$ parole di codifica con delle lunghezze rispettive di $\{l_1,l_2,\ldots,l_m\}$ su un alfabeto formato da $d$ simboli. Consideriamo la quantità:
 \[
 \left(\sum_{i=1}^m d^{-l_i}\right)^n = \left(d^{-l_1}+d^{-l_2}+\ldots+d^{-l_m} \right)^n
 \]
@@ -512,8 +521,8 @@ questo codice soddisfa la condizione per essere a prefisso, come il codice C, ma
 \]
 questo codice non soddisfa la disuguaglianza, possiamo quindi concludere che non è istantaneo.
 \end{itemize}
-Fare esercizio direttamente qua per fare capire come si costruisce il codice
-\subsection{Esercizio}
+% Fare esercizio direttamente qua per fare capire come si costruisce il codice
+\subsubsection{Esercizio guidato}
 Si vuole codificare una sorgente con 9 simboli usando un codice a prefisso. L'alfabeto per le parole di codifica è {0,1,2} con delle lunghezze di 1,2,2,2,2,2,3,3,3.
 
 Per prima cosa applichiamo il teorema di Kraft-McMillan per capire se con queste premesse può essere creato un codice a prefisso. 
