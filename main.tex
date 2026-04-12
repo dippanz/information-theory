@@ -596,10 +596,11 @@ Il Teorema di Shannon stabilisce il limite matematico inferiore per la lunghezza
         Scegliendo pesi che si discostano dalle probabilità reali $p_i$, si introduce un costo aggiuntivo che rende la media maggiore perchè non si riesce a rispecchiare la frequenza reale dei simboli.}.
 
     Questa relazione costituisce il passaggio chiave per derivare un limite inferiore alla lunghezza media dei codici. Per verificarla, considero la differenza tra i due membri e la riscrivo nella forma:
-    \[
-        \sum_{i=1}^m p_i \log\!\left(\frac{1}{p_i}\right) - \sum_{i=1}^m p_i \log\!\left(\frac{1}{q_i}\right) =
-        \sum_{i=1}^m p_i \log\!\left(\frac{q_i}{p_i}\right) \leq 0
-    \]
+    \begin{align*}
+        \sum_{i=1}^m p_i \log\!\left(\frac{1}{p_i}\right)
+        - \sum_{i=1}^m p_i \log\!\left(\frac{1}{q_i}\right)
+         & = \sum_{i=1}^m p_i \log\!\left(\frac{q_i}{p_i}\right)
+    \end{align*}
     cambiando la base del logaritmo ottengo:
     \begin{align*}
         \sum_{i=1}^m p_i \log\!\left(\frac{q_i}{p_i}\right)
@@ -613,6 +614,10 @@ Il Teorema di Shannon stabilisce il limite matematico inferiore per la lunghezza
          & = \frac{1}{\ln 2}\sum_{i=1}^m (q_i - p_i)                               \\
          & = \frac{1}{\ln 2}\left(\sum_{i=1}^m q_i - \sum_{i=1}^m p_i\right) = 0
     \end{align*}
+    Quindi:
+    \[
+        \sum_{i=1}^m p_i \log\!\left(\frac{q_i}{p_i}\right) \leq 0,
+    \]
     visto che entrambe sono distribuzioni le cui somme sono uguali a 1. In questi passaggi abbiamo dimostrato la disuguaglianza chiave che \uline{mette in relazione l'entropia della sorgente con una media logaritmica basata su una distribuzione arbitraria} $q_i$.
 
     Scegliamo:
@@ -631,9 +636,10 @@ Il Teorema di Shannon stabilisce il limite matematico inferiore per la lunghezza
          & = \log\!\left(\sum_{j=1}^m d^{-l_j}\right) + L_S(C)\cdot \log d
     \end{align*}
     visto che $C$ è per ipotesi un codice UD allora $\sum_{j=1}^m d^{-l_j} \leq 1$, segue che:
-    \[
-        \log\!\left(\sum_{j=1}^m d^{-l_j}\right) + L_S(C)\cdot \log d \leq L_S(C)\cdot \log d
-    \]
+    \begin{align*}
+        \log\!\left(\sum_{j=1}^m d^{-l_j}\right) + L_S(C)\cdot \log d
+         & \leq L_S(C)\cdot \log d
+    \end{align*}
     allora si conclude che:
     \[
         H(S) \leq L_S(C)\cdot \log d
@@ -658,15 +664,20 @@ Ricapitolando, la dimostrazione si basa su questi punti:
 
     \item \textbf{Caso di uguaglianza:} Per un codice univocamente decodificabile (UD) d-ario raggiungere l'entropia implica che $\sum_{i=1}^m d^{-l_i} = 1$ e l'uguaglianza viene rispettata \textbf{se e solo se}:
           \[
-              p_i=d^{-l_i}
-              \quad\text{e}\quad
-              l_i=\log_d \frac{1}{p_i}
+              \left\{
+              \begin{aligned}
+                  p_i & = d^{-l_i},                           \\
+                  l_i & = \log_d\!\left(\frac{1}{p_i}\right),
+              \end{aligned}
+              \right.
+              \qquad i=1,\ldots,m.
           \]
-          per ogni $i$. Questo è possibile \uline{sole se} le lunghezze delle parole di codice sono numeri interi\footnote{\`E ovvio che le lunghezze delle parole siano numeri interi, queste infatti misurano quanto ogni parola di codifica debba essere lunga. Quindi se questi valori sono numeri interi allora deve valere che anche il logaritmo sia un numero intero.}, ovvero se $l_i=\log_d \frac{1}{p_i}\in \mathbb{N}$ per ogni $i$.
+          Questo è possibile \uline{sole se} le lunghezze delle parole di codice sono numeri interi\footnote{\`E ovvio che le lunghezze delle parole siano numeri interi, queste infatti misurano quanto ogni parola di codifica debba essere lunga. Quindi se questi valori sono numeri interi allora deve valere che anche il logaritmo sia un numero intero.}, ovvero se $l_i=\log_d\!\left(\frac{1}{p_i}\right)\in \mathbb{N}$ per ogni $i$.
 
           Si nota che scegliendo:
           \[
-              p_i=\left(\frac{1}{d}\right)^{\alpha_i}=d^{-\alpha_i} \quad\text{con}\quad \alpha_i > 0 \in \mathbb{N}
+              p_i = \left(\frac{1}{d}\right)^{\alpha_i} = d^{-\alpha_i},
+              \qquad \alpha_i \in \mathbb{N},\ \alpha_i > 0
           \]
           basta scegliere $l_i=\alpha_i$ per ogni $i$ per ottenere un codice compatto. Infatti, con questa scelta possiamo notare che:
           \[
@@ -679,11 +690,11 @@ Ricapitolando, la dimostrazione si basa su questi punti:
           \]
           dove $0 \leq \theta(C) \leq 1$. Più il valore tende a 1 è più il codice è efficiente, mentre più si discosta da 1 è meno efficiente. Se $C$ è un codice ottimale allora $\theta(C)=1$.
 
-    \item \textbf{Ridondanza:} Per misurare la ridondanza di un codice $C$ si può usare la seguente formula:
+    \item \textbf{Ridondanza:} Per misurare la ridondanza di un codice $C$ (quanto un codice si discosta dall'ottimalità) si può usare la seguente formula:
           \[
               \rho(C) = 1- \theta(C) = \frac{L_S(C) - H_d(S)}{L_S(C)}
           \]
-          dove $0 \leq \rho(C) \leq 1$. Più il valore tende a 1 è più il codice è ridondante, mentre più si discosta da 1 è meno ridondante. Se $C$ è un codice ottimale allora $\rho(C)=0$. La ridondanza rappresenta la porzione di lunghezza media che non è strettamente necessaria per rappresentare l'informazione della sorgente, ma che è invece dovuta a inefficienze nella progettazione del codice. Un codice con alta ridondanza utilizza più simboli di codifica del necessario, mentre un codice con bassa ridondanza si avvicina al limite inferiore stabilito dall'entropia della sorgente. Questa serve a misurare quanto un codice si discosta dall'ottimalità.
+          dove $0 \leq \rho(C) \leq 1$. Più il valore tende a 1 è più il codice è ridondante, mentre più si discosta da 1 è meno ridondante. Se $C$ è un codice ottimale allora $\rho(C)=0$. La ridondanza rappresenta la porzione di lunghezza media che non è strettamente necessaria per rappresentare l'informazione della sorgente, ma che è invece dovuta a inefficienze nella progettazione del codice. Un codice con alta ridondanza utilizza più simboli di codifica del necessario, mentre un codice con bassa ridondanza si avvicina al limite inferiore stabilito dall'entropia della sorgente.
 \end{itemize}
 
 
