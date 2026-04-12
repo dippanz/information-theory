@@ -1,0 +1,8 @@
+{
+    "latex-workshop.formatting.latex": "latexindent",
+    "editor.renderWhitespace": "all",
+    "editor.renderControlCharacters": true,
+    "editor.unicodeHighlight.invisibleCharacters": true,
+    "editor.unicodeHighlight.includeComments": true,
+    "editor.unicodeHighlight.includeStrings": true
+}

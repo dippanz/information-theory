@@ -34,8 +34,8 @@
 \section{Introduzione}
 Il ruolo fondamentale della teoria dell'informazione e compressione dati fornisce i concetti fondamentali, le tecniche e gli strumenti per rappresentare, processare e trasmettere in modo sicuro ed efficiente le informazioni. Fondamentalmente:
 \begin{itemize}
-  \item \textbf{Information theory:} stabilisce i principi per rappresentare e quantificare l'\emph{informazione} contenuta nei dati emessi da una \uline{sorgente}.
-  \item \textbf{Data compression:} descrive le tecniche per ridurre la dimensione dei dati (i bits) per migliorare la loro trasmissione e salvataggio.
+    \item \textbf{Information theory:} stabilisce i principi per rappresentare e quantificare l'\emph{informazione} contenuta nei dati emessi da una \uline{sorgente}.
+    \item \textbf{Data compression:} descrive le tecniche per ridurre la dimensione dei dati (i bits) per migliorare la loro trasmissione e salvataggio.
 \end{itemize}
 Tutto questo è possibile solo perché la rappresentazione della realtà porta con se molta ridondanza, per cui identificandola si può eliminare ottimizzandone la rappresentazione. Questi concetti della teoria dell'informazione sono alla base della crittografia; anche per il ML (Machine Learning) comprimendo i bit dei dataset i modelli occupano meno spazio e sono computazionalmente più efficienti.
 
@@ -43,21 +43,21 @@ Tutto questo è possibile solo perché la rappresentazione della realtà porta c
 Nell'informatica, lo scambio di informazioni si riferisce al trasferimento di dati tra un trasmittente e un ricevente (non sono necessariamente persone fisiche) e la \textbf{misura} del contenuto informativo di un messaggio viene rappresentato da quanto questo riesce a ridurre l'incertezza che si aveva prima di riceverlo. In altre parole, si presuppone che prima di ricevere un \textbf{messaggio} fossimo incerti su un determinato argomento e dopo averlo ricevuto siamo venuti a conoscenza di informazioni aggiuntive che hanno ridotto questa incertezza.
 
 \begin{definizione}
-L'informazione è la misura della riduzione dell'incertezza ed è quantificata dall'ammontare di conoscenza "guadagnata" da una osservazione o un messaggio.  Quando un messaggio o un evento è altamente improbabile porta con se molta informazione poiché riduce l'incertezza maggiormente rispetto ad un evento molto probabile.
+    L'informazione è la misura della riduzione dell'incertezza ed è quantificata dall'ammontare di conoscenza "guadagnata" da una osservazione o un messaggio.  Quando un messaggio o un evento è altamente improbabile porta con se molta informazione poiché riduce l'incertezza maggiormente rispetto ad un evento molto probabile.
 \end{definizione}
 \subsubsection{Criteri di una misura dell'informazione accettabile}
 I criteri fondamentali per una misura del \textbf{contenuto informativo} accettabile sono:
 \begin{itemize}
     \item \textbf{Dipendenza dalla probabilità:}
-    \begin{enumerate}
-        \item Un'informazione associata ad un evento dovrebbe essere collegata alla \textbf{probabilità delle sue occorrenze}.
-        \item  Più un evento è raro e più contenuto informativo porta con se.
-    \end{enumerate}
-    \item \textbf{Funzione monotonica e continua:} 
-    \begin{enumerate}
-        \item Il contenuto informativo di un evento dovrebbe \textbf{aumentare al diminuire della probabilità}. Applicato agli assiomi di Shannon, questo concetto stabilisce anche che, in un sistema composto da eventi tutti equiprobabili, un numero maggiore di eventi possibili deve corrispondere a una maggiore incertezza complessiva.
-        \item La quantità di informazione deve \textbf{variare in modo continuo} al variare della probabilità dell'evento. Dal punto di vista formale, ciò richiede che l'entropia sia una funzione continua rispetto alla probabilità nell'intervallo reale. In termini pratici, questo significa che un cambiamento piccolissimo nella probabilità di un evento non deve causare un "salto" improvviso e sproporzionato nel calcolo dell'informazione, ma una variazione graduale.
-    \end{enumerate}
+          \begin{enumerate}
+              \item Un'informazione associata ad un evento dovrebbe essere collegata alla \textbf{probabilità delle sue occorrenze}.
+              \item  Più un evento è raro e più contenuto informativo porta con se.
+          \end{enumerate}
+    \item \textbf{Funzione monotonica e continua:}
+          \begin{enumerate}
+              \item Il contenuto informativo di un evento dovrebbe \textbf{aumentare al diminuire della probabilità}. Applicato agli assiomi di Shannon, questo concetto stabilisce anche che, in un sistema composto da eventi tutti equiprobabili, un numero maggiore di eventi possibili deve corrispondere a una maggiore incertezza complessiva.
+              \item La quantità di informazione deve \textbf{variare in modo continuo} al variare della probabilità dell'evento. Dal punto di vista formale, ciò richiede che l'entropia sia una funzione continua rispetto alla probabilità nell'intervallo reale. In termini pratici, questo significa che un cambiamento piccolissimo nella probabilità di un evento non deve causare un "salto" improvviso e sproporzionato nel calcolo dell'informazione, ma una variazione graduale.
+          \end{enumerate}
     \item \textbf{Eventi indipendenti:} Se due eventi sono statisticamente indipendenti, il contenuto informativo totale sarà dato dalla \textbf{somma} dei contenuti informativi dei singoli eventi.
 \end{itemize}
 
@@ -78,17 +78,17 @@ Secondo Shannon, un qualsiasi sistema di comunicazione consiste in 5 fasi:
 Shannon, inoltre, ha introdotto due ipotesi:
 \begin{itemize}
     \item La trasmissione di simboli attraverso un canali di comunicazione è un fenomeno discreto che impiega una certa quantità di tempo diversa da zero.
-    \item Il canale di comunicazione è affetto da \textbf{sorgenti di rumore} le quali possono modificare il contenuto informativo del messaggio in maniera impredicibile a priori. La trasformazione potrebbe anche corrompere il messaggio stesso.\footnote{Il corso tratta solo le teorie senza rumore.} 
+    \item Il canale di comunicazione è affetto da \textbf{sorgenti di rumore} le quali possono modificare il contenuto informativo del messaggio in maniera impredicibile a priori. La trasformazione potrebbe anche corrompere il messaggio stesso.\footnote{Il corso tratta solo le teorie senza rumore.}
 \end{itemize}
-Nel processo di comunicazione la misura della quantità di informazione viene espressa attraverso i \textbf{bit}, l'unità di misura fondamentale dell'informazione, che permette una quantificazione esatta di quanta informazione si sta trasmettendo. 
+Nel processo di comunicazione la misura della quantità di informazione viene espressa attraverso i \textbf{bit}, l'unità di misura fondamentale dell'informazione, che permette una quantificazione esatta di quanta informazione si sta trasmettendo.
 
 \section{Misura dell'informazione}
 \subsection{Sorgente discreta}
 Una \textbf{sorgente} è caratterizzata da un alfabeto intrinseco, ogni elemento dell'alfabeto può essere di qualsiasi natura come lettere, numeri o eventi. La sorgente, come già accennato, è \textbf{discreta} e ad ogni unità di tempo viene prodotto un singolo elemento di questo alfabeto con una sua probabilità. Questa probabilità viene mappata come  $\pi:A\xrightarrow{}[0,1]$ per cui una sorgente discreta $S$ può essere rappresentata da:
 \begin{equation}\label{eq:discrete_source}S=
     \begin{pmatrix}
-    a_1&a_2&...&a_m\\
-    p_1&p_2&...&p_m
+        a_1 & a_2 & ... & a_m \\
+        p_1 & p_2 & ... & p_m
     \end{pmatrix}
 \end{equation}
 dove deve valere $\sum_{a\in A}\pi(a)=1$. Ogni colonna di questa matrice rappresenta un elemento con la sua probabilità associata; per cui, per esempio, al simbolo $a_1$ è associata una probabilità $p_1$.
@@ -99,101 +99,101 @@ dove deve valere $\sum_{a\in A}\pi(a)=1$. Ogni colonna di questa matrice rappres
     \begin{equation}
         I(a_i)=\log_b\left(\frac{1}{p_i}\right)
     \end{equation}
-rappresenta la \textbf{misura quantitativa del contenuto informativo} associato ad uno specifico simbolo (o evento) emesso da una sorgente. La base dell'algoritmo può essere:
-\begin{itemize}
-    \item $b = 2$: rappresenta la misura di un \textbf{BIT} (Binary DigIT).
-    \item $b=e$: rappresenta la misura di un \textbf{NAT}.
-    \item $b=10$: rappresenta la misura di \textbf{HARTLEY}.
-\end{itemize}
+    rappresenta la \textbf{misura quantitativa del contenuto informativo} associato ad uno specifico simbolo (o evento) emesso da una sorgente. La base dell'algoritmo può essere:
+    \begin{itemize}
+        \item $b = 2$: rappresenta la misura di un \textbf{BIT} (Binary DigIT).
+        \item $b=e$: rappresenta la misura di un \textbf{NAT}.
+        \item $b=10$: rappresenta la misura di \textbf{HARTLEY}.
+    \end{itemize}
 \end{definizione}
 Dalla definizione precedente si può assumere che se la probabilità di un simbolo è 1 allora il contenuto informativo sarà pari a 0. Invece, se la probabilità tende a 0 allora il contenuto informativo tenderà ad infinito. Questo significa che meno probabile è un evento più sarà l'informazione che possiede. Formalizzando le proprietà dell'auto-informazione che derivano da quelle dei logaritmi:
 \begin{itemize}
-    \item $I(a_i)\geq0$ per $0\leq p_i \leq 1$ 
+    \item $I(a_i)\geq0$ per $0\leq p_i \leq 1$
     \item $I(a_i) \xrightarrow{}0$ per $p_i \xrightarrow{} 1$
     \item $I(a_i) > I(a_j)$ per $p_i < p_j$
-    \item Dati due simboli indipendenti $a_i$ e $a_j$, abbiamo: 
-    \begin{itemize}
-        \item $\pi (a_ia_j)=p_i\cdot p_j$
-        \item $I(a_ia_j)=I(a_i)+I(a_j)$
-    \end{itemize}
+    \item Dati due simboli indipendenti $a_i$ e $a_j$, abbiamo:
+          \begin{itemize}
+              \item $\pi (a_ia_j)=p_i\cdot p_j$
+              \item $I(a_ia_j)=I(a_i)+I(a_j)$
+          \end{itemize}
 \end{itemize}
 \subsubsection{Esempio}
-Se consideriamo il caso binario ($b=2$) allora $I_i=\log_2(\frac{1}{p_i})$ e per una sorgente $S$ di due simboli equiprobabili: 
+Se consideriamo il caso binario ($b=2$) allora $I_i=\log_2(\frac{1}{p_i})$ e per una sorgente $S$ di due simboli equiprobabili:
 \begin{equation*}
     S=\begin{pmatrix}
-        a_1&a_2\\
-        \frac{1}{2}&\frac{1}{2}
+        a_1         & a_2         \\
+        \frac{1}{2} & \frac{1}{2}
     \end{pmatrix}
 \end{equation*}
 il contenuto informativo sarà $I_1=I_2=\log_22=1 [bit$]. Come si nota, serve un bit per distinguere due messaggi equiprobabili.
 \subsection{Entropia di Shannon}
-L'entropia può essere interpretata come la \textbf{quantità di informazione media} che ogni simbolo emesso da una sorgente trasporta o, in termini più formali, in media il numero minimo di bit necessari per codificare un simbolo emesso da una sorgente. Shannon attraverso un approccio assiomatico, stabilì preliminarmente che qualsiasi funzione matematica candidata a misurare il contenuto informativo dovesse necessariamente rispettare alcuni criteri fondamentali, dettati dalla logica e dalla coerenza matematica. Questi cinque assiomi impongono che la misura dell'informazione debba essere continua nel dominio delle probabilità, normalizzabile per definire l'unità di misura, invariante rispetto a come le probabilità vengono etichettate (permutazione), monotonicamente crescente al crescere del numero di eventi equiprobabili e, infine, coerente e additiva quando gli eventi vengono raggruppati in scelte successive 
+L'entropia può essere interpretata come la \textbf{quantità di informazione media} che ogni simbolo emesso da una sorgente trasporta o, in termini più formali, in media il numero minimo di bit necessari per codificare un simbolo emesso da una sorgente. Shannon attraverso un approccio assiomatico, stabilì preliminarmente che qualsiasi funzione matematica candidata a misurare il contenuto informativo dovesse necessariamente rispettare alcuni criteri fondamentali, dettati dalla logica e dalla coerenza matematica. Questi cinque assiomi impongono che la misura dell'informazione debba essere continua nel dominio delle probabilità, normalizzabile per definire l'unità di misura, invariante rispetto a come le probabilità vengono etichettate (permutazione), monotonicamente crescente al crescere del numero di eventi equiprobabili e, infine, coerente e additiva quando gli eventi vengono raggruppati in scelte successive
 \begin{theorem}
     Consideriamo una sorgente $S$ come nella \eqref{eq:discrete_source}, allora \textbf{l'entropia} di $S$ è definita come:
     \begin{equation}\label{eq:shannon_entropy}
         H(S)=C\sum_{i=1}^np_i\log_b\left(\frac{1}{p_i}\right)=C\sum_{i=1}^np_i\cdot I(a_i)
     \end{equation}
-assumendo che l'unità di misura sia il bit, per cui il logaritmo è espresso in base 2 ed la costante $C\geq0$. Solitamente $C$ dipende dall'unità di misura scelta (ovvero la base del logaritmo) e in genere è uguale a 1.
+    assumendo che l'unità di misura sia il bit, per cui il logaritmo è espresso in base 2 ed la costante $C\geq0$. Solitamente $C$ dipende dall'unità di misura scelta (ovvero la base del logaritmo) e in genere è uguale a 1.
 \end{theorem}
 \begin{proof}
-Secondo Shannon, è ragionevole assumere che una funzione
-\[
-H(S) = H_n(p_1,p_2,\ldots,p_n)
-\]
-che misura il contenuto informativo medio prodotto da una sorgente rispetta le seguenti proprietà (assiomi):
-\begin{enumerate}
-    \item $H_2$ è una funzione continua di $p$ nell'intervallo $[0,1]$
-    \item $H_2(\frac{1}{2},\frac{1}{2})=1$
-    \item (Invarianza alle permutazioni) $H_n(\sigma(p_1,p_2,...,p_n))=H_n(p_1,p_2,...,p_n)$ l'entropia non varia rispetto alle permutazioni delle probabilità della sorgente. L'incertezza non dipende infatti da come sono state assegnate le probabilità ai singoli simboli.
-    \item  Detta $A(n)=H_n(\frac{1}{n},...,\frac{1}{n})$ questa deve essere una funzione di $n$ monotonica crescente. Infatti, se tutti gli eventi sono equiprobabili, maggiore è il numero di questi eventi e maggiore sarà l'incertezza (un contenuto informativo maggiore).
-    \textbf{Esempio:} se ho dei simboli $A,B,C$ con delle probabilità del $20\%,50\%,30\%$ rispettivamente se queste probabilità fossero del $50\%,30\%,20\%$ l'entropia sarebbe la stessa in entrambi i casi.
-    \item Se una scelta viene divisa in altre due scelte successive, il valore originale di $H$ deve essere la somma pesata dei singoli valori di $H$, cioè deve valere:
-    \begin{equation}
-        H_n(p_1,p_2,\ldots,p_n)=H_{n-1}(p_1+p_2,p_3,\ldots,p_n)+(p_1+p_2)H_2\left(\frac{p_1}{p_1+p_2},\frac{p_2}{p_1+p_2}\right)
-    \end{equation}
-    \textbf{Esempio:}\footnote{Per meglio comprendere questo assioma, lo spiego in modo più semplice. L'entropia del sistema non cambia anche se effettuiamo prima una decisione intermedia; quindi, raggruppare o meno le probabilità produce lo stesso risultato. Immaginiamo di avere tre eventi: $A, B, C$ con le probabilità dell'esempio. Possiamo effettuare una scelta intermedia su un sottogruppo che rappresenta $p_1$ e $p_2$, distinto dal sottogruppo che rappresenta $p_3$. Pertanto, le probabilità per effettuare la scelta intermedia sono quelle descritte dall'assioma, ovvero $\frac{1}{2}$ per entrambi i casi (cioè $H_2(\frac{1}{2}, \frac{1}{2})$). Supponiamo ora di scegliere il sottogruppo formato da $p_1$ e $p_2$: in questo caso dobbiamo effettuare un'ulteriore scelta, poiché il gruppo è composto da più elementi. Le probabilità delle singole scelte saranno, rispettivamente, $\frac{1}{3}$ e $\frac{2}{3}$ (cioè $H_2(\frac{1}{3}, \frac{2}{3})$). Si nota che il prodotto tra la probabilità della scelta intermedia (del gruppo) e quella della scelta finale restituisce le probabilità iniziali. Facendo un esempio concreto, se i simboli sono gusti di gelato, ad esempio $A=\text{Cioccolato}$, $B=\text{Vaniglia}$, $C=\text{Frutta}$, allora ci sono due modi per arrivare alla scelta finale. Il primo consiste nello scegliere direttamente, secondo le probabilità originarie. Il secondo consiste in una scelta composta: prima si seleziona un sottogruppo, ad esempio i gusti alla $\text{Crema}$ (cioè non $\text{Frutta}$), e poi si sceglie all'interno del sottogruppo. La prima scelta avviene tra $\text{Crema}$ e $\text{Frutta}$, ciascuna con probabilità $\frac{1}{2}$. Una volta scelta, ad esempio, $\text{Crema}$, si effettua una seconda scelta con probabilità condizionate dalla scelta intermedia.} $H_3(\frac{1}{6},\frac{1}{3},\frac{1}{2})=H_2(\frac{1}{2},\frac{1}{2})+\frac{1}{2}H_2(\frac{1}{3},\frac{2}{3})$. Questo assioma può anche essere esteso al raggruppamento di $k$ simboli:
-    \begin{equation}
-\begin{split}
-H_n(p_1, p_2, \ldots, p_n)
-&= H_{n-k+1}(p_1 + \cdots + p_k, p_{k+1}, \ldots, p_n) \\
-&\quad + (p_1 + \cdots + p_k)\, H_k\left(
-\frac{p_1}{p_1 + \cdots + p_k}, \ldots, \frac{p_k}{p_1 + \cdots + p_k}
-\right)
-\end{split}
-\end{equation}
-\end{enumerate}
-Finita la definizione degli assiomi è "facile" verificare che la funziona \eqref{eq:shannon_entropy} li soddisfa:
-\begin{enumerate}
-    \item Dall'assioma 5 deriviamo che $A(n\cdot m)=A(n)+ A(m)$.
-    \item $A(n^k)=kA(n)$ per $k,n>0$. Basta provarlo per induzione grazie alla precedente.
-    \item Dagli assiomi sappiamo che la funzione deve essere monotonica crescente, per cui l'unica funzione che soddisfa questa caratteristica e quelle precedenti è $A(n)=C\log_b(n)$ una funzione logaritmica con $n,C>0$.
-    \item L'entropia di una scelta binaria diversa da quella equiprobabile: 
-    \begin{equation*}
-            H_2(p, p-1)=-C\left[p\log (p)+(1-p)\log (1-p)\right] 
-    \end{equation*}
-    da dimostrare per tutti i numeri razionali.
-    \item Estendiamo la dimostrazione precedente a tutti gli $n$ per induzione e troviamo $ H(S)=C\sum_{i=1}^np_i\log_b\left(\frac{1}{p_i}\right)$.
-\end{enumerate}
+    Secondo Shannon, è ragionevole assumere che una funzione
+    \[
+        H(S) = H_n(p_1,p_2,\ldots,p_n)
+    \]
+    che misura il contenuto informativo medio prodotto da una sorgente rispetta le seguenti proprietà (assiomi):
+    \begin{enumerate}
+        \item $H_2$ è una funzione continua di $p$ nell'intervallo $[0,1]$
+        \item $H_2(\frac{1}{2},\frac{1}{2})=1$
+        \item (Invarianza alle permutazioni) $H_n(\sigma(p_1,p_2,...,p_n))=H_n(p_1,p_2,...,p_n)$ l'entropia non varia rispetto alle permutazioni delle probabilità della sorgente. L'incertezza non dipende infatti da come sono state assegnate le probabilità ai singoli simboli.
+        \item  Detta $A(n)=H_n(\frac{1}{n},...,\frac{1}{n})$ questa deve essere una funzione di $n$ monotonica crescente. Infatti, se tutti gli eventi sono equiprobabili, maggiore è il numero di questi eventi e maggiore sarà l'incertezza (un contenuto informativo maggiore).
+              \textbf{Esempio:} se ho dei simboli $A,B,C$ con delle probabilità del $20\%,50\%,30\%$ rispettivamente se queste probabilità fossero del $50\%,30\%,20\%$ l'entropia sarebbe la stessa in entrambi i casi.
+        \item Se una scelta viene divisa in altre due scelte successive, il valore originale di $H$ deve essere la somma pesata dei singoli valori di $H$, cioè deve valere:
+              \begin{equation}
+                  H_n(p_1,p_2,\ldots,p_n)=H_{n-1}(p_1+p_2,p_3,\ldots,p_n)+(p_1+p_2)H_2\left(\frac{p_1}{p_1+p_2},\frac{p_2}{p_1+p_2}\right)
+              \end{equation}
+              \textbf{Esempio:}\footnote{Per meglio comprendere questo assioma, lo spiego in modo più semplice. L'entropia del sistema non cambia anche se effettuiamo prima una decisione intermedia; quindi, raggruppare o meno le probabilità produce lo stesso risultato. Immaginiamo di avere tre eventi: $A, B, C$ con le probabilità dell'esempio. Possiamo effettuare una scelta intermedia su un sottogruppo che rappresenta $p_1$ e $p_2$, distinto dal sottogruppo che rappresenta $p_3$. Pertanto, le probabilità per effettuare la scelta intermedia sono quelle descritte dall'assioma, ovvero $\frac{1}{2}$ per entrambi i casi (cioè $H_2(\frac{1}{2}, \frac{1}{2})$). Supponiamo ora di scegliere il sottogruppo formato da $p_1$ e $p_2$: in questo caso dobbiamo effettuare un'ulteriore scelta, poiché il gruppo è composto da più elementi. Le probabilità delle singole scelte saranno, rispettivamente, $\frac{1}{3}$ e $\frac{2}{3}$ (cioè $H_2(\frac{1}{3}, \frac{2}{3})$). Si nota che il prodotto tra la probabilità della scelta intermedia (del gruppo) e quella della scelta finale restituisce le probabilità iniziali. Facendo un esempio concreto, se i simboli sono gusti di gelato, ad esempio $A=\text{Cioccolato}$, $B=\text{Vaniglia}$, $C=\text{Frutta}$, allora ci sono due modi per arrivare alla scelta finale. Il primo consiste nello scegliere direttamente, secondo le probabilità originarie. Il secondo consiste in una scelta composta: prima si seleziona un sottogruppo, ad esempio i gusti alla $\text{Crema}$ (cioè non $\text{Frutta}$), e poi si sceglie all'interno del sottogruppo. La prima scelta avviene tra $\text{Crema}$ e $\text{Frutta}$, ciascuna con probabilità $\frac{1}{2}$. Una volta scelta, ad esempio, $\text{Crema}$, si effettua una seconda scelta con probabilità condizionate dalla scelta intermedia.} $H_3(\frac{1}{6},\frac{1}{3},\frac{1}{2})=H_2(\frac{1}{2},\frac{1}{2})+\frac{1}{2}H_2(\frac{1}{3},\frac{2}{3})$. Questo assioma può anche essere esteso al raggruppamento di $k$ simboli:
+              \begin{equation}
+                  \begin{split}
+                      H_n(p_1, p_2, \ldots, p_n)
+                       & = H_{n-k+1}(p_1 + \cdots + p_k, p_{k+1}, \ldots, p_n) \\
+                       & \quad + (p_1 + \cdots + p_k)\, H_k\left(
+                      \frac{p_1}{p_1 + \cdots + p_k}, \ldots, \frac{p_k}{p_1 + \cdots + p_k}
+                      \right)
+                  \end{split}
+              \end{equation}
+    \end{enumerate}
+    Finita la definizione degli assiomi è "facile" verificare che la funziona \eqref{eq:shannon_entropy} li soddisfa:
+    \begin{enumerate}
+        \item Dall'assioma 5 deriviamo che $A(n\cdot m)=A(n)+ A(m)$.
+        \item $A(n^k)=kA(n)$ per $k,n>0$. Basta provarlo per induzione grazie alla precedente.
+        \item Dagli assiomi sappiamo che la funzione deve essere monotonica crescente, per cui l'unica funzione che soddisfa questa caratteristica e quelle precedenti è $A(n)=C\log_b(n)$ una funzione logaritmica con $n,C>0$.
+        \item L'entropia di una scelta binaria diversa da quella equiprobabile:
+              \begin{equation*}
+                  H_2(p, p-1)=-C\left[p\log (p)+(1-p)\log (1-p)\right]
+              \end{equation*}
+              da dimostrare per tutti i numeri razionali.
+        \item Estendiamo la dimostrazione precedente a tutti gli $n$ per induzione e troviamo $ H(S)=C\sum_{i=1}^np_i\log_b\left(\frac{1}{p_i}\right)$.
+    \end{enumerate}
 \end{proof}
 \subsubsection{Esempi}
 Vengono qui elencati alcuni esempi di calcolo di entropia. Consideriamo una sorgente $S$ con i seguenti simboli e probabilità associate:
 \begin{equation*}
     S=\begin{pmatrix}
-        a_1&a_2&a_3\\
-        \frac{1}{2}&\frac{1}{4}&\frac{1}{4}
+        a_1         & a_2         & a_3         \\
+        \frac{1}{2} & \frac{1}{4} & \frac{1}{4}
     \end{pmatrix}
 \end{equation*}
 allora l'entropia di questa sorgente sarà:
 \begin{equation*}
-   H(S)= \frac{1}{2}\log_2 (2)+\frac{1}{4}\log_2 (4)+\frac{1}{4}\log_2 (4)=\frac{3}{2} \text{bits/symbol}
+    H(S)= \frac{1}{2}\log_2 (2)+\frac{1}{4}\log_2 (4)+\frac{1}{4}\log_2 (4)=\frac{3}{2} \text{bits/symbol}
 \end{equation*}
 come si nota, si può interpretare questa quantità come la media di informazione per simbolo o, come da definizione iniziale di informazione, la \textbf{quantità media di incertezza} che un osservatore ha prima di conoscere il contenuto di un messaggio.
 
 Consideriamo una sorgente che emette tre simboli $a,b \text{ e } c$ con, rispettive, probabilità di 0.4, 0.3 e 0.3. In formula possiamo scrivere:
 \begin{equation*}
     S=\begin{pmatrix}
-        a&b&c\\
-        0.4&0.3&0.3
+        a   & b   & c   \\
+        0.4 & 0.3 & 0.3
     \end{pmatrix}
 \end{equation*}
 allora:
@@ -203,24 +203,24 @@ allora:
 
 \section{Codifica di sorgente}
 \subsection{Codici univocamente decodificabili}
-Solitamente, l'alfabeto di una sorgente non è trasmesso direttamente. Un encoder, prima di trasmettere, si occupa di codificare il messaggio trasformando i simboli del vecchio alfabeto in quelli del nuovo cosi da rendere agevole la loro trasmissione attraverso il canale di comunicazione. Una volta arrivato il messaggio deve essere decodificato per poter tornare al contenuto originale. 
+Solitamente, l'alfabeto di una sorgente non è trasmesso direttamente. Un encoder, prima di trasmettere, si occupa di codificare il messaggio trasformando i simboli del vecchio alfabeto in quelli del nuovo cosi da rendere agevole la loro trasmissione attraverso il canale di comunicazione. Una volta arrivato il messaggio deve essere decodificato per poter tornare al contenuto originale.
 \begin{definizione}
     Data una sorgente $S = \{ s_1,s_2,\ldots,s_m\}$. Viene definita \textbf{funzione di codifica}\footnote{Nelle slide queste vengono definite in diversi modi. Qui vengono definite come funzioni, visto che lo sono a tutti gli effetti. Quindi quando si parla di \textbf{funzioni di codifica} si fa riferimento sia a code che a block code. Inoltre, verrà usato anche il termine \textbf{blocco di codifica} per riferirsi alla stessa cosa.} una funzione che mappa una sequenza degli elementi di $S$ in una sequenza di un altro alfabeto $X=\{ x_1,x_2,\ldots,x_m\}$, chiamato \textbf{alfabeto di codifica}.
 \end{definizione}
 Le \textbf{funzioni di codifica} possono essere rappresentate come tabelle di associazione dei simboli dell'alfabeto originale in quelli dell'alfabeto codificato. Ecco un esempio:
 
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-\textbf{Simbolo} & \textbf{Codifica} \\ \hline
-$s_1$ & 0 \\ \hline
-$s_2$ & 11 \\ \hline
-$s_3$ & 00 \\ \hline
-$s_4$ & 01 \\ \hline
-\end{tabular}
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codifica} \\ \hline
+        $s_1$            & 0                 \\ \hline
+        $s_2$            & 11                \\ \hline
+        $s_3$            & 00                \\ \hline
+        $s_4$            & 01                \\ \hline
+    \end{tabular}
 \end{table}
-questa tabella, come si nota, riporta delle \textbf{codifiche} tutte differenti fra loro. Un blocco di codifica si dice \textbf{non singolare} se ogni parola dell'alfabeto di codifica è distinta. Questa proprietà non è sufficiente infatti data la sequenza codificata 0011 ci sono due possibili combinazioni di decodifica: $s_3s_2$ o $s_1s_1s_2$. La necessità di avere una proprietà più rigorosa è fondamentale. 
+questa tabella, come si nota, riporta delle \textbf{codifiche} tutte differenti fra loro. Un blocco di codifica si dice \textbf{non singolare} se ogni parola dell'alfabeto di codifica è distinta. Questa proprietà non è sufficiente infatti data la sequenza codificata 0011 ci sono due possibili combinazioni di decodifica: $s_3s_2$ o $s_1s_1s_2$. La necessità di avere una proprietà più rigorosa è fondamentale.
 \begin{definizione}
     Un codice è detto \textbf{unicamente decodificabile} (UD) se ogni elemento della sequenza dell'alfabeto di codifica corrisponde ad una sola sequenza dell'alfabeto della sorgente. In pratica, la decodifica di ogni parola deve essere univoca.
 \end{definizione}
@@ -234,7 +234,7 @@ Verificare che un codice generico sia UD è complesso, per questo motivo si util
     \end{enumerate}
     dove $A^*$ rappresenta l'insieme di tutte le stringhe di lunghezza finita generabili sull'alfabeto $A$, e l'insieme $S_i$ rappresenta formalmente l'insieme dei "residui" o "suffissi" ricavati al passo $i$. Allora la condizione \textbf{necessaria e sufficiente} affinché $C$ sia UD è:
     \[
-    \forall n>0, S_0 \cap S_n=\emptyset
+        \forall n>0, S_0 \cap S_n=\emptyset
     \]
     ovvero, nessuno degli insiemi dei residui generati corrisponde ad una codewords.
 \end{theorem}
@@ -254,25 +254,25 @@ Facciamo un esempio con il codice $C=\{a,c,ad,abb,bad,deb,bbdce\}$, la prima ope
     \item \textbf{Iterazione 4:} Per generare $S_4$ effettuo un confronto tra $S_0$ e $S_3$. L'unico elemento $de\in S_3$ è prefisso di $deb\in S_0$ che genera nuovamente un'insieme con un elemento $S_4=\{b\}$.
     \item \textbf{Iterazione 5:} Per generare $S_5$ effettuo un confronto tra $S_0$ e $S_4$. L'unico elemento $b\in S_4$ è prefisso di due elementi di $S_0$, $bad \text{ e } bbcde$, questo genera l'insieme  $S_5=\{ad,bcde\}$. L'algoritmo termina per la condizione $S_0 \cap S_n = \{ad\}\ne\emptyset$ affermando che il \textbf{codice non è UD}.
 \end{itemize}
- Per conferma di questa affermazione prendiamo il messaggio codificato $abbcdebad$, come si nota questo può essere espresso come:
- \begin{enumerate}
-     \item $abb-c-deb-ad$
-     \item $a-bbcde-bad$
- \end{enumerate}
+Per conferma di questa affermazione prendiamo il messaggio codificato $abbcdebad$, come si nota questo può essere espresso come:
+\begin{enumerate}
+    \item $abb-c-deb-ad$
+    \item $a-bbcde-bad$
+\end{enumerate}
 questo dimostra che non è un codice UD.
 
 \subsubsection{Esempio codice UD}\label{example_sardinas_patterson_ud}
 Data la seguente tabella con vari codici di codifica:
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|c|c|c|}
-\hline
-\textbf{Simbolo} & \textbf{Codice A} & \textbf{Codice B} & \textbf{Codice C} & \textbf{Codice D} \\ \hline
-Soleggiato  & \lbox{00} & \lbox{0}    & \lbox{0}    & \lbox{0}  \\ \hline
-Nuvoloso    & \lbox{01} & \lbox{10}   & \lbox{01}   & \lbox{01} \\ \hline
-Piovoso     & \lbox{10} & \lbox{110}  & \lbox{011}  & \lbox{10} \\ \hline
-Annebbiato  & \lbox{11} & \lbox{1110} & \lbox{0111} & \lbox{1}  \\ \hline
-\end{tabular}
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice A} & \textbf{Codice B} & \textbf{Codice C} & \textbf{Codice D} \\ \hline
+        Soleggiato       & \lbox{00}         & \lbox{0}          & \lbox{0}          & \lbox{0}          \\ \hline
+        Nuvoloso         & \lbox{01}         & \lbox{10}         & \lbox{01}         & \lbox{01}         \\ \hline
+        Piovoso          & \lbox{10}         & \lbox{110}        & \lbox{011}        & \lbox{10}         \\ \hline
+        Annebbiato       & \lbox{11}         & \lbox{1110}       & \lbox{0111}       & \lbox{1}          \\ \hline
+    \end{tabular}
 \end{table}
 
 sono presenti diversi tipi di codice. Partiamo dal \textbf{Codice D}, che non è unicamente decodificabile. Questo si osserva immediatamente: applicando l’algoritmo di Sardinas–Patterson, si ottiene subito un residuo pari a (1), segnale della presenza di ambiguità nella decodifica. Ora invece facciamo lo stesso esempio di prima ma con un codice UD. Prendiamo in esame il \textbf{codice C}, questo anche se lungo è UD, infatti seguendo i passi dell'algoritmo:
@@ -285,48 +285,48 @@ Per gli altri codici è facile provare che sono UD. Inoltre, il \textbf{codice A
 
 \subsubsection{Scelta del codice migliore}
 Scegliere il codice più adatto a un certo ambito è una parte fondamentale della compressione dati. Cercando di minimizzare la lunghezza media dei messaggi trasmessi. Per ottenere la massima efficienza, il principio fondamentale è \textbf{assegnare le parole di codice più corte agli eventi più frequenti (più probabili)} e riservare le parole di codice più lunghe agli eventi più rari. Questo principio è strettamente legato al concetto di Entropia, che rappresenta il numero minimo di bit necessari in media per codificare un simbolo emesso da una sorgente. Consideriamo questi due eventi:
-\begin{table}[ht]
-\centering
-\begin{minipage}[t]{0.45\textwidth}
-\centering
-\begin{tabular}{|l|c|}
-\hline
-\multicolumn{2}{|c|}{\textbf{Roma}} \\ \hline
-\textbf{Sorgente} & \textbf{Probabilità} \\ \hline
-Sole      & $1/4$ \\ \hline
-Nuvoloso  & $1/4$ \\ \hline
-Pioggia   & $1/4$ \\ \hline
-Nebbia    & $1/4$ \\ \hline
-\end{tabular}
-\end{minipage}
-\hfill
-\begin{minipage}[t]{0.45\textwidth}
-\centering
-\begin{tabular}{|l|c|}
-\hline
-\multicolumn{2}{|c|}{\textbf{Udine}} \\ \hline
-\textbf{Sorgente} & \textbf{Probabilità} \\ \hline
-Sole      & $1/4$ \\ \hline
-Nuvoloso  & $1/8$ \\ \hline
-Pioggia   & $1/8$ \\ \hline
-Nebbia    & $1/2$ \\ \hline
-\end{tabular}
-\end{minipage}
+\begin{table}[htpb]
+    \centering
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \begin{tabular}{|l|c|}
+            \hline
+            \multicolumn{2}{|c|}{\textbf{Roma}}      \\ \hline
+            \textbf{Sorgente} & \textbf{Probabilità} \\ \hline
+            Sole              & $1/4$                \\ \hline
+            Nuvoloso          & $1/4$                \\ \hline
+            Pioggia           & $1/4$                \\ \hline
+            Nebbia            & $1/4$                \\ \hline
+        \end{tabular}
+    \end{minipage}
+    \hfill
+    \begin{minipage}[t]{0.45\textwidth}
+        \centering
+        \begin{tabular}{|l|c|}
+            \hline
+            \multicolumn{2}{|c|}{\textbf{Udine}}     \\ \hline
+            \textbf{Sorgente} & \textbf{Probabilità} \\ \hline
+            Sole              & $1/4$                \\ \hline
+            Nuvoloso          & $1/8$                \\ \hline
+            Pioggia           & $1/8$                \\ \hline
+            Nebbia            & $1/2$                \\ \hline
+        \end{tabular}
+    \end{minipage}
 \end{table}
 
-gli eventi rappresentano due stazioni meteo differenti. Vogliamo capire quale sia il codice migliore per rappresentare queste informazioni. Per la stazione di Roma tutti gli eventi hanno esattamente la stessa probabilità (1/4), un codice a lunghezza fissa come il Codice A (che usa 2 bit per ogni condizione: 00, 01, 10, 11) risulta essere molto appropriato ed efficiente visto che l'informazione principale che si trasporta è uno dei simboli. Invece, per la stazione di Udine si hanno delle probabilità differenti per i vari simboli per cui le informazioni possono essere compresse ed usare un codice a lunghezza fissa di 2 bit significherebbe sprecare spazio. In questo scenario è molto più conveniente usare un \textbf{codice a lunghezza variabile} così da poter risparmiare un po' di bit. 
+gli eventi rappresentano due stazioni meteo differenti. Vogliamo capire quale sia il codice migliore per rappresentare queste informazioni. Per la stazione di Roma tutti gli eventi hanno esattamente la stessa probabilità (1/4), un codice a lunghezza fissa come il Codice A (che usa 2 bit per ogni condizione: 00, 01, 10, 11) risulta essere molto appropriato ed efficiente visto che l'informazione principale che si trasporta è uno dei simboli. Invece, per la stazione di Udine si hanno delle probabilità differenti per i vari simboli per cui le informazioni possono essere compresse ed usare un codice a lunghezza fissa di 2 bit significherebbe sprecare spazio. In questo scenario è molto più conveniente usare un \textbf{codice a lunghezza variabile} così da poter risparmiare un po' di bit.
 
 Per Udine i codici migliori potrebbero essere B o C; in entrambi i casi però l'evento più probabile dovrebbe avere un singolo bit e man mano che le probabilità diminuiscono assegnare i restanti simboli di codifica con una lunghezza maggiore. Per cui rivisitando il codice C ottimizzato per Udine ottengo:
-\begin{table}[h]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-\textbf{Simbolo} & \textbf{Codice C} \\ \hline
-Annebbiato  & \lbox{0}      \\ \hline
-Soleggiato  & \lbox{01}     \\ \hline
-Nuvoloso    & \lbox{011}    \\ \hline
-Piovoso     & \lbox{0111}   \\ \hline
-\end{tabular}
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice C} \\ \hline
+        Annebbiato       & \lbox{0}          \\ \hline
+        Soleggiato       & \lbox{01}         \\ \hline
+        Nuvoloso         & \lbox{011}        \\ \hline
+        Piovoso          & \lbox{0111}       \\ \hline
+    \end{tabular}
 \end{table}
 
 facendo un piccolo conteggio inviando un messaggio al giorno per 100 giorni se usassi il codice A avrei usato 200 bit; usando il codice C userei 187 bit circa\footnote{Sarebbero 50 bit per la nebbia, 50 per il sole, 37.5 per nuvoloso e altri 50 per piovoso. Si risparmia qualcosa rispetto a prima ed è anche possibile arrivare ad una compressione maggiore.}.
@@ -334,23 +334,23 @@ facendo un piccolo conteggio inviando un messaggio al giorno per 100 giorni se u
 \subsection{Codici istantanei}
 I codici istantanei sono un sottoinsieme dei codici unicamente decodificabili (UD); essi permettono di decodificare ogni parola di codice\footnote{Uso "parola di codice" per esprimere quello che prima è stato definito come "simbolo di codifica". Alla fine si intende la stessa cosa, ovvero un elemento dell'insieme $C$ dei codici.} senza dover attendere i simboli successivi.
 \begin{definizione}
-Un codice $C$ si dice \textbf{a prefisso} se nessuna parola di codice è prefisso di un'altra parola di codice. In altre parole, nessun simbolo di codifica è prefisso di un altro simbolo dello stesso codice.
+    Un codice $C$ si dice \textbf{a prefisso} se nessuna parola di codice è prefisso di un'altra parola di codice. In altre parole, nessun simbolo di codifica è prefisso di un altro simbolo dello stesso codice.
 \end{definizione}
 \begin{definizione}
-Un codice $C$ si dice \textbf{istantaneo} se ogni parola di codice può essere decodificata non appena viene letta, senza ambiguità e senza attendere simboli successivi.
+    Un codice $C$ si dice \textbf{istantaneo} se ogni parola di codice può essere decodificata non appena viene letta, senza ambiguità e senza attendere simboli successivi.
 \end{definizione}
 \begin{theorem}
-Un codice è istantaneo se e solo se è un codice a prefisso. Ogni codice a prefisso è unicamente decodificabile.
+    Un codice è istantaneo se e solo se è un codice a prefisso. Ogni codice a prefisso è unicamente decodificabile.
 \end{theorem}
-Questo risultato può essere dedotto, ad esempio, dal teorema di Sardinas-Patterson \eqref{theorem_sardinas_patterson}. 
+Questo risultato può essere dedotto, ad esempio, dal teorema di Sardinas-Patterson \eqref{theorem_sardinas_patterson}.
 \subsubsection{Ritardo di codifica}
 Come già accennato in precedenza la decodifica può avere un ritardo finito o infinito in dipendenza della \textbf{condizione di arresto}:
 \begin{itemize}
-    \item Se $\exists i>0, S_i=\emptyset$ allora il ritardo sarà finito, se $i = 1$ il codice è a prefisso\footnote{Se appunto il primo insieme dei residui è già vuoto allora questo comporta un ritardo nullo. Per questo si parla di codici istantanei.}. 
-    
-    Per capire cosa si intende per \textbf{ritardo finito} facciamo riferimento all'algoritmo di Sardinas-Patterson. In questo algoritmo, ogni insieme $S_i$ contiene i cosiddetti "residui". Questi residui vengono generati quando si cerca di costruire due diverse decodifiche per una stessa sequenza e una parola in codice risulta essere il prefisso di un'altra. I residui rappresentano la parte di stringa "avanzata" (ambigua) che deve essere risolta leggendo i simboli successivi. Se a un certo passo $i$ l'insieme $S_i$ risulta vuoto ($S_i=\emptyset$), significa che la catena di questi residui si interrompe e non si generano più nuove ambiguità. Di conseguenza, il ricevitore dovrà attendere al massimo la lettura di un numero limitato (e calcolabile) di simboli successivi prima che l'ambiguità si risolva e la parola possa essere decodificata con certezza. 
-   
-    Nell'esempio precedente \eqref{example_sardinas_patterson_ud} si nota come l'algoritmo si arresti ad un certo punto, quel punto indica proprio quanto si dovrà attendere prima di poter decodificare una parola. 
+    \item Se $\exists i>0, S_i=\emptyset$ allora il ritardo sarà finito, se $i = 1$ il codice è a prefisso\footnote{Se appunto il primo insieme dei residui è già vuoto allora questo comporta un ritardo nullo. Per questo si parla di codici istantanei.}.
+
+          Per capire cosa si intende per \textbf{ritardo finito} facciamo riferimento all'algoritmo di Sardinas-Patterson. In questo algoritmo, ogni insieme $S_i$ contiene i cosiddetti "residui". Questi residui vengono generati quando si cerca di costruire due diverse decodifiche per una stessa sequenza e una parola in codice risulta essere il prefisso di un'altra. I residui rappresentano la parte di stringa "avanzata" (ambigua) che deve essere risolta leggendo i simboli successivi. Se a un certo passo $i$ l'insieme $S_i$ risulta vuoto ($S_i=\emptyset$), significa che la catena di questi residui si interrompe e non si generano più nuove ambiguità. Di conseguenza, il ricevitore dovrà attendere al massimo la lettura di un numero limitato (e calcolabile) di simboli successivi prima che l'ambiguità si risolva e la parola possa essere decodificata con certezza.
+
+          Nell'esempio precedente \eqref{example_sardinas_patterson_ud} si nota come l'algoritmo si arresti ad un certo punto, quel punto indica proprio quanto si dovrà attendere prima di poter decodificare una parola.
     \item Se $\exists i,j>0, S_i=S_j$ allora il ritardo è infinito. Come già spiegato, la presenza di un secondo insieme dei residui identico ad uno precedente comporta la presenza di un ciclo infinito. Questo accade perché l'ambiguità si propaga ciclicamente. Chi riceve potrebbe essere costretto ad aspettare l'intero messaggio prima di poter decodificare la prima parola e questa attesa appunto non ha un limite.
 \end{itemize}
 \subsubsection{Esempio}
@@ -364,44 +364,44 @@ Questa disuguaglianza stabilisce la condizione necessaria e sufficiente per l'es
         \sum_{i=1}^m d^{-l_i}\leq 1
     \end{equation}
     dove $d$ è il numero \textbf{distinto} di simboli dell'alfabeto $X$ usato per creare ogni elemento del codice\footnote{Se il codice è binario allora $d=2$ visto che sono presenti due simboli 0 e 1. Se il codice fosse formato da lettere o numeri allora $d$ sarà uguale al numero di questi singoli simboli.}.
-\begin{itemize}
-    \item Se la disuguaglianza \uline{non viene soddisfatta} allora non c'è modo di creare un codice istantaneo con le parole di codifica che si hanno a disposizione. 
-    \item Se la disuguaglianza \uline{viene soddisfatta} allora c'è almeno un modo per creare un codice istantaneo con le parole di codifica che si hanno a disposizione. 
-\end{itemize}
+    \begin{itemize}
+        \item Se la disuguaglianza \uline{non viene soddisfatta} allora non c'è modo di creare un codice istantaneo con le parole di codifica che si hanno a disposizione.
+        \item Se la disuguaglianza \uline{viene soddisfatta} allora c'è almeno un modo per creare un codice istantaneo con le parole di codifica che si hanno a disposizione.
+    \end{itemize}
 \end{theorem}
-\begin{proof}[\textbf{Dimostrazione della condizione sufficiente}]
-Indichiamo con $\{l_1,l_2,\ldots,l_m\}$ le lunghezze delle rispettive parole di codifica $c_i$ che soddisfano l'equazione \eqref{eq:disequality_kraft_mcmillan} allora cerchiamo di provare che esiste un codice a prefisso che le rispetta. Denotiamo con $n_1$ il numero di parole di codifica che hanno lunghezza pari a 1, con $n_2$ il numero di parole di codifica che hanno lunghezza pari a 2 e cosi via fino alla lunghezza massima $L$. Una volta ottenuti questi valori $\{n_1,n_2,\ldots,n_L\}$ possiamo affermare che $\sum_{i=1}^L n_i=m$, dove $m$ è il numero di parole di codifica\footnote{Questo indica che la somma dei singoli raggruppamenti è uguale a tutti i gli elementi dell'insieme iniziale, ed è ovvio che sia così.}. 
-   
-   Una volta raggruppate tutte le parole di codifica con le stesse lunghezze possiamo scrivere:
-   \[
-   \sum_{i=1}^m d^{-l_i}=\sum_{i=1}^L n_id^{-i}\leq 1
-   \]
-   permettendoci di calcolare in una sola volta tutte le parole che condividono la stessa lunghezza.\footnote{Per capire questo passaggio basta pensare a come è fatta la somma. Raggruppando tutti gli elementi che hanno lo stesso esponente e moltiplicando il loro numero per $d^{-i}$ dove $i$ rappresenta proprio il livello si ottiene proprio la formula iniziale ma compressa. Possiamo fare un esempio per essere ancora più chiari. Si considerino le lunghezze 1,3,3 con simboli binari allora la disuguaglianza si dovrebbe scrivere come $2^{-1}+ 2^{-3}+2^{-3}=0.75\leq1$ ma la stessa cosa si poteva benissimo scrivere anche come $1\cdot 2^{-1}+0\cdot 2^{-2}+2\cdot 2^{-3}$.} Espandendo la somma si nota che moltiplicando per $d$ ottengo:
-   \[
-   n_1+n_2d^{-1}+n_3d^{-2}+\ldots+n_Ld^{-L+1}\leq d
-   \]
-   è stato effettuato uno shift destro dei valori, e continuando a moltiplicare lo stesso valore:
-   \begin{align*}
-   n_2d^{-1}+n_3d^{-2}+\ldots+n_Ld^{-L+1}&\leq d-n_1 \\
-   n_3d^{-1}+n_4d^{-2}+\ldots+n_Ld^{-L+2}&\leq d(d(d-n_1)-n_2) \\
-   n_4d^{-1}+n_5d^{-2}+\ldots+n_Ld^{-L+3}&\leq (d(d(d-n_1)-n_2)-n_3) \\
-   \vdots
-   \end{align*}
-otteniamo un insieme di disequazioni dove ogni raggruppamento $n_i$ rappresenta un livello di un \textbf{albero d-ario}. Si possono quindi estrapolare le seguenti regole per ogni livello dell'albero:
-   \begin{align*}
-        \text{Livello 1}& \xrightarrow{} n_1 \leq d \\
-        \text{Livello 2}& \xrightarrow{} n_2 \leq d(d-n_1) \\
-        \text{Livello 3}& \xrightarrow{} n_3 \leq d(d(d-n_1)-n_2) \\
-        \vdots
-   \end{align*}
-   questo indica che: 
-   \begin{itemize}
-       \item  Nel primo livello, che ospita le parole di lunghezza pari a 1, non si possono avere più parole dei rami totali a disposizione. Quindi è possibile prendere al massimo $n_1$ foglie (quelle con profondità 1). 
-       \item Nel secondo livello, che ospita le parole di lunghezza pari a 2, i rami liberi avanzati dal primo livello ($d-n_1$) si moltiplicano per $d$ al secondo livello. La formula garantisce che questi nuovi rami saranno sufficienti per ospitare le $n_2$ parole.
-       \item E cosi via per tutti gli altri livelli.
-   \end{itemize}
+\begin{proof}[\textbf{Dimostrazione condizione sufficiente}]
+    Indichiamo con $\{l_1,l_2,\ldots,l_m\}$ le lunghezze delle parole di codifica $c_i$ che soddisfano l'equazione \eqref{eq:disequality_kraft_mcmillan} allora cerchiamo di provare che esiste un codice a prefisso che le rispetta. Denotiamo con $n_1$ il numero di parole di codifica che hanno lunghezza pari a 1, con $n_2$ il numero di parole di codifica che hanno lunghezza pari a 2 e cosi via fino alla lunghezza massima $L$. Una volta ottenuti questi valori $\{n_1,n_2,\ldots,n_L\}$ possiamo affermare che $\sum_{i=1}^L n_i=m$, dove $m$ è il numero di parole di codifica\footnote{Questo indica che la somma dei singoli raggruppamenti è uguale a tutti i gli elementi dell'insieme iniziale, ed è ovvio che sia così.}.
 
-\noindent Queste regole mostrano che, \textbf{se la disequazione è verificata}, allora i rami non si esauriscono prima di aver posizionato tutte le parole; pertanto, il codice a prefisso può essere costruito assegnando ciascuna parola a una foglia.
+    Una volta raggruppate tutte le parole di codifica con le stesse lunghezze possiamo scrivere:
+    \[
+        \sum_{i=1}^m d^{-l_i}=\sum_{i=1}^L n_id^{-i}\leq 1
+    \]
+    permettendoci di calcolare in una sola volta tutte le parole che condividono la stessa lunghezza.\footnote{Per capire questo passaggio basta pensare a come è fatta la somma. Raggruppando tutti gli elementi che hanno lo stesso esponente e moltiplicando il loro numero per $d^{-i}$ dove $i$ rappresenta proprio il livello si ottiene proprio la formula iniziale ma compressa. Possiamo fare un esempio per essere ancora più chiari. Si considerino le lunghezze 1,3,3 con simboli binari allora la disuguaglianza si dovrebbe scrivere come $2^{-1}+ 2^{-3}+2^{-3}=0.75\leq1$ ma la stessa cosa si poteva benissimo scrivere anche come $1\cdot 2^{-1}+0\cdot 2^{-2}+2\cdot 2^{-3}$.} Espandendo la somma si nota che moltiplicando per $d$ ottengo:
+    \[
+        n_1+n_2d^{-1}+n_3d^{-2}+\ldots+n_Ld^{-L+1}\leq d
+    \]
+    è stato effettuato uno shift destro dei valori, e continuando a moltiplicare lo stesso valore:
+    \begin{align*}
+        n_2d^{-1}+n_3d^{-2}+\ldots+n_Ld^{-L+1} & \leq d-n_1                 \\
+        n_3d^{-1}+n_4d^{-2}+\ldots+n_Ld^{-L+2} & \leq d(d(d-n_1)-n_2)       \\
+        n_4d^{-1}+n_5d^{-2}+\ldots+n_Ld^{-L+3} & \leq (d(d(d-n_1)-n_2)-n_3) \\
+        \vdots
+    \end{align*}
+    otteniamo un insieme di disequazioni dove ogni raggruppamento $n_i$ rappresenta un livello di un \textbf{albero d-ario}. Si possono quindi estrapolare le seguenti regole per ogni livello dell'albero:
+    \begin{align*}
+        \text{Livello 1} & \xrightarrow{} n_1 \leq d               \\
+        \text{Livello 2} & \xrightarrow{} n_2 \leq d(d-n_1)        \\
+        \text{Livello 3} & \xrightarrow{} n_3 \leq d(d(d-n_1)-n_2) \\
+        \vdots
+    \end{align*}
+    questo indica che:
+    \begin{itemize}
+        \item  Nel primo livello, che ospita le parole di lunghezza pari a 1, non si possono avere più parole dei rami totali a disposizione. Quindi è possibile prendere al massimo $n_1$ foglie (quelle con profondità 1).
+        \item Nel secondo livello, che ospita le parole di lunghezza pari a 2, i rami liberi avanzati dal primo livello ($d-n_1$) si moltiplicano per $d$ al secondo livello. La formula garantisce che questi nuovi rami saranno sufficienti per ospitare le $n_2$ parole.
+        \item E cosi via per tutti gli altri livelli.
+    \end{itemize}
+
+    \noindent Queste regole mostrano che, \textbf{se la disequazione è verificata}, allora i rami non si esauriscono prima di aver posizionato tutte le parole; pertanto, il codice a prefisso può essere costruito assegnando ciascuna parola a una foglia.
 \end{proof}
 
 \subsubsection{Interpretazione sull'albero d-ario}
@@ -421,36 +421,36 @@ Scegliere un nodo significa 'consumare' una specifica porzione dell'albero. La d
 Questa lettura rende più intuitiva la selezione dei nodi e il taglio dei discendenti usati nella costruzione di un codice a prefisso.
 
 \begin{proof}[\textbf{Dimostrazione della condizione necessaria}]
-Ipotizziamo che $C$ sia un codice univocamente decodificabile (UD) con $m$ parole di codifica con delle lunghezze rispettive di $\{l_1,l_2,\ldots,l_m\}$ su un alfabeto formato da $d$ simboli. Consideriamo la quantità:
-\[
-\left(\sum_{i=1}^m d^{-l_i}\right)^n = \left(d^{-l_1}+d^{-l_2}+\ldots+d^{-l_m} \right)^n
-\]
-sviluppando questa potenza, otteniamo $m^n$ termini. Ogni termine è il prodotto di un gruppo di $n$ termini per cui ha la forma\footnote{Avendo tutti la stessa base quando viene svolta la potenza tutti i termini vengono raggruppati sotto una sola potenza.} $d^{-l_{i_1}-l_{i_2}-\ldots-l_{i_n}}=d^{-k}$, dove $k$ è la somma delle lunghezze di $n$ parole ($k=l_{i_1}+l_{i_2}+\ldots+l_{i_n}$). Il valore minimo di $k$ è $n$ (se tutte le parole sono lunghe 1) e il massimo è $nL$ (se tutte sono lunghe L). Raggruppiamo tutti i termini che hanno lo stesso esponente $k$ e otteniamo:
-\[
-\sum_{k=n}^{nL} N_k \cdot d^{-k}
-\]
-dove $N_k$ rappresenta il numero di possibili sequenze (concatenazioni di parole) composte da $n$ parole che hanno una lunghezza totale pari a $k$, ovvero il numero di volte che compare il termine $d^{-k}$. Poiché il codice deve essere \textbf{UD per ipotesi}, ogni concatenazione valida di parole deve corrispondere a una stringa univoca di simboli. Il numero massimo di stringhe distinte di lunghezza $k$ creabili con $d$ lettere è $d^k$.\footnote{Si pensi al semplice e familiare caso binario le possibili combinazioni di simboli per $k$ sarebbero proprio $2^k$.}Pertanto, $N_k$ non può mai superare $d^k$ ovvero:
-\[
-N_k\leq d^k
-\]
-applicando il caso limite ($N_k=d^k$) otteniamo:
-\[
-\sum_{k=n}^{nL} d^k \cdot d^{-k} = \sum_{k=n}^{nL} 1 = nL-n+1 \approx nL
-\]
-ricapitolando vale:
-\[
-\left(\sum_{i=1}^m d^{-l_i}\right)^n \leq \sum_{k=n}^{nL} d^k \cdot d^{-k} \leq nL
-\]
-abbiamo quindi dimostrato che esiste un limite superiore pari proprio a $nL$ (questo se tutte le parole nelle combinazioni sono lunghe $L$). Per far sì che la disequazione sia verificata è necessario che la somma sia minore o uguale a $1$. Infatti, ponendo:
-\[
-X = \sum_{i=1}^m d^{-l_i},
-\]
-se per assurdo fosse $X > 1$, allora elevando alla $n$-esima si avrebbe $X^n \to +\infty$ per $n \to +\infty$. D'altra parte, dal lato opposto si ottiene una quantità che cresce al più linearmente in $n$\footnote{La potenza va all'infinito molto più velocemente di una funzione lineare. Si dice che la funzione potenza sia di ordine superiore alla funzione lineare.}. Ne segue che, per $n$ sufficientemente grande, la disuguaglianza non può più essere soddisfatta.
+    Ipotizziamo che $C$ sia un codice univocamente decodificabile (UD) con $m$ parole di codifica con delle lunghezze rispettive di $\{l_1,l_2,\ldots,l_m\}$ su un alfabeto formato da $d$ simboli. Consideriamo la quantità:
+    \[
+        \left(\sum_{i=1}^m d^{-l_i}\right)^n = \left(d^{-l_1}+d^{-l_2}+\ldots+d^{-l_m} \right)^n
+    \]
+    sviluppando questa potenza, otteniamo $m^n$ termini. Ogni termine è il prodotto di un gruppo di $n$ termini per cui ha la forma\footnote{Avendo tutti la stessa base quando viene svolta la potenza tutti i termini vengono raggruppati sotto una sola potenza.} $d^{-l_{i_1}-l_{i_2}-\ldots-l_{i_n}}=d^{-k}$, dove $k$ è la somma delle lunghezze di $n$ parole ($k=l_{i_1}+l_{i_2}+\ldots+l_{i_n}$). Il valore minimo di $k$ è $n$ (se tutte le parole sono lunghe 1) e il massimo è $nL$ (se tutte sono lunghe L). Raggruppiamo tutti i termini che hanno lo stesso esponente $k$ e otteniamo:
+    \[
+        \sum_{k=n}^{nL} N_k \cdot d^{-k}
+    \]
+    dove $N_k$ rappresenta il numero di possibili sequenze (concatenazioni di parole) composte da $n$ parole che hanno una lunghezza totale pari a $k$, ovvero il numero di volte che compare il termine $d^{-k}$. Poiché il codice deve essere \textbf{UD per ipotesi}, ogni concatenazione valida di parole deve corrispondere a una stringa univoca di simboli. Il numero massimo di stringhe distinte di lunghezza $k$ creabili con $d$ lettere è $d^k$.\footnote{Si pensi al semplice e familiare caso binario le possibili combinazioni di simboli per $k$ sarebbero proprio $2^k$.}Pertanto, $N_k$ non può mai superare $d^k$ ovvero:
+    \[
+        N_k\leq d^k
+    \]
+    applicando il caso limite ($N_k=d^k$) otteniamo:
+    \[
+        \sum_{k=n}^{nL} d^k \cdot d^{-k} = \sum_{k=n}^{nL} 1 = nL-n+1 \approx nL
+    \]
+    ricapitolando vale:
+    \[
+        \left(\sum_{i=1}^m d^{-l_i}\right)^n \leq \sum_{k=n}^{nL} d^k \cdot d^{-k} \leq nL
+    \]
+    abbiamo quindi dimostrato che esiste un limite superiore pari proprio a $nL$ (questo se tutte le parole nelle combinazioni sono lunghe $L$). Per far sì che la disequazione sia verificata è necessario che la somma sia minore o uguale a $1$. Infatti, ponendo:
+    \[
+        X = \sum_{i=1}^m d^{-l_i},
+    \]
+    se per assurdo fosse $X > 1$, allora elevando alla $n$-esima si avrebbe $X^n \to +\infty$ per $n \to +\infty$. D'altra parte, dal lato opposto si ottiene una quantità che cresce al più linearmente in $n$\footnote{La potenza va all'infinito molto più velocemente di una funzione lineare. Si dice che la funzione potenza sia di ordine superiore alla funzione lineare.}. Ne segue che, per $n$ sufficientemente grande, la disuguaglianza non può più essere soddisfatta.
 
-Si conclude quindi che deve necessariamente valere:
-\[
-\sum_{i=1}^m d^{-l_i} \leq 1.
-\]
+    Si conclude quindi che deve necessariamente valere:
+    \[
+        \sum_{i=1}^m d^{-l_i} \leq 1.
+    \]
 \end{proof}
 
 \subsubsection{Proprietà}
@@ -458,7 +458,7 @@ Un aspetto rilevante da considerare è distinguere il caso in cui la disequazion
 
 \begin{itemize}
     \item Se la somma è \textbf{strettamente minore di 1}, il codice non è completo: ciò significa che, nella costruzione dell'albero associato al codice, rimangono ancora foglie libere, cioè combinazioni non assegnate ad alcuna parola di codice. In questo caso, quindi, esiste ancora spazio per aggiungere nuove parole senza violare la struttura del codice.
-    
+
     \item Se la somma è \textbf{esattamente uguale a 1}, il codice è completo: tutte le possibilità compatibili con la struttura del codice sono state sfruttate. Nell'albero non rimangono più foglie utilizzabili per introdurre nuove parole senza compromettere le proprietà del codice stesso.
 \end{itemize}
 
@@ -466,11 +466,11 @@ Un aspetto rilevante da considerare è distinguere il caso in cui la disequazion
 
 Consideriamo ora il confronto tra i codici B e C, presenti nel prossimo esercizio. Il codice B è costituito dalle parole:
 \[
-0,\quad 100,\quad 110,\quad 111,
+    0,\quad 100,\quad 110,\quad 111,
 \]
 mentre il codice C è costituito dalle parole:
 \[
-0,\quad 10,\quad 110,\quad 111.
+    0,\quad 10,\quad 110,\quad 111.
 \]
 
 Nel codice B rimane ancora una combinazione disponibile, ad esempio $101$, che non è stata assegnata ad alcun simbolo. Questo mostra che il codice non sfrutta completamente tutte le possibilità offerte dalla sua struttura: infatti, si potrebbe aggiungere la parola $101$ senza distruggere la proprietà di prefisso.
@@ -482,84 +482,211 @@ Si noti però che la sequenza $101$ \textbf{non è decodificabile} né nel codic
 \subsubsection{Esempi}
 Data la tabella con i seguenti codici:
 \begin{table}[htbp]
-\centering
-\begin{tabular}{|c|c|c|c|c|c|}
-\hline
-\textbf{Simbolo} & \textbf{Codice A} & \textbf{Codice B} & \textbf{Codice C} & \textbf{Codice D} & \textbf{Codice E}\\ \hline
-$s_1$  & \lbox{00} & \lbox{0}    & \lbox{0}    & \lbox{0}   & \lbox{0}  \\ \hline
-$s_2$  & \lbox{01} & \lbox{100}  & \lbox{10}   & \lbox{100} & \lbox{10}\\ \hline
-$s_3$  & \lbox{10} & \lbox{110}  & \lbox{110}  & \lbox{110} & \lbox{110}\\ \hline
-$s_4$  & \lbox{11} & \lbox{111}  & \lbox{111}  & \lbox{11}  & \lbox{11} \\ \hline
-\end{tabular}
+    \centering
+    \begin{tabular}{|c|c|c|c|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice A} & \textbf{Codice B} & \textbf{Codice C} & \textbf{Codice D} & \textbf{Codice E} \\ \hline
+        $s_1$            & \lbox{00}         & \lbox{0}          & \lbox{0}          & \lbox{0}          & \lbox{0}          \\ \hline
+        $s_2$            & \lbox{01}         & \lbox{100}        & \lbox{10}         & \lbox{100}        & \lbox{10}         \\ \hline
+        $s_3$            & \lbox{10}         & \lbox{110}        & \lbox{110}        & \lbox{110}        & \lbox{110}        \\ \hline
+        $s_4$            & \lbox{11}         & \lbox{111}        & \lbox{111}        & \lbox{11}         & \lbox{11}         \\ \hline
+    \end{tabular}
 \end{table}
 
-grazie alla disuguaglianza di Kraft-McMillan possiamo capire quali tra questi potrebbero essere codici istantanei. 
+grazie alla disuguaglianza di Kraft-McMillan possiamo capire quali tra questi potrebbero essere codici istantanei.
 \begin{itemize}
     \item Codice A:
-\[
-\sum_{i=1}^4 2^{-2}=\sum_{i=2}^2 4\cdot 2^{-i}=1
-\]
-ho usato entrambe le forme della dimostrazione. La disuguaglianza viene rispettata, si può quindi presumere che il codice A possa essere a prefisso visto che un codice binario con queste lunghezze può essere a prefisso. Per verificarlo bisogna usare l'algoritmo di Sardinas-Patterson (già verificato negli esempi precedenti).  
-\item Codice B:
-\[
-\sum_{i=1}^4 2^{-l_i}=2^{-1}+2^{-3}+2^{-3}+2^{-3}=\frac{7}{8}\leq 1
-\]
-queste lunghezze sono valide per un codice a prefisso; da un'analisi più approfondita si può facilmente verificare che questo è un codice a prefisso.
-\item Codice C:
-\[
-\sum_{i=1}^4 2^{-l_i}=2^{-1}+2^{-2}+2^{-3}+2^{-3}=\frac{8}{8}= 1
-\]
-la condizione viene soddisfatta. Questo codice è a prefisso e sfrutta pienamente le possibili combinazioni delle varie lunghezze.
-\item Codice D:
-\[
-\sum_{i=1}^4 2^{-l_i}=2^{-1}+2^{-2}+2^{-3}+2^{-3}=\frac{8}{8}= 1
-\]
-questo codice soddisfa la condizione per essere a prefisso, come il codice C, ma al contrario di suddetto codice non è a prefisso. Infatti, solo per queste lunghezze viene assicurato che ci possa essere un codice a prefisso ma la scelta della concatenazione dei simboli è fondamentale per far si che questo codice sia veramente a prefisso. Si nota subito \textbf{che non è UD } visto che 11 è prefisso di 110 e il residuo è un'altra parola del codice.
-\item Codice E:
-\[
-\sum_{i=1}^4 2^{-l_i}=2^{-1}+2^{-2}+2^{-3}+2^{-2}=1+\frac{1}{8}
-\]
-questo codice non soddisfa la disuguaglianza, possiamo quindi concludere che non è istantaneo.
+          \[
+              \sum_{i=1}^4 2^{-2}=\sum_{i=2}^2 4\cdot 2^{-i}=1
+          \]
+          ho usato entrambe le forme della dimostrazione. La disuguaglianza viene rispettata, si può quindi presumere che il codice A possa essere a prefisso visto che un codice binario con queste lunghezze può essere a prefisso. Per verificarlo bisogna usare l'algoritmo di Sardinas-Patterson (già verificato negli esempi precedenti).
+    \item Codice B:
+          \[
+              \sum_{i=1}^4 2^{-l_i}=2^{-1}+2^{-3}+2^{-3}+2^{-3}=\frac{7}{8}\leq 1
+          \]
+          queste lunghezze sono valide per un codice a prefisso; da un'analisi più approfondita si può facilmente verificare che questo è un codice a prefisso.
+    \item Codice C:
+          \[
+              \sum_{i=1}^4 2^{-l_i}=2^{-1}+2^{-2}+2^{-3}+2^{-3}=\frac{8}{8}= 1
+          \]
+          la condizione viene soddisfatta. Questo codice è a prefisso e sfrutta pienamente le possibili combinazioni delle varie lunghezze.
+    \item Codice D:
+          \[
+              \sum_{i=1}^4 2^{-l_i}=2^{-1}+2^{-2}+2^{-3}+2^{-3}=\frac{8}{8}= 1
+          \]
+          questo codice soddisfa la condizione per essere a prefisso, come il codice C, ma al contrario di suddetto codice non è a prefisso. Infatti, solo per queste lunghezze viene assicurato che ci possa essere un codice a prefisso ma la scelta della concatenazione dei simboli è fondamentale per far si che questo codice sia veramente a prefisso. Si nota subito \textbf{che non è UD } visto che 11 è prefisso di 110 e il residuo è un'altra parola del codice.
+    \item Codice E:
+          \[
+              \sum_{i=1}^4 2^{-l_i}=2^{-1}+2^{-2}+2^{-3}+2^{-2}=1+\frac{1}{8}
+          \]
+          questo codice non soddisfa la disuguaglianza, possiamo quindi concludere che non è istantaneo.
 \end{itemize}
 % Fare esercizio direttamente qua per fare capire come si costruisce il codice
 \subsubsection{Esercizio guidato}
 Si vuole codificare una sorgente con 9 simboli usando un codice a prefisso. L'alfabeto per le parole di codifica è {0,1,2} con delle lunghezze di 1,2,2,2,2,2,3,3,3.
 
-Per prima cosa applichiamo il teorema di Kraft-McMillan per capire se con queste premesse può essere creato un codice a prefisso. 
+Per prima cosa applichiamo il teorema di Kraft-McMillan per capire se con queste premesse può essere creato un codice a prefisso.
 \[
-\sum_{i=1}^9 3^{l_i} = \sum_{k=1}^3 N_k\cdot 3^{-i} = 1\cdot 3^{-1} + 5\cdot 3^{-2} + 3\cdot 3^{-3}=1
+    \sum_{i=1}^9 3^{l_i} = \sum_{k=1}^3 N_k\cdot 3^{-i} = 1\cdot 3^{-1} + 5\cdot 3^{-2} + 3\cdot 3^{-3}=1
 \]
 la disuguaglianza viene verificata si deduce che con questo alfabeto e queste lunghezze si può costruire un codice a prefisso.
 
-\begin{figure}[h]
-\centering
-\includegraphics[width=\textwidth]{albero-ternario}
-   \caption{Albero ternario verticale di profondità 3 con una possibile selezione di parole di codice. I nodi scelti sono evidenziati in rosso; i loro discendenti risultano oscurati perché non sono più disponibili.}
-\label{fig:albero-ternario}
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=\textwidth]{albero-ternario}
+    \caption{Albero ternario verticale di profondità 3 con una possibile selezione di parole di codice. I nodi scelti sono evidenziati in rosso; i loro discendenti risultano oscurati perché non sono più disponibili.}
+    \label{fig:albero-ternario}
 \end{figure}
 
 Come si nota in \autoref{fig:albero-ternario} la costruzione del codice a prefisso avviene selezionando i nodi dell'albero ternario in modo da rispettare le lunghezze specificate. Si parte dal livello più basso (lunghezza 1) e viene scelto uno dei nodi di questa lunghezza, ad esempio $0$. Questo nodo diventa una foglia e tutte le sue diramazioni (i suoi discendenti) vengono oscurati perché non possono più essere usati. Si passa poi al livello successivo (lunghezza 2) e si scelgono 5 nodi, ad esempio $10$, $11$, $12$, $20$ e $21$. Anche questi diventano foglie e i loro discendenti vengono oscurati. Infine, si passa all'ultimo livello (lunghezza 3) e si scelgono i 3 nodi rimanenti, ad esempio $220$, $221$ e $222$. In questo modo, si garantisce che il codice risultante sia a prefisso e quindi istantaneo. Una possibile assegnazione dei simboli è:
 \begin{table}[htbp]
-\centering
-\begin{tabular}{|c|c|}
-\hline
-\textbf{Simbolo} & \textbf{Codice} \\ \hline
-$s_1$  & \lbox{0} \\ \hline
-$s_2$  & \lbox{10} \\ \hline
-$s_3$  & \lbox{11} \\ \hline
-$s_4$  & \lbox{12} \\ \hline
-$s_5$  & \lbox{20} \\ \hline
-$s_6$  & \lbox{21} \\ \hline
-$s_7$  & \lbox{220} \\ \hline
-$s_8$  & \lbox{221} \\ \hline
-$s_9$  & \lbox{222} \\ \hline
-\end{tabular}
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice} \\ \hline
+        $s_1$            & \lbox{0}        \\ \hline
+        $s_2$            & \lbox{10}       \\ \hline
+        $s_3$            & \lbox{11}       \\ \hline
+        $s_4$            & \lbox{12}       \\ \hline
+        $s_5$            & \lbox{20}       \\ \hline
+        $s_6$            & \lbox{21}       \\ \hline
+        $s_7$            & \lbox{220}      \\ \hline
+        $s_8$            & \lbox{221}      \\ \hline
+        $s_9$            & \lbox{222}      \\ \hline
+    \end{tabular}
 \end{table}
 
+\subsection{Lunghezza media dei codici}
+Per decidere quale sia il codice più adatto a rappresentare una certa sorgente è necessario calcolare la lunghezza media dei codici per capire quale sia il più efficiente.
+\begin{definizione}
+    Dato un codice $C$ con un alfabeto di sorgente $S=\{s_1,s_2,\ldots,s_m\}$ e un alfabeto di codifica $X=\{x_1,x_2,\ldots,x_d\}$. Siano $\{c_1,c_2,\ldots,c_m\}$ le parole di codifica con delle lunghezze rispettive $\{l_1,l_2,\ldots,l_m\}$ e siano $\{p_1,p_2,\ldots,p_m\}$ le probabilità dei simboli di sorgente. La lunghezza media del codice $C$ è definita come:
+    \[
+        L_S(C) = \sum_{i=1}^m p_i \cdot l_i
+    \]
+\end{definizione}
+Il miglior codice che possa essere scelto per rappresentare una sorgente è quello che minimizza la lunghezza media.
 
+\subsubsection{Limite inferiore della lunghezza media}
+Il Teorema di Shannon stabilisce il limite matematico inferiore per la lunghezza media di un codice univocamente decodificabile (UD).
+\begin{theorem}
+    Se $C$ è un codice unicamente decodificabile (UD) per una sorgente $S$ con probabilità $p_1,p_2,\ldots,p_m$ e alfabeto di codifica $X$ caratterizzato da $d$ simboli differenti, allora vale:
+    \begin{equation}
+        L_S(C) \geq \frac{H(S)}{\log d}
+    \end{equation}
+    dove $H(S)$ è l'entropia della sorgente $S$ e $\log d$ rappresenta il numero di bit necessari per codificare ogni simbolo dell'alfabeto di codifica $X$. Per codici binari si può dedurre che il limite inferiore è proprio l'entropia della sorgente, ovvero:
+    \[
+        L_S(C) \geq H(S).
+    \]
+\end{theorem}
+\begin{proof}
+    Dalla disuguaglianza di Kraft-McMillan \eqref{eq:disequality_kraft_mcmillan} segue che, se $C$ è un codice univocamente decodificabile (UD), allora:
+    \[
+        \sum_{i=1}^m d^{-l_i} \leq 1,
+    \]
+    il che impone un vincolo sulle lunghezze $l_i$ delle parole di codice ammissibili.
 
+    Per mettere in relazione tale vincolo con le probabilità della sorgente, introduciamo $m$ numeri non negativi $q_i$ (che rappresenta la distribuzione $\{q_i\}_{i=1}^m$) tali che $\sum_{i=1}^m q_i = 1$. Vale allora la seguente disuguaglianza\footnote{In questo modo si costruisce un collegamento diretto tra le probabilità della sorgente $(p_i)$, che determinano l’entropia, e una distribuzione $(q_i)$ che, nel contesto della codifica, rappresenta implicitamente le lunghezze del codice.}:
+    \begin{equation}\label{eq:teorema_shannon_dimostrazione_passaggio_3}
+        \sum_{i=1}^m p_i \log\!\left(\frac{1}{p_i}\right)
+        \;\leq\;
+        \sum_{i=1}^m p_i \log\!\left(\frac{1}{q_i}\right),
+    \end{equation}
+
+    con uguaglianza se e solo se $q_i = p_i$ per ogni $i$. La quantità a destra rappresenta la \textbf{media}, rispetto alla distribuzione vera $p$, del costo logaritmico $\log\!\left(\frac{1}{q_i}\right)$ associato ai simboli $s_i$\footnote{In altre parole, ad ogni simbolo $s_i$ è associato un costo rappresentato da $\log\!\left(\frac{1}{q_i}\right)$; la disuguaglianza afferma che la media di questi costi, calcolata con le probabilità reali $p_i$, è sempre maggiore o uguale all'entropia della sorgente.
+        Scegliendo pesi che si discostano dalle probabilità reali $p_i$, si introduce un costo aggiuntivo che rende la media maggiore perchè non si riesce a rispecchiare la frequenza reale dei simboli.}.
+
+    Questa relazione costituisce il passaggio chiave per derivare un limite inferiore alla lunghezza media dei codici. Per verificarla, considero la differenza tra i due membri e la riscrivo nella forma:
+    \[
+        \sum_{i=1}^m p_i \log\!\left(\frac{1}{p_i}\right) - \sum_{i=1}^m p_i \log\!\left(\frac{1}{q_i}\right) =
+        \sum_{i=1}^m p_i \log\!\left(\frac{q_i}{p_i}\right) \leq 0
+    \]
+    cambiando la base del logaritmo ottengo:
+    \begin{align*}
+        \sum_{i=1}^m p_i \log\!\left(\frac{q_i}{p_i}\right)
+         & = \sum_{i=1}^m p_i\;\frac{\ln\left(\frac{q_i}{p_i}\right)}{\ln 2}   \\
+         & = \frac{1}{\ln 2}\sum_{i=1}^m p_i \ln\!\left(\frac{q_i}{p_i}\right)
+    \end{align*}
+    A questo punto, usando la proprietà\footnote{Per capire questa proprietà basta tracciare i grafici delle due funzioni.} $\ln x \leq x-1$, segue che:
+    \begin{align*}
+        \sum_{i=1}^m p_i \log\!\left(\frac{q_i}{p_i}\right)
+         & \leq \frac{1}{\ln 2}\sum_{i=1}^m p_i \!\left(\frac{q_i}{p_i} - 1\right) \\
+         & = \frac{1}{\ln 2}\sum_{i=1}^m (q_i - p_i)                               \\
+         & = \frac{1}{\ln 2}\left(\sum_{i=1}^m q_i - \sum_{i=1}^m p_i\right) = 0
+    \end{align*}
+    visto che entrambe sono distribuzioni le cui somme sono uguali a 1. In questi passaggi abbiamo dimostrato la disuguaglianza chiave che \uline{mette in relazione l'entropia della sorgente con una media logaritmica basata su una distribuzione arbitraria} $q_i$.
+
+    Scegliamo:
+    \[
+        q_i=\frac{d^{-l_i}}{\sum_{j=1}^m d^{-l_j}}.
+    \]
+    Questa scelta è naturale: i valori $q_i$ vengono costruiti a partire dai termini $d^{-l_i}$ che compaiono nella disuguaglianza di Kraft-McMillan dipendendo direttamente dalle lunghezze $l_i$ delle codeword; si può quindi collegare il risultato del punto precedente proprio alla lunghezza del codice.\footnote{La normalizzazione al denominatore serve a fare in modo che i valori $q_i$ sommino a $1$, così da ottenere una distribuzione di probabilità e poter applicare il risultato precedente.}.
+
+    Sostituendo nella formula \eqref{eq:teorema_shannon_dimostrazione_passaggio_3} otteniamo:
+    \begin{align*}
+        H(S)  = \sum_{i=1}^m p_i \log\!\left(\frac{1}{p_i}\right)
+         & \leq \sum_{i=1}^m p_i \log\!\left(\frac{1}{q_i}\right)
+        = \sum_{i=1}^m p_i \log\!\left(\frac{\sum_{j=1}^m d^{-l_j}}{d^{-l_i}}\right)                 \\
+         & = \sum_{i=1}^m p_i \left[\log\!\left(\sum_{j=1}^m d^{-l_j}\right) - \log d^{-l_i}\right]  \\
+         & = \sum_{i=1}^m p_i \log\!\left(\sum_{j=1}^m d^{-l_j}\right) + \sum_{i=1}^m p_i l_i \log d \\
+         & = \log\!\left(\sum_{j=1}^m d^{-l_j}\right) + L_S(C)\cdot \log d
+    \end{align*}
+    visto che $C$ è per ipotesi un codice UD allora $\sum_{j=1}^m d^{-l_j} \leq 1$, segue che:
+    \[
+        \log\!\left(\sum_{j=1}^m d^{-l_j}\right) + L_S(C)\cdot \log d \leq L_S(C)\cdot \log d
+    \]
+    allora si conclude che:
+    \[
+        H(S) \leq L_S(C)\cdot \log d
+        \quad\Rightarrow\quad
+        L_S(C) \geq \frac{H(S)}{\log d}.
+    \]
+\end{proof}
+Ricapitolando, la dimostrazione si basa su questi punti:
+\begin{enumerate}
+    \item \textbf{Punto di partenza:} Si utilizza la disuguaglianza di Kraft-McMillan per i codici univocamente decodificabili (UD).
+    \item \textbf{Variabili ausiliarie:} Si introduce un set di numeri arbitrari ($q_i$) la cui somma è pari a 1.
+    \item \textbf{Disuguaglianza logaritmica:} Si applica una proprietà matematica dei logaritmi per mettere in relazione le probabilità della sorgente ($p_i$) con i numeri $q_i$.
+    \item \textbf{Sostituzione strategica:} Si assegna ai numeri $q_i$ un valore specifico basato sulle lunghezze delle parole di codifica.
+    \item \textbf{Conclusione:} Si combinano i risultati per dimostrare che l'entropia è sempre minore o uguale alla lunghezza media.
+\end{enumerate}
+
+\subsubsection{Proprietà}
+\begin{itemize}
+    \item \textbf{Criterio di ottimalità:} Se per un certo codice $C$ \uline{la lunghezza media di un codice eguaglia l'entropia} allora si può affermare che quel codice è ottimale, ovvero è il codice più efficiente possibile per rappresentare la sorgente $S$. Essendo l'entropia il limite inferiore per la lunghezza media, raggiungere questo limite significa che non esiste alcun altro codice che possa rappresentare la sorgente con una lunghezza media più bassa. Viceversa, se un codice ha una lunghezza media superiore all'entropia, allora presenta un certo margine di inefficienza.
+
+          Raggiungere l'entropia per un codice $C$ implica che i simboli più frequenti (con probabilità più alta) sono codificati con parole più corte, mentre i simboli meno frequenti (con probabilità più bassa) sono codificati con parole più lunghe. Questa è la base teorica per la costruzione di codici ottimali come il codice di Huffman.
+
+    \item \textbf{Caso di uguaglianza:} Per un codice univocamente decodificabile (UD) d-ario raggiungere l'entropia implica che $\sum_{i=1}^m d^{-l_i} = 1$ e l'uguaglianza viene rispettata \textbf{se e solo se}:
+          \[
+              p_i=d^{-l_i}
+              \quad\text{e}\quad
+              l_i=\log_d \frac{1}{p_i}
+          \]
+          per ogni $i$. Questo è possibile \uline{sole se} le lunghezze delle parole di codice sono numeri interi\footnote{\`E ovvio che le lunghezze delle parole siano numeri interi, queste infatti misurano quanto ogni parola di codifica debba essere lunga. Quindi se questi valori sono numeri interi allora deve valere che anche il logaritmo sia un numero intero.}, ovvero se $l_i=\log_d \frac{1}{p_i}\in \mathbb{N}$ per ogni $i$.
+
+          Si nota che scegliendo:
+          \[
+              p_i=\left(\frac{1}{d}\right)^{\alpha_i}=d^{-\alpha_i} \quad\text{con}\quad \alpha_i > 0 \in \mathbb{N}
+          \]
+          basta scegliere $l_i=\alpha_i$ per ogni $i$ per ottenere un codice compatto. Infatti, con questa scelta possiamo notare che:
+          \[
+              \sum_{i=1}^m d^{-l_i} = \sum_{i=1}^m d^{-\alpha_i} = \sum_{i=1}^m p_i = 1
+          \]
+
+    \item \textbf{Efficienza:} Per misurare l'efficienza di un codice $C$ si può usare la seguente formula:
+          \[
+              \theta(C) = \frac{H_d(S)}{L_S(C)} = \frac{H(S)}{L_S(C)\cdot \log d}
+          \]
+          dove $0 \leq \theta(C) \leq 1$. Più il valore tende a 1 è più il codice è efficiente, mentre più si discosta da 1 è meno efficiente. Se $C$ è un codice ottimale allora $\theta(C)=1$.
+
+    \item \textbf{Ridondanza:} Per misurare la ridondanza di un codice $C$ si può usare la seguente formula:
+          \[
+              \rho(C) = 1- \theta(C) = \frac{L_S(C) - H_d(S)}{L_S(C)}
+          \]
+          dove $0 \leq \rho(C) \leq 1$. Più il valore tende a 1 è più il codice è ridondante, mentre più si discosta da 1 è meno ridondante. Se $C$ è un codice ottimale allora $\rho(C)=0$. La ridondanza rappresenta la porzione di lunghezza media che non è strettamente necessaria per rappresentare l'informazione della sorgente, ma che è invece dovuta a inefficienze nella progettazione del codice. Un codice con alta ridondanza utilizza più simboli di codifica del necessario, mentre un codice con bassa ridondanza si avvicina al limite inferiore stabilito dall'entropia della sorgente. Questa serve a misurare quanto un codice si discosta dall'ottimalità.
+\end{itemize}
 
 
 
 \end{document}
-  
+
