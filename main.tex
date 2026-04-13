@@ -885,7 +885,10 @@ In particolare:
 
 La disuguaglianza di Kraft-McMillan assicura che una tale costruzione è possibile. In questo modo i simboli più probabili ricevono parole più corte, mentre quelli meno probabili ricevono parole più lunghe.
 
-\subsubsection{Esempio}
+\subsubsection{Esempi}
+Vediamo ora due esempi in cui la codifica di Shannon non produce un codice compatto.
+
+\paragraph{Sorgente con tre simboli}
 Consideriamo la seguente sorgente con alfabeto binario:
 \begin{table}[htpb]
     \centering
@@ -940,6 +943,61 @@ con lunghezza media:
 \begin{align*}
     L_S(C') & = \frac{2}{3}\cdot 1 + \frac{2}{9}\cdot 2 + \frac{1}{9}\cdot 2 = \frac{4}{3} \approx 1.33
 \end{align*}
+
+\paragraph{Sorgente con due simboli}
+Consideriamo ora la seguente sorgente con alfabeto binario:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} \\ \hline
+        $s_0$            & 1/4                  \\ \hline
+        $s_1$            & 3/4                  \\ \hline
+    \end{tabular}
+\end{table}
+
+Applicando la codifica di Shannon si ottengono le lunghezze:
+\begin{align*}
+    l_0 & = \left\lceil \log_2\!\left(\frac{1}{1/4}\right) \right\rceil = \left\lceil 2 \right\rceil = 2,    \\
+    l_1 & = \left\lceil \log_2\!\left(\frac{1}{3/4}\right) \right\rceil = \left\lceil 0.41 \right\rceil = 1.
+\end{align*}
+Un possibile codice a prefisso con tali lunghezze è:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice C} \\ \hline
+        $s_0$            & \lbox{10}         \\ \hline
+        $s_1$            & \lbox{0}          \\ \hline
+    \end{tabular}
+\end{table}
+
+La lunghezza media del codice è:
+\begin{align*}
+    L_S(C) & = \frac{1}{4}\cdot 2 + \frac{3}{4}\cdot 1 = \frac{5}{4} = 1.25
+\end{align*}
+mentre l'entropia della sorgente è:
+\begin{align*}
+    H(S) & = \frac{1}{4}\log_2 4 + \frac{3}{4}\log_2 \frac{4}{3} \approx 0.81
+\end{align*}
+quindi il codice ottenuto con la codifica di Shannon non è compatto (ma neanche ottimale).
+
+Inoltre, in questo caso, esso non è nemmeno ottimale. Infatti possiamo considerare il codice:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice C'} \\ \hline
+        $s_0$            & \lbox{1}           \\ \hline
+        $s_1$            & \lbox{0}           \\ \hline
+    \end{tabular}
+\end{table}
+
+la cui lunghezza media è:
+\begin{align*}
+    L_S(C') & = \frac{1}{4}\cdot 1 + \frac{3}{4}\cdot 1 = 1.
+\end{align*}
+Il codice $C'$ è quindi ottimale. Esso non è compatto, perché la sua lunghezza media è ancora maggiore dell'entropia della sorgente, ma in questo caso non è possibile ottenere un codice binario a prefisso con lunghezza media inferiore a $1$.
 
 \end{document}
 
