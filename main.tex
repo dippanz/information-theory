@@ -661,13 +661,13 @@ Per misurare l'efficienza di un codice $C$ si può usare la seguente formula:
 \[
     \theta(C) = \frac{H_d(S)}{L_S(C)} = \frac{H(S)}{L_S(C)\cdot \log d}
 \]
-dove $0 \leq \theta(C) \leq 1$. Più il valore tende a 1 e più il codice è efficiente, mentre più si discosta da 1 e meno è efficiente. Se $C$ è un codice ottimale allora $\theta(C)=1$.
+dove $0 \leq \theta(C) \leq 1$. Più il valore tende a 1 e più il codice è efficiente, mentre più si discosta da 1 e meno è efficiente. Se $C$ è un codice compatto allora $\theta(C)=1$.
 
 Per misurare la ridondanza di un codice $C$ (quanto un codice si discosta dall'ottimalità) si può invece usare la seguente formula:
 \[
     \rho(C) = 1- \theta(C) = \frac{L_S(C) - H_d(S)}{L_S(C)}
 \]
-dove $0 \leq \rho(C) \leq 1$. Più il valore tende a 1 e più il codice è ridondante, mentre più si discosta da 1 e meno ridondante risulta. Se $C$ è un codice ottimale allora $\rho(C)=0$. La ridondanza rappresenta la porzione di lunghezza media che non è strettamente necessaria per rappresentare l'informazione della sorgente, ma che è invece dovuta a inefficienze nella progettazione del codice. Un codice con alta ridondanza utilizza più simboli di codifica del necessario, mentre un codice con bassa ridondanza si avvicina al limite inferiore stabilito dall'entropia della sorgente.
+dove $0 \leq \rho(C) \leq 1$. Più il valore tende a 1 e più il codice è ridondante, mentre più si discosta da 1 e meno ridondante risulta. Se $C$ è un codice compatto allora $\rho(C)=0$. La ridondanza rappresenta la porzione di lunghezza media che non è strettamente necessaria per rappresentare l'informazione della sorgente, ma che è invece dovuta a inefficienze nella progettazione del codice. Un codice con alta ridondanza utilizza più simboli di codifica del necessario, mentre un codice con bassa ridondanza si avvicina al limite inferiore stabilito dall'entropia della sorgente.
 
 \subsection{Codici ottimali e compatti}
 C'è una distinzione netta tra codici ottimali e codici compatti.
@@ -680,12 +680,18 @@ C'è una distinzione netta tra codici ottimali e codici compatti.
           Essendo l'entropia il limite inferiore per la lunghezza media, raggiungerlo significa che non esiste alcun altro codice che possa rappresentare la sorgente con una lunghezza media più bassa. Quindi un codice compatto è anche ottimale, ma non vale il viceversa.
 \end{itemize}
 \paragraph{Nota:}
-Raggiungere l'entropia per un codice $C$ implica che i \textbf{simboli più frequenti} sono codificati con \textbf{parole più corte}, mentre i \textbf{simboli meno frequenti} sono codificati con \textbf{parole più lunghe}. Questa è la base teorica per la costruzione di codici ottimali come il codice di Huffman.
+In un codice a prefisso ottimale, i \textbf{simboli più frequenti} tendono a essere associati a \textbf{parole di codice più corte}, mentre i \textbf{simboli meno frequenti} a \textbf{parole più lunghe}. Questa idea guida la costruzione di codici ottimali come il codice di Huffman.
 
 Se invece la lunghezza media di un codice è \uline{superiore all'entropia}, allora il codice presenta un \textbf{margine di inefficienza}.
 
-\paragraph{Caso di uguaglianza:}
-Per un codice univocamente decodificabile (UD) d-ario raggiungere l'entropia implica che $\sum_{i=1}^m d^{-l_i} = 1$, questa uguaglianza viene rispettata \textbf{se e solo se}:
+\subsubsection{Condizioni di esistenza dei codici compatti}
+Dopo aver distinto i codici ottimali dai codici compatti, sorge una domanda naturale: quando è possibile raggiungere esattamente il limite inferiore fornito dal teorema di Shannon? Il caso di uguaglianza caratterizza proprio le situazioni in cui un codice compatto può esistere.
+
+Per un codice univocamente decodificabile (UD) d-ario, l'uguaglianza:
+\[
+    L_S(C)=H_d(S)
+\]
+si verifica se e solo se la disuguaglianza di Kraft-McMillan è soddisfatta con uguaglianza, ciò accade quando:
 \[
     \left\{
     \begin{aligned}
@@ -695,7 +701,7 @@ Per un codice univocamente decodificabile (UD) d-ario raggiungere l'entropia imp
     \right.
     \qquad i=1,\ldots,m.
 \]
-Questo è possibile \uline{solo se} le lunghezze delle parole di codice sono numeri interi\footnote{\`E ovvio che le lunghezze delle parole siano numeri interi, queste infatti misurano quanto ogni parola di codifica debba essere lunga. Quindi se questi valori sono numeri interi allora deve valere che anche il logaritmo sia un numero intero.}, ovvero se $l_i=\log_d\!\left(\frac{1}{p_i}\right)\in \mathbb{N}$ per ogni $i$.
+Questo è possibile \uline{solo se} le lunghezze delle parole di codice sono \textbf{numeri interi}\footnote{\`E ovvio che le lunghezze delle parole siano numeri interi, queste infatti misurano quanto ogni parola di codifica debba essere lunga. Quindi se questi valori sono numeri interi allora deve valere che anche il logaritmo sia un numero intero.}, ovvero se $l_i=\log_d\!\left(\frac{1}{p_i}\right)\in \mathbb{N}$ per ogni $i$.
 
 Si nota che scegliendo:
 \[
