@@ -746,8 +746,69 @@ Calcoliamo ora la lunghezza media per ciascun codice:
           \]
           La lunghezza media del Codice 2 è superiore all'entropia della sorgente, quindi il Codice 2 non è un codice compatto.
 \end{itemize}
+\newpage
+\subsubsection{Esercizio}
+Data la seguente sorgente:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} \\ \hline
+        $s_0$            & 1/3                  \\ \hline
+        $s_1$            & 1/3                  \\ \hline
+        $s_2$            & 1/9                  \\ \hline
+        $s_3$            & 1/9                  \\ \hline
+        $s_4$            & 1/27                 \\ \hline
+        $s_5$            & 1/27                 \\ \hline
+        $s_6$            & 1/27                 \\ \hline
+    \end{tabular}
+\end{table}
 
+trovare un codice compatto per l'alfabeto di codifica $\{0,1,2\}$.
+Il primo passo da fare è calcolare l'entropia della sorgente:
+\begin{align*}
+    H(S)
+         & = \sum_{i=0}^6 p_i \log_3 \frac{1}{p_i} \\
+         & = 2 \cdot \frac{1}{3}\log_3 3
+         + 2 \cdot \frac{1}{9}\log_3 9
+         + 3 \cdot \frac{1}{27}\log_3 27 \\
+         & = 2 \cdot \frac{1}{3}\cdot 1
+         + 2 \cdot \frac{1}{9}\cdot 2
+         + 3 \cdot \frac{1}{27}\cdot 3 \\
+         & = \frac{2}{3} + \frac{4}{9} + \frac{1}{3} \\
+         & = \frac{13}{9}
+\end{align*}
+Per costruire un codice compatto so che devo assegnare a ciascun simbolo una parola di codice la cui lunghezza sia pari a $l_i = \log_3\!\left(\frac{1}{p_i}\right)$. Calcoliamo quindi le lunghezze per ciascun simbolo:
+\begin{align*}
+    l_0 = l_1 & = \log_3 3 = 1, \\
+    l_2 = l_3 & = \log_3 9 = 2, \\
+    l_4 = l_5 = l_6 & = \log_3 27 = 3.
+\end{align*}
+Ricapitolando, le lunghezze delle parole di codice devono essere $\{1,1,2,2,3,3,3\}$ con le quali è possibile costruire un codice a prefisso, ad esempio:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice} \\ \hline
+        $s_0$            & 0                  \\ \hline
+        $s_1$            & 1                  \\ \hline
+        $s_2$            & 20                  \\ \hline
+        $s_3$            & 21                  \\ \hline
+        $s_4$            & 220                  \\ \hline
+        $s_5$            & 221                  \\ \hline
+        $s_6$            & 222                  \\ \hline
+    \end{tabular}
+\end{table}
 
+verificando che la lunghezza media di questo codice è:
+\[
+L_S(C) = \sum_{i=0}^6 p_i \cdot l_i
+= 2 \cdot \left(\frac{1}{3}\cdot 1\right)
++ 2 \cdot \left(\frac{1}{9}\cdot 2\right)
++ 3 \cdot \left(\frac{1}{27}\cdot 3\right)
+= \frac{13}{9} = H(S)
+\]
+allora si conclude che il codice costruito è compatto.
 
 
 \end{document}
