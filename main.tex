@@ -904,29 +904,41 @@ calcoliamo le lunghezze:
     l_1 & = \left\lceil \log_2\!\left(\frac{1}{2/9}\right) \right\rceil = \left\lceil 2.17 \right\rceil = 3, \\
     l_2 & = \left\lceil \log_2\!\left(\frac{1}{1/9}\right) \right\rceil = \left\lceil 3.17 \right\rceil = 4.
 \end{align*}
-La lunghezza media del codice di Shannon è:
+Un possibile codice a prefisso con tali lunghezze è il seguente:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice C} \\ \hline
+        $s_0$            & \lbox{0}          \\ \hline
+        $s_1$            & \lbox{100}        \\ \hline
+        $s_2$            & \lbox{1010}       \\ \hline
+    \end{tabular}
+\end{table}
+
+La lunghezza media di questo codice è:
 \begin{align*}
-    L_S(C) & = \sum_{i=0}^2 p_i \cdot l_i = \frac{2}{3}\cdot 1 + \frac{2}{9}\cdot 3 + \frac{1}{9}\cdot 4 = \approx 1.78
+    L_S(C) & = \sum_{i=0}^2 p_i \cdot l_i = \frac{2}{3}\cdot 1 + \frac{2}{9}\cdot 3 + \frac{1}{9}\cdot 4 = \frac{16}{9} \approx 1.78
 \end{align*}
 mentre l'entropia della sorgente è:
 \begin{align*}
     H(S) & = \sum_{i=0}^2 p_i \log_2 \frac{1}{p_i} = \frac{2}{3}\log_2 \frac{3}{2} + \frac{2}{9}\log_2 \frac{9}{2} + \frac{1}{9}\log_2 9 \approx 1.22
 \end{align*}
-come si nota facilmente il codice che verrebbe generato con la codifica di Shannon \textbf{non è un codice compatto né ottimale}. Infatti, ad esempio, è possibile costruire un codice a prefisso con lunghezza media più vicina all'entropia, ad esempio:
+Quindi questo codice ottenuto con la codifica di Shannon \textbf{non è un codice compatto né ottimale}. Infatti è possibile costruire un altro codice a prefisso con lunghezza media più vicina all'entropia, ad esempio:
 \begin{table}[htpb]
     \centering
     \begin{tabular}{|l|l|}
         \hline
         \textbf{Simbolo} & \textbf{Codice C'} \\ \hline
-        $s_0$            & 0               \\ \hline
-        $s_1$            & 10              \\ \hline
-        $s_2$            & 11              \\ \hline
+        $s_0$            & \lbox{0}           \\ \hline
+        $s_1$            & \lbox{10}          \\ \hline
+        $s_2$            & \lbox{11}          \\ \hline
     \end{tabular}
 \end{table}
 
 con lunghezza media:
 \begin{align*}
-    L_S(C') & = \sum_{i=0}^2 p_i \cdot l_i = \frac{2}{3}\cdot 1 + \frac{2}{9}\cdot 2 + \frac{1}{9}\cdot 2 \approx 1.33
+    L_S(C') & = \frac{2}{3}\cdot 1 + \frac{2}{9}\cdot 2 + \frac{1}{9}\cdot 2 = \frac{4}{3} \approx 1.33
 \end{align*}
 
 \end{document}
