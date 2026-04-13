@@ -684,7 +684,7 @@ In un codice a prefisso ottimale, i \textbf{simboli più frequenti} tendono a es
 
 Se invece la lunghezza media di un codice è \uline{superiore all'entropia}, allora il codice presenta un \textbf{margine di inefficienza}.
 
-\subsubsection{Condizioni di esistenza dei codici compatti}
+\subsubsection{Condizioni di esistenza dei codici compatti}\label{condizioni_codici_compatti}
 Dopo aver distinto i codici ottimali dai codici compatti, sorge una domanda naturale: quando è possibile raggiungere esattamente il limite inferiore fornito dal teorema di Shannon? Il caso di uguaglianza caratterizza proprio le situazioni in cui un codice compatto può esistere.
 
 Per un codice univocamente decodificabile (UD) d-ario, l'uguaglianza:
@@ -768,20 +768,20 @@ trovare un codice compatto per l'alfabeto di codifica $\{0,1,2\}$.
 Il primo passo da fare è calcolare l'entropia della sorgente:
 \begin{align*}
     H(S)
-         & = \sum_{i=0}^6 p_i \log_3 \frac{1}{p_i} \\
-         & = 2 \cdot \frac{1}{3}\log_3 3
-         + 2 \cdot \frac{1}{9}\log_3 9
-         + 3 \cdot \frac{1}{27}\log_3 27 \\
-         & = 2 \cdot \frac{1}{3}\cdot 1
-         + 2 \cdot \frac{1}{9}\cdot 2
-         + 3 \cdot \frac{1}{27}\cdot 3 \\
-         & = \frac{2}{3} + \frac{4}{9} + \frac{1}{3} \\
-         & = \frac{13}{9}
+     & = \sum_{i=0}^6 p_i \log_3 \frac{1}{p_i}   \\
+     & = 2 \cdot \frac{1}{3}\log_3 3
+    + 2 \cdot \frac{1}{9}\log_3 9
+    + 3 \cdot \frac{1}{27}\log_3 27              \\
+     & = 2 \cdot \frac{1}{3}\cdot 1
+    + 2 \cdot \frac{1}{9}\cdot 2
+    + 3 \cdot \frac{1}{27}\cdot 3                \\
+     & = \frac{2}{3} + \frac{4}{9} + \frac{1}{3} \\
+     & = \frac{13}{9}
 \end{align*}
 Per costruire un codice compatto so che devo assegnare a ciascun simbolo una parola di codice la cui lunghezza sia pari a $l_i = \log_3\!\left(\frac{1}{p_i}\right)$. Calcoliamo quindi le lunghezze per ciascun simbolo:
 \begin{align*}
-    l_0 = l_1 & = \log_3 3 = 1, \\
-    l_2 = l_3 & = \log_3 9 = 2, \\
+    l_0 = l_1       & = \log_3 3 = 1,  \\
+    l_2 = l_3       & = \log_3 9 = 2,  \\
     l_4 = l_5 = l_6 & = \log_3 27 = 3.
 \end{align*}
 Ricapitolando, le lunghezze delle parole di codice devono essere $\{1,1,2,2,3,3,3\}$ con le quali è possibile costruire un codice a prefisso, ad esempio:
@@ -790,26 +790,144 @@ Ricapitolando, le lunghezze delle parole di codice devono essere $\{1,1,2,2,3,3,
     \begin{tabular}{|l|l|}
         \hline
         \textbf{Simbolo} & \textbf{Codice} \\ \hline
-        $s_0$            & 0                  \\ \hline
-        $s_1$            & 1                  \\ \hline
-        $s_2$            & 20                  \\ \hline
-        $s_3$            & 21                  \\ \hline
-        $s_4$            & 220                  \\ \hline
-        $s_5$            & 221                  \\ \hline
-        $s_6$            & 222                  \\ \hline
+        $s_0$            & 0               \\ \hline
+        $s_1$            & 1               \\ \hline
+        $s_2$            & 20              \\ \hline
+        $s_3$            & 21              \\ \hline
+        $s_4$            & 220             \\ \hline
+        $s_5$            & 221             \\ \hline
+        $s_6$            & 222             \\ \hline
     \end{tabular}
 \end{table}
 
 verificando che la lunghezza media di questo codice è:
 \[
-L_S(C) = \sum_{i=0}^6 p_i \cdot l_i
-= 2 \cdot \left(\frac{1}{3}\cdot 1\right)
-+ 2 \cdot \left(\frac{1}{9}\cdot 2\right)
-+ 3 \cdot \left(\frac{1}{27}\cdot 3\right)
-= \frac{13}{9} = H(S)
+    L_S(C) = \sum_{i=0}^6 p_i \cdot l_i
+    = 2 \cdot \left(\frac{1}{3}\cdot 1\right)
+    + 2 \cdot \left(\frac{1}{9}\cdot 2\right)
+    + 3 \cdot \left(\frac{1}{27}\cdot 3\right)
+    = \frac{13}{9} = H(S)
 \]
 allora si conclude che il codice costruito è compatto.
 
+\subsection{Codifica di Shannon}
+Nelle condizioni di esistenza viste nel paragrafo \eqref{condizioni_codici_compatti} abbiamo visto che, per ottenere un codice compatto, le lunghezze ideali devono soddisfare:
+\[
+    l_i = \log_d\!\left(\frac{1}{p_i}\right).
+\]
+Tuttavia tali valori non sono in generale interi, mentre le lunghezze delle parole di codice devono necessariamente esserlo.
+
+La codifica di Shannon nasce proprio per superare questa difficoltà. Essa sostituisce alle lunghezze ideali delle lunghezze intere, ottenendo così un codice a prefisso effettivamente costruibile e con lunghezza media vicina al limite inferiore teorico.
+
+\begin{theorem}
+    Sia $S$ una sorgente con simboli $s_1, s_2, \ldots, s_m$ e probabilità associate $p_1, p_2, \ldots, p_m$, e sia $X$ un alfabeto di codifica d-ario. Se per ogni $i=1,\ldots,m$ si sceglie:
+    \[
+        l_i = \left\lceil \log_d\!\left(\frac{1}{p_i}\right) \right\rceil,
+    \]
+    allora esiste un codice a prefisso $C$ le cui parole di codice hanno lunghezza $l_i$ e la cui lunghezza media soddisfa:
+    \[
+        H_d(S) \leq L_S(C) < H_d(S) + 1.
+    \]
+\end{theorem}
+\begin{proof}
+    Per definizione di arrotondamento all'intero superiore, per ogni $i$ vale\footnote{Se poniamo $x=\log_d\!\left(\frac{1}{p_i}\right)$ e scegliamo $l_i=\lceil x \rceil$, allora $l_i$ è il più piccolo intero maggiore o uguale a $x$. Quindi deve valere $x \leq l_i < x+1$.}:
+    \[
+        \log_d\!\left(\frac{1}{p_i}\right) \leq l_i < \log_d\!\left(\frac{1}{p_i}\right)+1
+    \]
+    Dalla prima disuguaglianza, elevando a potenza con base $d$, otteniamo:
+    \[
+        d^{-l_i} \leq p_i
+    \]
+    Sommando su tutti gli $i$, segue che:
+    \[
+        \sum_{i=1}^m d^{-l_i} \leq \sum_{i=1}^m p_i = 1
+    \]
+    quindi, per la disuguaglianza di Kraft-McMillan, esiste un codice a prefisso $C$ con le lunghezze specificate.
+
+    Moltiplicando ora la doppia disuguaglianza iniziale per $p_i$ e sommando su tutti gli $i$, otteniamo:
+    \[
+        \sum_{i=1}^m p_i \log_d\!\left(\frac{1}{p_i}\right)
+        \leq
+        \sum_{i=1}^m p_i l_i
+        <
+        \sum_{i=1}^m p_i \log_d\!\left(\frac{1}{p_i}\right) + \sum_{i=1}^m p_i
+    \]
+    Poiché
+    \[
+        H_d(S)=\sum_{i=1}^m p_i \log_d\!\left(\frac{1}{p_i}\right),
+        \qquad
+        L_S(C)=\sum_{i=1}^m p_i l_i,
+        \qquad
+        \sum_{i=1}^m p_i = 1,
+    \]
+    concludiamo che:
+    \[
+        H_d(S) \leq L_S(C) < H_d(S) + 1.
+    \]
+\end{proof}
+\paragraph{Nota:}
+La codifica di Shannon non produce in generale un codice compatto, ma garantisce che la lunghezza media del codice \uline{si discosti dall'entropia per meno di un simbolo di codifica}. Facendo riferimento al caso binario, l'eccesso rispetto all'entropia è quindi strettamente minore di $1$ bit per simbolo.
+
+\subsubsection{Costruzione del codice}
+Per costruire concretamente un codice secondo la codifica di Shannon lo si fa in due fasi. Prima si calcolano le lunghezze:
+\[
+    l_i = \left\lceil \log_d\!\left(\frac{1}{p_i}\right) \right\rceil.
+\]
+Poi si realizza un codice a prefisso che abbia esattamente tali lunghezze ed è naturale procedere come nei paragrafi precedenti, cioè usando un albero d-ario.
+
+In particolare:
+\begin{enumerate}
+    \item si ordinano i simboli in ordine di probabilità decrescente;
+    \item si calcola per ciascun simbolo la lunghezza $l_i$;
+    \item si selezionano nell'albero d-ario delle foglie poste ai livelli $l_i$, evitando che una parola scelta sia prefisso di un'altra;
+    \item si associano ai simboli le parole ottenute.
+\end{enumerate}
+
+La disuguaglianza di Kraft-McMillan assicura che una tale costruzione è possibile. In questo modo i simboli più probabili ricevono parole più corte, mentre quelli meno probabili ricevono parole più lunghe.
+
+\subsubsection{Esempio}
+Consideriamo la seguente sorgente con alfabeto binario:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} \\ \hline
+        $s_0$            & 2/3                  \\ \hline
+        $s_1$            & 2/9                  \\ \hline
+        $s_2$            & 1/9                  \\ \hline
+    \end{tabular}
+\end{table}
+
+calcoliamo le lunghezze:
+\begin{align*}
+    l_0 & = \left\lceil \log_2\!\left(\frac{1}{2/3}\right) \right\rceil = \left\lceil 0.58 \right\rceil = 1, \\
+    l_1 & = \left\lceil \log_2\!\left(\frac{1}{2/9}\right) \right\rceil = \left\lceil 2.17 \right\rceil = 3, \\
+    l_2 & = \left\lceil \log_2\!\left(\frac{1}{1/9}\right) \right\rceil = \left\lceil 3.17 \right\rceil = 4.
+\end{align*}
+La lunghezza media del codice di Shannon è:
+\begin{align*}
+    L_S(C) & = \sum_{i=0}^2 p_i \cdot l_i = \frac{2}{3}\cdot 1 + \frac{2}{9}\cdot 3 + \frac{1}{9}\cdot 4 = \approx 1.78
+\end{align*}
+mentre l'entropia della sorgente è:
+\begin{align*}
+    H(S) & = \sum_{i=0}^2 p_i \log_2 \frac{1}{p_i} = \frac{2}{3}\log_2 \frac{3}{2} + \frac{2}{9}\log_2 \frac{9}{2} + \frac{1}{9}\log_2 9 \approx 1.22
+\end{align*}
+come si nota facilmente il codice che verrebbe generato con la codifica di Shannon \textbf{non è un codice compatto né ottimale}. Infatti, ad esempio, è possibile costruire un codice a prefisso con lunghezza media più vicina all'entropia, ad esempio:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice C'} \\ \hline
+        $s_0$            & 0               \\ \hline
+        $s_1$            & 10              \\ \hline
+        $s_2$            & 11              \\ \hline
+    \end{tabular}
+\end{table}
+
+con lunghezza media:
+\begin{align*}
+    L_S(C') & = \sum_{i=0}^2 p_i \cdot l_i = \frac{2}{3}\cdot 1 + \frac{2}{9}\cdot 2 + \frac{1}{9}\cdot 2 \approx 1.33
+\end{align*}
 
 \end{document}
 
