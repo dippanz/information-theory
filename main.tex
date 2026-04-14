@@ -819,7 +819,7 @@ Tuttavia tali valori non sono in generale interi, mentre le lunghezze delle paro
 
 La codifica di Shannon nasce proprio per superare questa difficoltà. Essa sostituisce alle lunghezze ideali delle lunghezze intere, ottenendo così un codice a prefisso effettivamente costruibile e con lunghezza media vicina al limite inferiore teorico.
 
-\begin{theorem}
+\begin{theorem}\label{teorema_shannon_limite_sup_inf}
     Sia $S$ una sorgente con simboli $s_1, s_2, \ldots, s_m$ e probabilità associate $p_1, p_2, \ldots, p_m$, e sia $X$ un alfabeto di codifica d-ario. Se per ogni $i=1,\ldots,m$ si sceglie:
     \[
         l_i = \left\lceil \log_d\!\left(\frac{1}{p_i}\right) \right\rceil,
@@ -868,7 +868,7 @@ La codifica di Shannon nasce proprio per superare questa difficoltà. Essa sosti
 \paragraph{Nota:}
 La codifica di Shannon non produce in generale un codice compatto, ma garantisce che la lunghezza media del codice \uline{si discosti dall'entropia per meno di un simbolo di codifica}. Facendo riferimento al caso binario, l'eccesso rispetto all'entropia è quindi strettamente minore di $1$ bit per simbolo.
 
-\subsubsection{Costruzione del codice}
+\subsubsection{Costruzione a sorgente singola}
 Per costruire concretamente un codice secondo la codifica di Shannon lo si fa in due fasi. Prima si calcolano le lunghezze:
 \[
     l_i = \left\lceil \log_d\!\left(\frac{1}{p_i}\right) \right\rceil.
@@ -884,6 +884,49 @@ In particolare:
 \end{enumerate}
 
 La disuguaglianza di Kraft-McMillan assicura che una tale costruzione è possibile. In questo modo i simboli più probabili ricevono parole più corte, mentre quelli meno probabili ricevono parole più lunghe.
+
+\subsubsection{Estensione alla codifica a blocchi}
+Visto che la costruzione di codici, come visto in precedenza, porta a NON avere un codice compatto o ottimale. Per questo motivo Shannon ha proposto un metodo di costruzione più diretto, che associa a ciascun simbolo $s_i$ una parola di codice basata sulla sua probabilità cumulativa. Grazie a questo metodo si cerca di costruire un codice la cui lunghezza media tende sempre di più verso il suo limite inferiore, l'entropia della sorgente.
+
+Si considera quindi la sorgente estesa $S^n$, i cui simboli sono tutte le n-uple di simboli della sorgente originaria (essa rappresenta l'insieme di tutti i possibili blocchi di lunghezza $n$) e la probabilità di ciascun blocco è il prodotto delle probabilità dei simboli che lo compongono.
+
+\begin{theorem}
+    Data una sorgente $S$ vale la seguente:
+    \[
+        H_d(S^n) = n \cdot H_d(S)
+    \]
+    ovvero, l'entropia della sorgente estesa $S^n$ è pari a $n$ volte l'entropia della sorgente originaria $S$. Inoltre, si definisce come lunghezza media per simbolo di un codice $C$ per la sorgente estesa $S^n$ la quantità:
+    \[
+        L_n(C) := \frac{L_{S^n}(C)}{n}
+    \]
+\end{theorem}
+
+\paragraph{Interpretazione}
+Considerando la sorgente estesa:
+\[
+    S^n = \{(s_{i_1}, s_{i_2},\ldots, s_{i_n}) : s_{i_k} \in S\},
+\]
+la probabilità, come già detto, di ciascun blocco di simboli è:
+\[
+    P(s_{i_1}, s_{i_2},\ldots, s_{i_n}) = p_{i_1} \cdot p_{i_2} \cdot \ldots \cdot p_{i_n}
+\]
+essenzialmente, ogni blocco viene trattato come un simbolo unico con una probabilità che è il prodotto delle probabilità dei simboli che lo compongono. Allora considerando il \autoref{teorema_shannon_limite_sup_inf} per la sorgente estesa $S^n$ vale:
+\[
+    H_d(S^n) \leq L_{S^n}(C) < H_d(S^n) + 1
+\]
+dividendo per $n$ otteniamo:
+\[
+    \frac{H_d(S^n)}{n}  \leq \frac{L_{S^n}(C)}{n}  < \frac{H_d(S^n) + 1}{n}
+\]
+semplificando:
+\[
+    H_d(S) \leq L_n(C) < H_d(S) + \frac{1}{n}.
+\]
+Prendendo blocchi di lunghezza sempre maggiore, ovvero facendo tendere $n$ all'infinito, si ottiene proprio l'entropia della sorgente, cioè:
+\[
+    \lim_{n\to\infty} L_n(C) = H_d(S).
+\]
+Comunque resta sempre un margine di inefficienza, rappresentato da $\frac{1}{n}$, che tende a zero ma non è mai nullo. Quindi, anche con la codifica di Shannon, non si riesce ad ottenere un codice compatto o ottimale, ma si riesce ad avvicinare arbitrariamente l'entropia della sorgente.
 
 \subsubsection{Esempi}
 Vediamo ora due esempi in cui la codifica di Shannon non produce un codice compatto.
