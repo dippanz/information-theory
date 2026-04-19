@@ -886,7 +886,7 @@ In particolare:
 La disuguaglianza di Kraft-McMillan assicura che una tale costruzione è possibile. In questo modo i simboli più probabili ricevono parole più corte, mentre quelli meno probabili ricevono parole più lunghe.
 
 \subsubsection{Estensione alla codifica a blocchi}
-Visto che la costruzione di codici, come visto in precedenza, porta a NON avere un codice compatto o ottimale. Per questo motivo Shannon ha proposto un metodo di costruzione più diretto, che associa a ciascun simbolo $s_i$ una parola di codice basata sulla sua probabilità cumulativa. Grazie a questo metodo si cerca di costruire un codice la cui lunghezza media tende sempre di più verso il suo limite inferiore, l'entropia della sorgente.
+Visto che la costruzione di codici, come visto in precedenza, non garantisce in generale di ottenere un codice compatto o ottimale, Shannon ha proposto un metodo di costruzione più diretto, che associa a ciascun simbolo $s_i$ una parola di codice basata sulla sua probabilità cumulativa. Grazie a questo metodo si cerca di costruire un codice la cui lunghezza media tenda sempre di più verso il suo limite inferiore, cioè l'entropia della sorgente.
 
 Si considera quindi la sorgente estesa $S^n$, i cui simboli sono tutte le n-uple di simboli della sorgente originaria (essa rappresenta l'insieme di tutti i possibili blocchi di lunghezza $n$) e la probabilità di ciascun blocco è il prodotto delle probabilità dei simboli che lo compongono.
 
@@ -895,11 +895,13 @@ Si considera quindi la sorgente estesa $S^n$, i cui simboli sono tutte le n-uple
     \[
         H_d(S^n) = n \cdot H_d(S)
     \]
-    ovvero, l'entropia della sorgente estesa $S^n$ è pari a $n$ volte l'entropia della sorgente originaria $S$. Inoltre, si definisce come lunghezza media per simbolo di un codice $C$ per la sorgente estesa $S^n$ la quantità:
-    \[
-        L_n(C) := \frac{L_{S^n}(C)}{n}
-    \]
+    ovvero, l'entropia della sorgente estesa $S^n$ è pari a $n$ volte l'entropia della sorgente originaria $S$.
 \end{theorem}
+
+Si definisce quindi come lunghezza media per simbolo di un codice $C$ per la sorgente estesa $S^n$ la quantità:
+\[
+    L_n(C) := \frac{L_{S^n}(C)}{n}
+\]
 
 \paragraph{Interpretazione}
 Considerando la sorgente estesa:
@@ -926,7 +928,9 @@ Prendendo blocchi di lunghezza sempre maggiore, ovvero facendo tendere $n$ all'i
 \[
     \lim_{n\to\infty} L_n(C) = H_d(S).
 \]
-Comunque resta sempre un margine di inefficienza, rappresentato da $\frac{1}{n}$, che tende a zero ma non è mai nullo. Quindi, anche con la codifica di Shannon, non si riesce ad ottenere un codice compatto o ottimale, ma si riesce ad avvicinare arbitrariamente l'entropia della sorgente.
+Il termine $\frac{1}{n}$ rappresenta quindi un limite superiore dell'eccesso della lunghezza media per simbolo rispetto all'entropia: al crescere di $n$ esso tende a zero. Per ogni valore finito di $n$, però, la codifica di Shannon non garantisce in generale di ottenere un codice compatto o ottimale, ma assicura che la lunghezza media per simbolo possa avvicinarsi arbitrariamente all'entropia della sorgente.
+
+Va però osservato che il numero di simboli della sorgente estesa cresce rapidamente con $n$: se la sorgente originaria ha $m$ simboli, allora $S^n$ contiene $m^n$ blocchi distinti. Per questo motivo, sebbene la codifica a blocchi abbia un grande valore teorico, essa diventa presto difficile da gestire in pratica.
 
 \subsubsection{Esempi}
 Vediamo ora due esempi in cui la codifica di Shannon non produce un codice compatto.
