@@ -869,24 +869,46 @@ La codifica di Shannon nasce proprio per superare questa difficoltà. Essa sosti
 La codifica di Shannon non produce in generale un codice compatto, ma garantisce che la lunghezza media del codice \uline{si discosti dall'entropia per meno di un simbolo di codifica}. Facendo riferimento al caso binario, l'eccesso rispetto all'entropia è quindi strettamente minore di $1$ bit per simbolo.
 
 \subsubsection{Costruzione a sorgente singola}
-Per costruire concretamente un codice secondo la codifica di Shannon lo si fa in due fasi. Prima si calcolano le lunghezze:
+Per costruire concretamente un codice secondo la codifica di Shannon bisogna distinguere due passaggi. Il primo passaggio consiste nel fissare le lunghezze:
 \[
     l_i = \left\lceil \log_d\!\left(\frac{1}{p_i}\right) \right\rceil.
 \]
-Poi si realizza un codice a prefisso che abbia esattamente tali lunghezze ed è naturale procedere come nei paragrafi precedenti, cioè usando un albero d-ario.
+Il secondo passaggio consiste nell'assegnare parole di codice effettive che abbiano proprio quelle lunghezze. Le lunghezze, infatti, indicano soltanto a quale livello dell'albero d-ario devono trovarsi le foglie, ma non determinano in modo unico quale parola di codice assegnare a ciascun simbolo.
 
 In particolare:
 \begin{enumerate}
     \item si ordinano i simboli in ordine di probabilità decrescente;
     \item si calcola per ciascun simbolo la lunghezza $l_i$;
-    \item si selezionano nell'albero d-ario delle foglie poste ai livelli $l_i$, evitando che una parola scelta sia prefisso di un'altra;
-    \item si associano ai simboli le parole ottenute.
+    \item si scelgono nell'albero d-ario delle foglie poste ai livelli $l_i$, evitando che una parola scelta sia prefisso di un'altra;
+    \item si associano ai simboli le parole di codice ottenute.
 \end{enumerate}
 
 La disuguaglianza di Kraft-McMillan assicura che una tale costruzione è possibile. In questo modo i simboli più probabili ricevono parole più corte, mentre quelli meno probabili ricevono parole più lunghe.
 
-\subsubsection{Estensione alla codifica a blocchi}
-Visto che la costruzione di codici, come visto in precedenza, non garantisce in generale di ottenere un codice compatto o ottimale, Shannon ha proposto un metodo di costruzione più diretto, che associa a ciascun simbolo $s_i$ una parola di codice basata sulla sua probabilità cumulativa. Grazie a questo metodo si cerca di costruire un codice la cui lunghezza media tenda sempre di più verso il suo limite inferiore, cioè l'entropia della sorgente.
+\paragraph{Nota sulle probabilità cumulative:}
+Un modo canonico per scegliere le parole di codice, una volta fissate le lunghezze, usa le \textbf{probabilità cumulative}:
+\[
+    Q_i = \sum_{j=1}^{i-1} p_j.
+\]
+La probabilità cumulativa non serve a calcolare $l_i$, né modifica la lunghezza media del codice: serve solo a ricavare in modo sistematico una possibile parola di codice. Nel caso binario si prende lo sviluppo binario di $Q_i$ e si conservano le prime $l_i$ cifre dopo la virgola.
+
+Ad esempio, per una sorgente con probabilità $\frac{1}{2}, \frac{1}{4}, \frac{1}{8}, \frac{1}{8}$ si ottengono le lunghezze $1,2,3,3$ e:
+\begin{center}
+    \begin{tabular}{|l|l|l|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{$Q_i$} & \textbf{$Q_i$ in base 2} & \textbf{$l_i$} & \textbf{Codice} \\ \hline
+        $s_1$            & $0$            & $0.000\ldots_2$          & $1$            & \lbox{0}        \\ \hline
+        $s_2$            & $1/2$          & $0.100\ldots_2$          & $2$            & \lbox{10}       \\ \hline
+        $s_3$            & $3/4$          & $0.110\ldots_2$          & $3$            & \lbox{110}      \\ \hline
+        $s_4$            & $7/8$          & $0.111\ldots_2$          & $3$            & \lbox{111}      \\ \hline
+    \end{tabular}
+\end{center}
+Quindi la cumulativa è solo un criterio ordinato per scegliere le parole di codice; se l'esercizio richiede soltanto lunghezza media, efficienza e ridondanza, non è necessario usarla.
+
+Questa costruzione non va confusa con la codifica Shannon-Fano: qui le lunghezze sono già decise dalla formula logaritmica; in Shannon-Fano, invece, l'albero viene costruito dividendo ricorsivamente i simboli in gruppi di probabilità simile.
+
+\subsubsection{Codifica di Shannon a blocchi}
+La codifica di Shannon a sorgente singola non garantisce in generale di ottenere un codice compatto o ottimale. Per ridurre lo scarto medio rispetto all'entropia si può applicare la stessa idea non ai singoli simboli, ma a blocchi di simboli. Questa è un'estensione teorica della codifica di Shannon, non la codifica Shannon-Fano.
 
 Si considera quindi la sorgente estesa $S^n$, i cui simboli sono tutte le n-uple di simboli della sorgente originaria (essa rappresenta l'insieme di tutti i possibili blocchi di lunghezza $n$) e la probabilità di ciascun blocco è il prodotto delle probabilità dei simboli che lo compongono.
 
@@ -993,21 +1015,21 @@ con lunghezza media:
 
 \paragraph{Sorgente con due simboli}
 Consideriamo ora la seguente sorgente con alfabeto binario:
-\begin{table}[htpb]
-    \centering
+\begin{center}
     \begin{tabular}{|l|l|}
         \hline
         \textbf{Simbolo} & \textbf{Probabilità} \\ \hline
         $s_0$            & 1/4                  \\ \hline
         $s_1$            & 3/4                  \\ \hline
     \end{tabular}
-\end{table}
+\end{center}
 
 Applicando la codifica di Shannon si ottengono le lunghezze:
 \begin{align*}
     l_0 & = \left\lceil \log_2\!\left(\frac{1}{1/4}\right) \right\rceil = \left\lceil 2 \right\rceil = 2,    \\
     l_1 & = \left\lceil \log_2\!\left(\frac{1}{3/4}\right) \right\rceil = \left\lceil 0.41 \right\rceil = 1.
 \end{align*}
+
 Un possibile codice a prefisso con tali lunghezze è:
 \begin{table}[htpb]
     \centering
@@ -1046,5 +1068,161 @@ la cui lunghezza media è:
 \end{align*}
 Il codice $C'$ è quindi ottimale. Esso non è compatto, perché la sua lunghezza media è ancora maggiore dell'entropia della sorgente, ma in questo caso non è possibile ottenere un codice binario a prefisso con lunghezza media inferiore a $1$.
 
+\subsubsection{Esercizio sulla codifica di Shannon}\label{esercizio_codifica_shannon}
+Data la seguente sorgente con alfabeto binario:
+\begin{center}
+    \begin{tabular}{|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} \\ \hline
+        $x_1$            & 0.09                 \\ \hline
+        $x_2$            & 0.21                 \\ \hline
+        $x_3$            & 0.05                 \\ \hline
+        $x_4$            & 0.10                 \\ \hline
+        $x_5$            & 0.36                 \\ \hline
+        $x_6$            & 0.14                 \\ \hline
+        $x_7$            & 0.05                 \\ \hline
+    \end{tabular}
+\end{center}
+trovare la codifica secondo Shannon e calcolare efficienza e ridondanza. Nella codifica di Shannon le lunghezze sono calcolate con:
+\[
+    l_i = \left\lceil \log_2\!\left(\frac{1}{p_i}\right) \right\rceil.
+\]
+Otteniamo quindi:
+\begin{align*}
+    l_1 & = \left\lceil \log_2\left(\frac{1}{0.09}\right) \right\rceil = \left\lceil 3.47 \right\rceil = 4, \\
+    l_2 & = \left\lceil \log_2\left(\frac{1}{0.21}\right) \right\rceil = \left\lceil 2.25 \right\rceil = 3, \\
+    l_3 & = \left\lceil \log_2\left(\frac{1}{0.05}\right) \right\rceil = \left\lceil 4.32 \right\rceil = 5, \\
+    l_4 & = \left\lceil \log_2\left(\frac{1}{0.10}\right) \right\rceil = \left\lceil 3.32 \right\rceil = 4, \\
+    l_5 & = \left\lceil \log_2\left(\frac{1}{0.36}\right) \right\rceil = \left\lceil 1.47 \right\rceil = 2, \\
+    l_6 & = \left\lceil \log_2\left(\frac{1}{0.14}\right) \right\rceil = \left\lceil 2.84 \right\rceil = 3, \\
+    l_7 & = \left\lceil \log_2\left(\frac{1}{0.05}\right) \right\rceil = \left\lceil 4.32 \right\rceil = 5.
+\end{align*}
+
+Una possibile assegnazione delle parole di codice è:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|l|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} & \textbf{$l_i$} & \textbf{$Q_i$} & \textbf{Codice} \\ \hline
+        $x_5$            & 0.36                 & 2              & 0              & \lbox{00}       \\ \hline
+        $x_2$            & 0.21                 & 3              & 0.36           & \lbox{010}      \\ \hline
+        $x_6$            & 0.14                 & 3              & 0.57           & \lbox{100}      \\ \hline
+        $x_4$            & 0.10                 & 4              & 0.71           & \lbox{1011}     \\ \hline
+        $x_1$            & 0.09                 & 4              & 0.81           & \lbox{1100}     \\ \hline
+        $x_3$            & 0.05                 & 5              & 0.90           & \lbox{11100}    \\ \hline
+        $x_7$            & 0.05                 & 5              & 0.95           & \lbox{11110}    \\ \hline
+    \end{tabular}
+\end{table}
+
+La lunghezza media del codice è:
+\begin{align*}
+    L_S(C)
+     & = 0.09\cdot 4 + 0.21\cdot 3 + 0.05\cdot 5 + 0.10\cdot 4
+    + 0.36\cdot 2 + 0.14\cdot 3 + 0.05\cdot 5 \\
+     & = 3.03.
+\end{align*}
+L'entropia della sorgente è:
+\[
+    H(S) = -\sum_{i=1}^7 p_i \log_2 p_i \approx 2.478.
+\]
+Essendo il codice binario, l'efficienza è:
+\[
+    \theta(C) = \frac{H(S)}{L_S(C)} \approx \frac{2.478}{3.03} \approx 0.818.
+\]
+La ridondanza è quindi:
+\[
+    \rho(C) = 1-\theta(C) \approx 1-0.818 = 0.182.
+\]
+
+\subsection{Codifica Shannon-Fano}
+La codifica \textbf{Shannon-Fano} è diversa dalla codifica di Shannon descritta nel paragrafo precedente. Entrambe cercano di assegnare parole più corte ai simboli più probabili, ma lo fanno con criteri differenti.
+
+Nella codifica di Shannon le lunghezze vengono fissate direttamente tramite:
+\[
+    l_i = \left\lceil \log_d\!\left(\frac{1}{p_i}\right) \right\rceil.
+\]
+Nella codifica Shannon-Fano, invece, non si parte da questa formula per assegnare le lunghezze. Si costruisce direttamente un albero binario dividendo ricorsivamente i simboli in gruppi con probabilità totale il più possibile simile.
+
+\subsubsection{Algoritmo di costruzione}
+Nel caso binario, la costruzione Shannon-Fano procede nel modo seguente:
+\begin{enumerate}
+    \item si ordinano i simboli della sorgente in ordine di probabilità decrescente;
+    \item si divide l'insieme ordinato in due gruppi la cui probabilità totale sia il più possibile bilanciata;
+    \item si assegna il simbolo $0$ a un gruppo e il simbolo $1$ all'altro;
+    \item si ripete ricorsivamente lo stesso procedimento su ciascun gruppo;
+    \item quando un gruppo contiene un solo simbolo, la parola di codice di quel simbolo è completa.
+\end{enumerate}
+
+Il codice ottenuto è un codice a prefisso, perché ogni parola di codice corrisponde a una foglia dell'albero binario costruito dalle divisioni successive.
+
+\subsubsection{Esercizio con Shannon-Fano}
+Riprendiamo la sorgente dell'esercizio \eqref{esercizio_codifica_shannon}. Prima ordiniamo i simboli per probabilità decrescente:
+\[
+    x_5,\; x_2,\; x_6,\; x_4,\; x_1,\; x_3,\; x_7.
+\]
+Una prima divisione bilanciata è:
+\[
+    \{x_5,x_2\}
+    \qquad\text{e}\qquad
+    \{x_6,x_4,x_1,x_3,x_7\},
+\]
+con probabilità totali rispettivamente $0.57$ e $0.43$. Assegniamo il prefisso $0$ al primo gruppo e il prefisso $1$ al secondo gruppo.
+
+Il primo gruppo contiene solo due simboli, quindi viene diviso subito in:
+\[
+    \{x_5\}
+    \qquad\text{e}\qquad
+    \{x_2\}.
+\]
+Poiché entrambi ereditano il prefisso $0$, otteniamo $x_5 \mapsto 00$ e $x_2 \mapsto 01$.
+
+Il secondo gruppo, invece, deve essere diviso ancora. La divisione più equilibrata è:
+\[
+    \{x_6,x_4\}
+    \qquad\text{e}\qquad
+    \{x_1,x_3,x_7\},
+\]
+con probabilità totali rispettivamente $0.24$ e $0.19$. Poiché questo gruppo aveva già il prefisso $1$, il primo sottogruppo riceve il prefisso $10$ e il secondo riceve il prefisso $11$. Proseguendo con le ultime divisioni tra i simboli rimasti, si ottiene ad esempio:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|l|l|l|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} & \textbf{Codice Shannon-Fano} \\ \hline
+        $x_5$            & 0.36                 & \lbox{00}                    \\ \hline
+        $x_2$            & 0.21                 & \lbox{01}                    \\ \hline
+        $x_6$            & 0.14                 & \lbox{100}                   \\ \hline
+        $x_4$            & 0.10                 & \lbox{101}                   \\ \hline
+        $x_1$            & 0.09                 & \lbox{110}                   \\ \hline
+        $x_3$            & 0.05                 & \lbox{1110}                  \\ \hline
+        $x_7$            & 0.05                 & \lbox{1111}                  \\ \hline
+    \end{tabular}
+\end{table}
+
+La lunghezza media del codice Shannon-Fano è:
+\begin{align*}
+    L_S(C)
+     & = 0.36\cdot 2 + 0.21\cdot 2 + 0.14\cdot 3 + 0.10\cdot 3
+    + 0.09\cdot 3 + 0.05\cdot 4 + 0.05\cdot 4 \\
+     & = 2.53.
+\end{align*}
+Per la stessa sorgente avevamo:
+\[
+    H(S) \approx 2.478.
+\]
+Quindi:
+\[
+    \theta(C) = \frac{H(S)}{L_S(C)} \approx \frac{2.478}{2.53} \approx 0.979,
+    \qquad
+    \rho(C) = 1-\theta(C) \approx 0.021.
+\]
+
+\subsubsection{Confronto con la codifica di Shannon}
+La distinzione più importante è la seguente:
+\begin{itemize}
+    \item nella \textbf{codifica di Shannon} si calcolano prima le lunghezze teoriche arrotondate e poi si costruiscono parole di codice compatibili con quelle lunghezze;
+    \item nella \textbf{codifica Shannon-Fano} si costruisce direttamente l'albero dividendo ricorsivamente i simboli in due gruppi di probabilità simile;
+    
+\end{itemize}
+entrambe producono codici a prefisso, ma nessuna delle due garantisce in generale un codice ottimale.
 \end{document}
 
