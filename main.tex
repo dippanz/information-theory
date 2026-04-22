@@ -1284,6 +1284,114 @@ Prima di affrontare la codifica vera e propria è meglio soffermarsi su delle pr
     che contraddice l'ottimalità di $C_R$. Quindi $C$ deve essere ottimale per $S$.
 \end{proof}
 
+\subsubsection{Algoritmo di Huffman binario}
+Il teorema precedente suggerisce direttamente il modo per costruire dei codice secondo Huffman. L'approccio è di tipo \textbf{bottom-up}: l'albero viene costruito a partire dai simboli meno probabili e procedere per fusioni successive fino ad arrivare alla radice.
+
+\begin{enumerate}
+    \item Data una sorgente $S$, costruiamo la sequenza di sorgenti ridotte $\{S_0, S_1, \ldots, S_{m-2}\}$ si pone $S_0=S$.
+    \item A ogni passo si riduce la sorgente, vengono presi i due simboli meno probabili della sorgente corrente e si sostituiscono con un unico simbolo, la cui probabilità è la somma delle due probabilità fuse:
+    \[
+        S_{i+1}=R(S_i).
+    \]
+    \item Si continua finché si arriva a una sorgente con due soli simboli. In questo caso il codice ottimale è immediato: a un simbolo si assegna $0$ e all'altro si assegna $1$.
+    \item A questo punto, in modo ricorsivo, si risale all'indietro lungo tutte le fusioni fatte. Ogni volta che un simbolo fuso aveva parola di codice $z$, ai due simboli che lo componevano si assegnano le parole $z0$ e $z1$.
+\end{enumerate}
+
+\paragraph{Esempio con cinque simboli.}
+Consideriamo la sorgente:
+\[
+    S=
+    \begin{pmatrix}
+        a & b & c & d & e \\
+        0.25 & 0.25 & 0.20 & 0.15 & 0.15
+    \end{pmatrix}.
+\]
+Una possibile sequenza di fusioni è:
+\[
+    (d,e)\rightarrow 0.30,
+    \qquad
+    (c,b)\rightarrow 0.45,
+    \qquad
+    ((d,e),a)\rightarrow 0.55.
+\]
+Infine si fondono i due simboli rimasti, di probabilità $0.45$ e $0.55$, e si risale all'indietro assegnando $0$ e $1$ a ogni biforcazione. Una possibile scelta è rappresentata in \autoref{fig:huffman_five_symbol_tree}: per leggere la parola di codice di un simbolo basta partire dalla radice e concatenare le etichette degli archi incontrati fino alla foglia.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.72\textwidth]{huffman-five-symbol-tree}
+    \caption{Albero di Huffman per la sorgente con cinque simboli.}
+    \label{fig:huffman_five_symbol_tree}
+\end{figure}
+
+Da questo albero si ottiene, ad esempio, il seguente codice:
+
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} & \textbf{Parola di codice} \\ \hline
+        $a$ & $0.25$ & \lbox{01} \\ \hline
+        $b$ & $0.25$ & \lbox{10} \\ \hline
+        $c$ & $0.20$ & \lbox{11} \\ \hline
+        $d$ & $0.15$ & \lbox{000} \\ \hline
+        $e$ & $0.15$ & \lbox{001} \\ \hline
+    \end{tabular}
+\end{center}
+
+La scelta non è necessariamente unica, soprattutto quando ci sono probabilità uguali; tuttavia qualunque codice ottenuto seguendo correttamente la procedura di Huffman è ottimale.
+
+\paragraph{Esempio con albero di Huffman.}
+Consideriamo ora la sorgente:
+\[
+    S=
+    \begin{pmatrix}
+        a & b & c & d & e & f & g \\
+        0.05 & 0.05 & 0.10 & 0.20 & 0.30 & 0.20 & 0.10
+    \end{pmatrix}
+\]
+applicando l'algoritmo si ottiene l'albero in \autoref{fig:huffman_example_tree}. Ogni parola di codice si legge seguendo il cammino dalla radice alla foglia: a ogni arco sinistro si associa $0$, mentre a ogni arco destro si associa $1$.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.82\textwidth]{huffman-example-tree}
+    \caption{Albero di Huffman per una sorgente binaria con sette simboli.}
+    \label{fig:huffman_example_tree}
+\end{figure}
+
+Leggendo i cammini nell'albero si ottiene:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} & \textbf{Parola di codice} \\ \hline
+        $a$ & $0.05$ & \lbox{0000} \\ \hline
+        $b$ & $0.05$ & \lbox{0001} \\ \hline
+        $c$ & $0.10$ & \lbox{001} \\ \hline
+        $d$ & $0.20$ & \lbox{01} \\ \hline
+        $e$ & $0.30$ & \lbox{10} \\ \hline
+        $f$ & $0.20$ & \lbox{110} \\ \hline
+        $g$ & $0.10$ & \lbox{111} \\ \hline
+    \end{tabular}
+\end{center}
+
+La lunghezza media del codice è:
+\[
+    L_S(C)
+    =
+    0.05\cdot4
+    +0.05\cdot4
+    +0.10\cdot3
+    +0.20\cdot2
+    +0.30\cdot2
+    +0.20\cdot3
+    +0.10\cdot3
+    =
+    2.6.
+\]
+L'entropia della sorgente vale:
+\[
+    H(S)=-\sum_i p_i\log_2 p_i \approx 2.5464.
+\]
+Il codice è quindi molto vicino al limite teorico dato dall'entropia e, essendo stato costruito con l'algoritmo di Huffman, non esiste un altro codice a prefisso binario con lunghezza media inferiore.
+
 
 
 
