@@ -810,7 +810,10 @@ verificando che la lunghezza media di questo codice è:
 \]
 allora si conclude che il codice costruito è compatto.
 
-\subsection{Codifica di Shannon}
+\section{Algoritmi di codifica}
+Nel seguente capitolo verranno affrontati le teorie e i relativi algoritmi per costruire codici a prefisso e ottimali. 
+
+\subsection{Codifica Shannon}
 Nelle condizioni di esistenza viste nel paragrafo \eqref{condizioni_codici_compatti} abbiamo visto che, per ottenere un codice compatto, le lunghezze ideali devono soddisfare:
 \[
     l_i = \log_d\!\left(\frac{1}{p_i}\right).
@@ -1215,7 +1218,6 @@ Quindi:
     \qquad
     \rho(C) = 1-\theta(C) \approx 0.021.
 \]
-
 \subsubsection{Confronto con la codifica di Shannon}
 La distinzione più importante è la seguente:
 \begin{itemize}
@@ -1224,5 +1226,75 @@ La distinzione più importante è la seguente:
     
 \end{itemize}
 entrambe producono codici a prefisso, ma nessuna delle due garantisce in generale un codice ottimale.
-\end{document}
 
+\subsection{Codifica Huffman}
+Prima di affrontare la codifica vera e propria è meglio soffermarsi su delle proprietà che caratterizzano i codici ottimali (quei codici a prefisso che minimizzano la lunghezza media). Sia $S$ una sorgente con una distribuzione di probabilità data, supponiamo che $p_1 \geq p_2 \geq \cdots \geq p_m$, e sia $c_i$ la parola di codice associata al simbolo di probabilità $p_i$, allora:
+\begin{enumerate}
+    \item \uline{I simboli con probabilità più alta devono essere associati a parole di codice più corte}. Infatti, se $p_i > p_j$, allora $|c_j| \geq |c_i|$.
+    \item \uline{I simboli meno probabili hanno parole di codice della stessa lunghezza}, ovvero se $m$ è il numero totale di simboli allora $|c_{m-1}| = |c_m|$. Se invece risulta che $|c_{m-1}| < |c_m|$, allora è possibile togliere l'ultimo simbolo da $c_m$ e continuare ad avere un codice a prefisso, ottenendo così un codice con lunghezza media inferiore.\footnote{Tutti i simboli fino ad arrivare a $s_{m-1}$, essendo almeno tanto probabili quanto $s_{m-1}$, per la prima proprietà non possono avere parole di codice più lunghe di $c_{m-1}$ (perché le probabilità sono ordinate in modo decrescente). Questo significa che $c_m$ sarebbe l'unica parola di codice più lunga. Togliendo l'ultimo simbolo da $c_m$, il codice resterebbe ancora a prefisso: nessuna parola già presente potrebbe diventare prefisso della nuova parola, altrimenti sarebbe stata prefisso anche di $c_m$; inoltre la nuova parola non potrebbe essere prefisso di parole più lunghe, perché $c_m$ era l'unica parola di lunghezza massima.}
+    \item \uline{Tra le parole più lunghe, almeno due devono differire solo per l'ultimo simbolo}. Dato $M=\max_i |c_i|$, ovvero la massima lunghezza tra le parole di codice, nel caso binario devono esistere due parole di lunghezza $M$ della forma $t0$ e $t1$, cioè due parole con lo stesso prefisso $t$ e diverso ultimo simbolo. Se tutte le parole di lunghezza massima differissero per un simbolo diverso dall'ultimo, allora sarebbe possibile togliere l'ultimo simbolo da una di esse e ottenere un codice a prefisso con lunghezza media inferiore.
+    
+    In termini di albero, significa che tra le foglie più profonde devono esserci almeno due foglie sorelle, cioè due foglie che hanno lo stesso padre. Se una parola di lunghezza massima non avesse una sorella, il suo ultimo passo nell'albero sarebbe sprecato: potremmo risalire di un livello e usare come parola di codice il suo prefisso più corto. 
+
+    Il codice resterebbe a prefisso, perché la nuova parola di codice che si verrebbe a creare in quel nodo non esisterebbe già e non avrebbe altre foglie sotto di sé; però la lunghezza media diminuirebbe.
+\end{enumerate}
+\begin{theorem}
+    Data una sorgente:
+    \[
+        S=
+        \begin{pmatrix}
+        s_1 & \cdots & s_m \\
+        p_1 & \cdots & p_m
+        \end{pmatrix}
+    \]
+    dove ogni simbolo è ordinato in modo decrescente in base alle probabilità $p_1 \geq p_2 \geq \cdots \geq p_m$. Denotiamo con $R(S)$ la \textbf{sorgente ridotta}, ottenuta rimpiazzando i due simboli meno probabili con un nuovo simbolo $\tilde{s}=(s_{m-1}, s_m)$, la cui probabilità è $p' = p_{m-1} + p_m$:
+    \[
+        R(S) =
+        \begin{pmatrix}
+        s_1 & \cdots & s_{m-2} & \tilde{s} \\
+        p_1 & \cdots & p_{m-2} & p'
+        \end{pmatrix}
+    \]
+    Se $C_R$ è un codice a prefisso per la sorgente ridotta $R(S)$ e $z$ è la parola di codice assegnata a $\tilde{s}$, allora $C$ sarà anch'esso un codice a prefisso per la sorgente originaria $S$ e si ottiene da $C_R$ sostituendo la parola $z$ con le due nuove parole che si ottengono appendendo ad essa, rispettivamente, $0$ e $1$:
+    \begin{itemize}
+        \item $c_m = z0$ (appendendo $0$ a $z$ si ottiene la parola di codice per $s_m$)
+        \item $c_{m-1} = z1$ (appendendo $1$ a $z$ si ottiene la parola di codice per $s_{m-1}$)
+    \end{itemize}
+    Inoltre:
+    \[
+        L_S(C)=L_{R(S)}(C_R)+p_{m-1}+p_m
+    \]
+    Se $C_R$ è ottimale per $R(S)$, allora $C$ è ottimale per $S$.
+\end{theorem}
+\begin{proof}
+    Per prima cosa osserviamo che $C$ è ancora un codice a prefisso. Infatti tutti i simboli $s_1,\ldots,s_{m-2}$ mantengono le stesse parole di codice che avevano in $C_R$, mentre la sola parola $z$ viene sostituita da $z0$ e $z1$. Poiché $C_R$ era già a prefisso, nessuna parola del codice poteva essere prefisso di $z$ o avere $z$ come prefisso; quindi aggiungendo i due simboli alla fine della parola $z$ non si avrà che un'altra parola risulti loro prefisso o viceversa. Inoltre $z0$ e $z1$ non possono essere prefisso l'una dell'altra, perché hanno la stessa lunghezza e differiscono nell'ultimo simbolo.
+
+    Resta da mostrare l'ottimalità. Supponiamo per assurdo che $C_R$ sia ottimale per $R(S)$, ma che il codice $C$ costruito per $S$ non lo sia. Allora esisterebbe un codice a prefisso ottimale $D$ per $S$ tale che:
+    \[
+        L_S(D)<L_S(C).
+    \]
+    Per le proprietà viste prima, possiamo assumere che i due simboli meno probabili $s_{m-1}$ e $s_m$ corrispondano a due parole sorelle di lunghezza massima, cioè della forma $t0$ e $t1$. Fondendo queste due parole nella sola parola $t$, si ottiene un codice a prefisso $D_R$ per la sorgente ridotta $R(S)$. Per lo stesso ragionamento sulla lunghezza media:
+    \[
+        L_S(D)=L_{R(S)}(D_R)+p_{m-1}+p_m.
+    \]
+    Dalla disuguaglianza $L_S(D)<L_S(C)$ segue allora:
+    \[
+        L_{R(S)}(D_R)<L_{R(S)}(C_R),
+    \]
+    che contraddice l'ottimalità di $C_R$. Quindi $C$ deve essere ottimale per $S$.
+\end{proof}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\end{document}
