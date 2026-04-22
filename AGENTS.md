@@ -3,7 +3,7 @@
 ## Project Structure & Module Organization
 This repository is a single-document LaTeX project. [`main.tex`](C:\Users\V10617\OneDrive - UNIPA\materie magistrale\inf theory\latex\main.tex) is the entry point and contains the preamble, theorem environments, custom macros, and the full course text. Store figures in [`images/`](C:\Users\V10617\OneDrive - UNIPA\materie magistrale\inf theory\latex\images). Import figures in LaTeX as vector PDFs through `\includegraphics`; if a figure has an editable source (for example a TikZ/standalone `.tex` file or an original `.svg`), keep that source next to the exported PDF but do not reference the SVG directly from `main.tex`.
 
-For diagrams that become visually or logically articulated, prefer moving them into a standalone source under `images/` and including only the generated PDF from `main.tex`. This keeps the main document readable and makes iterative work on figures faster. Generated artifacts such as `main.pdf`, `.aux`, `.log`, `.toc`, `.fls`, and `.fdb_latexmk` are written in the repository root and should never be edited by hand.
+For diagrams that become visually or logically articulated, prefer moving them into a standalone source under a topic subfolder of `images/` and including only the generated PDF from `main.tex`. This keeps the main document readable and makes iterative work on figures faster. Generated artifacts such as `main.pdf`, `.aux`, `.log`, `.toc`, `.fls`, and `.fdb_latexmk` are written in the repository root or next to standalone figures and should never be edited by hand.
 
 The parent course directory [`C:\Users\V10617\OneDrive - UNIPA\materie magistrale\inf theory`](C:\Users\V10617\OneDrive - UNIPA\materie magistrale\inf theory) contains the teaching material for the subject, organized in numbered folders and related archives. Treat that material as a reference source for the project: consult it when the user explicitly asks to align with the slides, when a theorem/definition/order of topics needs to be checked against the course material, or when verifying notation or examples would materially improve accuracy. Do not depend on those files continuously by default, because the notes are meant to be a re-elaboration of the material rather than a direct transcription.
 
@@ -12,8 +12,10 @@ Use `latexmk` for document builds:
 
 - `latexmk -pdf main.tex`: build the main document.
 - `latexmk -pdf -pvc main.tex`: rebuild automatically while editing.
-- `latexmk -pdf -cd images/kraft-mcmillan_vector.tex`: rebuild the standalone vector figure PDF after editing its TikZ source and keep its build artifacts inside `images/`.
-- `latexmk -pdf -cd images/albero-ternario.tex`: rebuild the standalone ternary-tree figure after editing its `forest` source.
+- `latexmk -pdf -cd images/kraft-mcmillan/kraft-mcmillan_vector.tex`: rebuild the standalone vector figure PDF after editing its TikZ source.
+- `latexmk -pdf -cd images/kraft-mcmillan/albero-ternario.tex`: rebuild the standalone ternary-tree figure after editing its `forest` source.
+- `latexmk -pdf -cd images/huffman/huffman-five-symbol-tree.tex`: rebuild the standalone Huffman tree for the five-symbol example.
+- `latexmk -pdf -cd images/huffman/huffman-example-tree.tex`: rebuild the standalone Huffman tree for the seven-symbol example.
 - `latexmk -c`: remove auxiliary files.
 - `latexmk -C`: remove auxiliary files and generated PDFs.
 
