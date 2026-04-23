@@ -1,5 +1,6 @@
 \documentclass{article}
 \usepackage{graphicx} % Required for inserting images
+\usepackage{xcolor}
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsthm}
@@ -811,7 +812,7 @@ verificando che la lunghezza media di questo codice è:
 allora si conclude che il codice costruito è compatto.
 
 \section{Algoritmi di codifica}
-Nel seguente capitolo verranno affrontati le teorie e i relativi algoritmi per costruire codici a prefisso e ottimali. 
+Nel seguente capitolo verranno affrontati le teorie e i relativi algoritmi per costruire codici a prefisso e ottimali.
 
 \subsection{Codifica Shannon}
 Nelle condizioni di esistenza viste nel paragrafo \eqref{condizioni_codici_compatti} abbiamo visto che, per ottenere un codice compatto, le lunghezze ideali devono soddisfare:
@@ -1121,7 +1122,7 @@ La lunghezza media del codice è:
 \begin{align*}
     L_S(C)
      & = 0.09\cdot 4 + 0.21\cdot 3 + 0.05\cdot 5 + 0.10\cdot 4
-    + 0.36\cdot 2 + 0.14\cdot 3 + 0.05\cdot 5 \\
+    + 0.36\cdot 2 + 0.14\cdot 3 + 0.05\cdot 5                  \\
      & = 3.03.
 \end{align*}
 L'entropia della sorgente è:
@@ -1205,7 +1206,7 @@ La lunghezza media del codice Shannon-Fano è:
 \begin{align*}
     L_S(C)
      & = 0.36\cdot 2 + 0.21\cdot 2 + 0.14\cdot 3 + 0.10\cdot 3
-    + 0.09\cdot 3 + 0.05\cdot 4 + 0.05\cdot 4 \\
+    + 0.09\cdot 3 + 0.05\cdot 4 + 0.05\cdot 4                  \\
      & = 2.53.
 \end{align*}
 Per la stessa sorgente avevamo:
@@ -1223,7 +1224,7 @@ La distinzione più importante è la seguente:
 \begin{itemize}
     \item nella \textbf{codifica di Shannon} si calcolano prima le lunghezze teoriche arrotondate e poi si costruiscono parole di codice compatibili con quelle lunghezze;
     \item nella \textbf{codifica Shannon-Fano} si costruisce direttamente l'albero dividendo ricorsivamente i simboli in due gruppi di probabilità simile;
-    
+
 \end{itemize}
 entrambe producono codici a prefisso, ma nessuna delle due garantisce in generale un codice ottimale.
 
@@ -1234,7 +1235,7 @@ Prima di affrontare la codifica vera e propria è meglio soffermarsi su delle pr
     \item \uline{I simboli meno probabili hanno parole di codice della stessa lunghezza}, ovvero se $m$ è il numero totale di simboli allora $|c_{m-1}| = |c_m|$. Se invece risulta che $|c_{m-1}| < |c_m|$, allora è possibile togliere l'ultimo simbolo da $c_m$ e continuare ad avere un codice a prefisso, ottenendo così un codice con lunghezza media inferiore.\footnote{Tutti i simboli fino ad arrivare a $s_{m-1}$, essendo almeno tanto probabili quanto $s_{m-1}$, per la prima proprietà non possono avere parole di codice più lunghe di $c_{m-1}$ (perché le probabilità sono ordinate in modo decrescente). Questo significa che $c_m$ sarebbe l'unica parola di codice più lunga. Togliendo l'ultimo simbolo da $c_m$, il codice resterebbe ancora a prefisso: nessuna parola già presente potrebbe diventare prefisso della nuova parola, altrimenti sarebbe stata prefisso anche di $c_m$; inoltre la nuova parola non potrebbe essere prefisso di parole più lunghe, perché $c_m$ era l'unica parola di lunghezza massima.}
     \item \uline{Tra le parole più lunghe, almeno due devono differire solo per l'ultimo simbolo}. Dato $M=\max_i |c_i|$, ovvero la massima lunghezza tra le parole di codice, nel caso binario devono esistere due parole di lunghezza $M$ della forma $t0$ e $t1$, cioè due parole con lo stesso prefisso $t$ e diverso ultimo simbolo. Se tutte le parole di lunghezza massima differissero per un simbolo diverso dall'ultimo, allora sarebbe possibile togliere l'ultimo simbolo da una di esse e ottenere un codice a prefisso con lunghezza media inferiore.
     
-    In termini di albero, significa che tra le foglie più profonde devono esserci almeno due foglie sorelle, cioè due foglie che hanno lo stesso padre. Se una parola di lunghezza massima non avesse una sorella, il suo ultimo passo nell'albero sarebbe sprecato: potremmo risalire di un livello e usare come parola di codice il suo prefisso più corto. 
+    In termini di albero, significa che tra le foglie più profonde devono esserci almeno due foglie sorelle, cioè due foglie che hanno lo stesso padre. Se una parola di lunghezza massima non avesse una sorella, il suo ultimo passo nell'albero sarebbe sprecato: potremmo risalire di un livello e usare come parola di codice il suo prefisso più corto.
 
     Il codice resterebbe a prefisso, perché la nuova parola di codice che si verrebbe a creare in quel nodo non esisterebbe già e non avrebbe altre foglie sotto di sé; però la lunghezza media diminuirebbe.
 \end{enumerate}
@@ -1243,16 +1244,16 @@ Prima di affrontare la codifica vera e propria è meglio soffermarsi su delle pr
     \[
         S=
         \begin{pmatrix}
-        s_1 & \cdots & s_m \\
-        p_1 & \cdots & p_m
+            s_1 & \cdots & s_m \\
+            p_1 & \cdots & p_m
         \end{pmatrix}
     \]
     dove ogni simbolo è ordinato in modo decrescente in base alle probabilità $p_1 \geq p_2 \geq \cdots \geq p_m$. Denotiamo con $R(S)$ la \textbf{sorgente ridotta}, ottenuta rimpiazzando i due simboli meno probabili con un nuovo simbolo $\tilde{s}=(s_{m-1}, s_m)$, la cui probabilità è $p' = p_{m-1} + p_m$:
     \[
         R(S) =
         \begin{pmatrix}
-        s_1 & \cdots & s_{m-2} & \tilde{s} \\
-        p_1 & \cdots & p_{m-2} & p'
+            s_1 & \cdots & s_{m-2} & \tilde{s} \\
+            p_1 & \cdots & p_{m-2} & p'
         \end{pmatrix}
     \]
     Se $C_R$ è un codice a prefisso per la sorgente ridotta $R(S)$ e $z$ è la parola di codice assegnata a $\tilde{s}$, allora $C$ sarà anch'esso un codice a prefisso per la sorgente originaria $S$ e si ottiene da $C_R$ sostituendo la parola $z$ con le due nuove parole che si ottengono appendendo ad essa, rispettivamente, $0$ e $1$:
@@ -1285,24 +1286,25 @@ Prima di affrontare la codifica vera e propria è meglio soffermarsi su delle pr
 \end{proof}
 
 \subsubsection{Algoritmo di Huffman binario}
-Il teorema precedente suggerisce direttamente il modo per costruire dei codice secondo Huffman. L'approccio è di tipo \textbf{bottom-up}: l'albero viene costruito a partire dai simboli meno probabili e procedere per fusioni successive fino ad arrivare alla radice.
-
+Il teorema precedente suggerisce direttamente il modo per costruire dei codice secondo Huffman. L'approccio è di tipo \textbf{bottom-up}: l'albero viene costruito a partire dai simboli meno probabili e procedere per fusioni successive fino ad arrivare alla radice. \uline{Ogni codice costruito seguendo questa procedura è ottimale}.
 \begin{enumerate}
     \item Data una sorgente $S$, costruiamo la sequenza di sorgenti ridotte $\{S_0, S_1, \ldots, S_{m-2}\}$ si pone $S_0=S$.
     \item A ogni passo si riduce la sorgente, vengono presi i due simboli meno probabili della sorgente corrente e si sostituiscono con un unico simbolo, la cui probabilità è la somma delle due probabilità fuse:
-    \[
-        S_{i+1}=R(S_i).
-    \]
+          \[
+              S_{i+1}=R(S_i).
+          \]
     \item Si continua finché si arriva a una sorgente con due soli simboli. In questo caso il codice ottimale è immediato: a un simbolo si assegna $0$ e all'altro si assegna $1$.
-    \item A questo punto, in modo ricorsivo, si risale all'indietro lungo tutte le fusioni fatte. Ogni volta che un simbolo fuso aveva parola di codice $z$, ai due simboli che lo componevano si assegnano le parole $z0$ e $z1$.
+    \item A questo punto, in modo ricorsivo, si risale all'indietro lungo tutte le fusioni fatte. Ogni volta che un simbolo fuso aveva parola di codice $z$, ai due simboli che lo componevano si assegnano le parole $z0$ e $z1$. In altre parole, il codice viene ricostruito in modo top-down dalla radice fino alle foglie, assegnando $0$ e $1$ a ogni biforcazione.
 \end{enumerate}
+\paragraph{Convenzione di ordinamento.}
+\uline{Nella costruzione dell'albero di Huffman l'ordine scelto per disporre i nodi deve rimanere coerente dall'inizio alla fine}. Di solito, a ogni fusione, si collocano i simboli meno probabili \textbf{da sinistra verso destra} seguendo l'ordine con cui vengono selezionati; poi si assegnano le etichette degli archi nello stesso verso, ad esempio $0$ e $1$ nel caso binario oppure $0,1,\ldots,d-1$ nel caso $d$-ario. Questa convenzione non cambia l'ottimalità del codice, ma evita ambiguità: se si cambia l'ordine dei figli, possono cambiare le parole di codice associate ai simboli, pur rimanendo uguali le lunghezze e quindi la lunghezza media.
 
 \paragraph{Esempio con cinque simboli.}
 Consideriamo la sorgente:
 \[
     S=
     \begin{pmatrix}
-        a & b & c & d & e \\
+        a    & b    & c    & d    & e    \\
         0.25 & 0.25 & 0.20 & 0.15 & 0.15
     \end{pmatrix}.
 \]
@@ -1314,7 +1316,6 @@ Una possibile sequenza di fusioni è:
     \qquad
     ((d,e),a)\rightarrow 0.55.
 \]
-Infine si fondono i due simboli rimasti, di probabilità $0.45$ e $0.55$, e si risale all'indietro assegnando $0$ e $1$ a ogni biforcazione. Una possibile scelta è rappresentata in \autoref{fig:huffman_five_symbol_tree}: per leggere la parola di codice di un simbolo basta partire dalla radice e concatenare le etichette degli archi incontrati fino alla foglia.
 
 \begin{figure}[htpb]
     \centering
@@ -1323,17 +1324,17 @@ Infine si fondono i due simboli rimasti, di probabilità $0.45$ e $0.55$, e si r
     \label{fig:huffman_five_symbol_tree}
 \end{figure}
 
-Da questo albero si ottiene, ad esempio, il seguente codice:
+Infine si fondono i due simboli rimasti, di probabilità $0.45$ e $0.55$, e si risale all'indietro assegnando $0$ e $1$ a ogni biforcazione. Una possibile scelta è rappresentata in \autoref{fig:huffman_five_symbol_tree}: per leggere la parola di codice di un simbolo basta partire dalla radice e concatenare le etichette degli archi incontrati fino alla foglia. Ad esempio, si ottiene il seguente codice:
 
 \begin{center}
     \begin{tabular}{|c|c|c|}
         \hline
         \textbf{Simbolo} & \textbf{Probabilità} & \textbf{Parola di codice} \\ \hline
-        $a$ & $0.25$ & \lbox{01} \\ \hline
-        $b$ & $0.25$ & \lbox{10} \\ \hline
-        $c$ & $0.20$ & \lbox{11} \\ \hline
-        $d$ & $0.15$ & \lbox{000} \\ \hline
-        $e$ & $0.15$ & \lbox{001} \\ \hline
+        $a$              & $0.25$               & \lbox{01}                 \\ \hline
+        $b$              & $0.25$               & \lbox{10}                 \\ \hline
+        $c$              & $0.20$               & \lbox{11}                 \\ \hline
+        $d$              & $0.15$               & \lbox{000}                \\ \hline
+        $e$              & $0.15$               & \lbox{001}                \\ \hline
     \end{tabular}
 \end{center}
 
@@ -1344,7 +1345,7 @@ Consideriamo ora la sorgente:
 \[
     S=
     \begin{pmatrix}
-        a & b & c & d & e & f & g \\
+        a    & b    & c    & d    & e    & f    & g    \\
         0.05 & 0.05 & 0.10 & 0.20 & 0.30 & 0.20 & 0.10
     \end{pmatrix}
 \]
@@ -1362,13 +1363,13 @@ Leggendo i cammini nell'albero si ottiene:
     \begin{tabular}{|c|c|c|}
         \hline
         \textbf{Simbolo} & \textbf{Probabilità} & \textbf{Parola di codice} \\ \hline
-        $a$ & $0.05$ & \lbox{0000} \\ \hline
-        $b$ & $0.05$ & \lbox{0001} \\ \hline
-        $c$ & $0.10$ & \lbox{001} \\ \hline
-        $d$ & $0.20$ & \lbox{01} \\ \hline
-        $e$ & $0.30$ & \lbox{10} \\ \hline
-        $f$ & $0.20$ & \lbox{110} \\ \hline
-        $g$ & $0.10$ & \lbox{111} \\ \hline
+        $a$              & $0.05$               & \lbox{0000}               \\ \hline
+        $b$              & $0.05$               & \lbox{0001}               \\ \hline
+        $c$              & $0.10$               & \lbox{001}                \\ \hline
+        $d$              & $0.20$               & \lbox{01}                 \\ \hline
+        $e$              & $0.30$               & \lbox{10}                 \\ \hline
+        $f$              & $0.20$               & \lbox{110}                \\ \hline
+        $g$              & $0.10$               & \lbox{111}                \\ \hline
     \end{tabular}
 \end{center}
 
@@ -1391,6 +1392,64 @@ L'entropia della sorgente vale:
     H(S)=-\sum_i p_i\log_2 p_i \approx 2.5464.
 \]
 Il codice è quindi molto vicino al limite teorico dato dall'entropia e, essendo stato costruito con l'algoritmo di Huffman, non esiste un altro codice a prefisso binario con lunghezza media inferiore.
+
+\subsubsection{Codifica di Huffman per codici d-ari}
+La stessa procedura di costruzione può essere estesa a codici d-ari, con $d>2$. In questo caso, invece di fondere i due simboli meno probabili, si fondono i $d$ simboli meno probabili in un unico simbolo, la cui probabilità è la somma delle probabilità dei simboli fusi. In questo modo, ogni sorgente ridotta avrà $d-1$ simboli rispetto a prima, e si continua a fondere fino ad arrivare a una sorgente con $d$ simboli. Si nota che la sorgente iniziale deve avere almeno $d+\alpha(d-1)$ simboli, dove $\alpha$ è un intero non negativo.
+
+A questo punto, si assegnano i simboli di codice $0,1,\ldots,d-1$ ai simboli rimasti, e si risale all'indietro lungo tutte le fusioni fatte, appendendo a ogni parola di codice i simboli $0,1,\ldots,d-1$ a seconda della posizione del simbolo fuso. Se l'ultima sorgente da ridurre (ovvero la radice dell'albero) ha meno di $d$ simboli, si possono aggiungere simboli fittizi con probabilità $0$ per arrivare al numero desiderato. Dopo la crezione del codice questi simboli fittizi possono essere eliminati.
+
+\paragraph{Esempio d-ario}
+Consideriamo la sorgente:
+\begin{center}
+    \begin{tabular}{|c|c||c|c||c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Prob.} &
+        \textbf{Simbolo} & \textbf{Prob.} &
+        \textbf{Simbolo} & \textbf{Prob.}                                                                   \\ \hline
+        $a$              & $0.22$         & $b$ & $0.15$ & $c$                    & $0.12$                  \\ \hline
+        $d$              & $0.10$         & $e$ & $0.10$ & $f$                    & $0.08$                  \\ \hline
+        $g$              & $0.06$         & $h$ & $0.05$ & $i$                    & $0.05$                  \\ \hline
+        $l$              & $0.04$         & $m$ & $0.03$ & \textcolor{red}{$n,o$} & \textcolor{red}{$0.00$} \\ \hline
+    \end{tabular}
+\end{center}
+Vogliamo costruire un codice quaternario. Notiamo subito che gli 11 simboli presenti non bastano infatti per la formula $11 \neq 4 + \alpha\cdot (4-1)$ per nessun intero $\alpha$. Aggiungiamo quindi due simboli fittizi $n$ e $o$ con probabilità $0$ per arrivare così al numero di simboli necessario. Una possibile sequenza di fusioni, scegliendo ogni volta i quattro simboli meno probabili, è:
+\[
+    (n,o,m,l) \rightarrow 0.07,
+    \quad
+    (h,i,g,(n,o,m,l)) \rightarrow 0.23,
+    \quad
+    (f,d,e,c) \rightarrow 0.40,
+\]
+\[
+    \bigl(b,a,(h,i,g,(n,o,m,l)),(f,d,e,c)\bigr)  \rightarrow 1.00.
+\]
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.95\textwidth]{huffman/huffman-quaternary-example-tree}
+    \caption{Albero di Huffman quaternario per la sorgente dell'esempio.}
+    \label{fig:huffman_quaternary_example_tree}
+\end{figure}
+
+In \autoref{fig:huffman_quaternary_example_tree} le parole di codice si leggono dalla radice alle foglie concatenando le etichette degli archi; i simboli fittizi $n$ e $o$ non fanno parte del codice finale. Quindi otteniamo ad esempio il seguente codice quaternario:
+
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} & \textbf{Parola di codice} \\ \hline
+        $a$              & $0.22$               & \lbox{1}                  \\ \hline
+        $b$              & $0.15$               & \lbox{0}                  \\ \hline
+        $c$              & $0.12$               & \lbox{33}                 \\ \hline
+        $d$              & $0.10$               & \lbox{31}                 \\ \hline
+        $e$              & $0.10$               & \lbox{32}                 \\ \hline
+        $f$              & $0.08$               & \lbox{30}                 \\ \hline
+        $g$              & $0.06$               & \lbox{22}                 \\ \hline
+        $h$              & $0.05$               & \lbox{20}                 \\ \hline
+        $i$              & $0.05$               & \lbox{21}                 \\ \hline
+        $l$              & $0.04$               & \lbox{233}                \\ \hline
+        $m$              & $0.03$               & \lbox{232}                \\ \hline
+    \end{tabular}
+\end{center}
 
 
 
