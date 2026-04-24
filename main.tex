@@ -1554,13 +1554,18 @@ Questo significa che la compressione avviene in due fasi distinte:
 \end{enumerate}
 Questa distinzione è importante perché la prima fase può richiedere tempo e memoria, soprattutto quando il testo è grande o quando l'alfabeto contiene molti simboli distinti.
 
-Inoltre, per poter decodificare il messaggio, il ricevitore deve conoscere lo stesso codice usato dall'encoder. Per questo motivo, insieme al corpo compresso, bisogna memorizzare o trasmettere anche la tabella dei codici, oppure una rappresentazione equivalente dell'albero di Huffman. Questo preambolo aumenta la dimensione complessiva del file compresso e può diventare rilevante quando il testo è corto o quando l'alfabeto è grande. Infine, se la tabella o l'albero vengono persi o corrotti, la decompressione può diventare impossibile, perché il flusso di bit non contiene da solo il significato dei simboli originari.
+Inoltre, per poter decodificare il messaggio, il ricevitore deve conoscere lo stesso codice usato dall'encoder. Per questo motivo, oltre al corpo del messaggio compresso, bisogna memorizzare o trasmettere anche una descrizione del codice usato. In pratica, il file compresso è formato da due parti:
+\begin{itemize}
+    \item il corpo del messaggio compresso, cioè la sequenza di bit ottenuta concatenando le parole di codice dei simboli del testo;
+    \item la tabella dei codici, oppure una rappresentazione equivalente dell'albero di Huffman; questa seconda parte ha dimensione $\mathcal{O}(|A|)$, dove $A$ è l'alfabeto della sorgente.
+\end{itemize}
+Questa parte introduttiva, cioè il preambolo del file compresso, aumenta la dimensione complessiva del file compresso e può diventare rilevante quando il testo è corto o quando l'alfabeto è grande. Infine, se la tabella o l'albero vengono persi o corrotti, la decompressione può diventare impossibile, perché il flusso di bit non contiene da solo il significato dei simboli originari.
 
 \subsubsection{Complessità e decodifica}
 \paragraph{Complessità di costruzione.}
 La costruzione dell'albero di Huffman richiede di selezionare ripetutamente i due nodi con probabilità minore. Se si usa una coda di priorità implementata tramite \textbf{min-heap}, e se $n$ indica il numero di simboli distinti della sorgente, il costo complessivo dell'algoritmo è:
 \[
-    O(n\log n).
+    \mathcal{O}(n\log n).
 \]
 Infatti, a ogni iterazione si estraggono due nodi minimi e si reinserisce il nodo ottenuto dalla loro fusione. Se però i simboli sono già ordinati in base alla probabilità, la costruzione può essere resa lineare usando due code: una per le foglie iniziali e una per i nodi interni generati dalle fusioni.
 
