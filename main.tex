@@ -1234,10 +1234,10 @@ Prima di affrontare la codifica vera e propria è meglio soffermarsi su delle pr
     \item \uline{I simboli con probabilità più alta devono essere associati a parole di codice più corte}. Infatti, se $p_i > p_j$, allora $|c_j| \geq |c_i|$.
     \item \uline{I simboli meno probabili hanno parole di codice della stessa lunghezza}, ovvero se $m$ è il numero totale di simboli allora $|c_{m-1}| = |c_m|$. Se invece risulta che $|c_{m-1}| < |c_m|$, allora è possibile togliere l'ultimo simbolo da $c_m$ e continuare ad avere un codice a prefisso, ottenendo così un codice con lunghezza media inferiore.\footnote{Tutti i simboli fino ad arrivare a $s_{m-1}$, essendo almeno tanto probabili quanto $s_{m-1}$, per la prima proprietà non possono avere parole di codice più lunghe di $c_{m-1}$ (perché le probabilità sono ordinate in modo decrescente). Questo significa che $c_m$ sarebbe l'unica parola di codice più lunga. Togliendo l'ultimo simbolo da $c_m$, il codice resterebbe ancora a prefisso: nessuna parola già presente potrebbe diventare prefisso della nuova parola, altrimenti sarebbe stata prefisso anche di $c_m$; inoltre la nuova parola non potrebbe essere prefisso di parole più lunghe, perché $c_m$ era l'unica parola di lunghezza massima.}
     \item \uline{Tra le parole più lunghe, almeno due devono differire solo per l'ultimo simbolo}. Dato $M=\max_i |c_i|$, ovvero la massima lunghezza tra le parole di codice, nel caso binario devono esistere due parole di lunghezza $M$ della forma $t0$ e $t1$, cioè due parole con lo stesso prefisso $t$ e diverso ultimo simbolo. Se tutte le parole di lunghezza massima differissero per un simbolo diverso dall'ultimo, allora sarebbe possibile togliere l'ultimo simbolo da una di esse e ottenere un codice a prefisso con lunghezza media inferiore.
-    
-    In termini di albero, significa che tra le foglie più profonde devono esserci almeno due foglie sorelle, cioè due foglie che hanno lo stesso padre. Se una parola di lunghezza massima non avesse una sorella, il suo ultimo passo nell'albero sarebbe sprecato: potremmo risalire di un livello e usare come parola di codice il suo prefisso più corto.
 
-    Il codice resterebbe a prefisso, perché la nuova parola di codice che si verrebbe a creare in quel nodo non esisterebbe già e non avrebbe altre foglie sotto di sé; però la lunghezza media diminuirebbe.
+          In termini di albero, significa che tra le foglie più profonde devono esserci almeno due foglie sorelle, cioè due foglie che hanno lo stesso padre. Se una parola di lunghezza massima non avesse una sorella, il suo ultimo passo nell'albero sarebbe sprecato: potremmo risalire di un livello e usare come parola di codice il suo prefisso più corto.
+
+          Il codice resterebbe a prefisso, perché la nuova parola di codice che si verrebbe a creare in quel nodo non esisterebbe già e non avrebbe altre foglie sotto di sé; però la lunghezza media diminuirebbe.
 \end{enumerate}
 \begin{theorem}
     Data una sorgente:
@@ -1451,17 +1451,137 @@ In \autoref{fig:huffman_quaternary_example_tree} le parole di codice si leggono 
     \end{tabular}
 \end{center}
 
+\subsubsection{Huffman per un testo in input}
+L'algoritmo di Huffman può essere usato anche per costruire un codice ottimale a partire da un testo in input, senza conoscere a priori la distribuzione di probabilità dei simboli. In questo caso, si contano le frequenze di ogni simbolo nel testo e si costruisce la sorgente associata, con probabilità calcolate come frequenza del simbolo diviso la lunghezza totale del testo. A questo punto, si applica l'algoritmo di Huffman alla sorgente così ottenuta per costruire il codice ottimale.
+
+\paragraph{Esempio.}
+Dato il testo in input: \texttt{LA BELLA LILLI BALLA} si contano le frequenze dei singoli simboli\footnote{Per semplicità i simboli che vengono considerati sono solo le lettere stesse, altrimenti potrebbero essere contati anche gli spazi, gli accenti e quant'altro.}:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Frequenza} & \textbf{Probabilità} \\ \hline
+        $A$              & 4                  & $4/17$               \\ \hline
+        $B$              & 2                  & $2/17$               \\ \hline
+        $E$              & 1                  & $1/17$               \\ \hline
+        $I$              & 2                  & $2/17$               \\ \hline
+        $L$              & 8                  & $8/17$               \\ \hline
+    \end{tabular}
+\end{center}
+solo una volta calcolate le frequenze e le probabilità dei simboli, si può applicare l'algoritmo di Huffman. Allora facendo le seguenti fusioni:
+\[
+    (E,B) \rightarrow 0.176,
+    \qquad
+    ((E,B),I) \rightarrow 0.294,
+    \qquad
+    (A,((E,B),I)) \rightarrow 0.471,
+\]
+\[
+    (L,(A,((E,B),I))) \rightarrow 1.00
+\]
+ottenendo, per esempio, il codice:
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codice} \\ \hline
+        $A$              & \lbox{10}         \\ \hline
+        $B$              & \lbox{1110}       \\ \hline
+        $E$              & \lbox{1111}       \\ \hline
+        $I$              & \lbox{110}        \\ \hline
+        $L$              & \lbox{0}          \\ \hline
+    \end{tabular}
+\end{center}
+allora il testo di input, senza contare gli spazi, può essere codificato come:
+\begin{center}
+    \texttt{0 10 1110 1111 0 0 10 0 110 0 0 110 1110 10 0 0 10}
+\end{center}
+Concatenando le parole di codice si ottiene:
+\begin{center}
+    \texttt{0101110111100100110001101110100010}
+\end{center}
+La lunghezza complessiva del messaggio codificato è quindi pari a $34$ bit. Poiché il testo contiene $17$ simboli, la lunghezza media effettivamente ottenuta è:
+\[
+    \frac{34}{17}=2\quad \texttt{bit/symbol}
+\]
+
+La decodifica del messaggio è immediata, basta leggere il messaggio codificato da sinistra a destra e sostituire ogni parola di codice con il simbolo corrispondente. Essendo il codice a prefisso, non ci sono ambiguità: ogni parola di codice è riconoscibile non appena viene letta completamente, senza dover aspettare di leggere ulteriori simboli. 
+
+\paragraph{Compression ratio e compression factor.}
+Per valutare la compressione si confronta il messaggio compresso con una rappresentazione standard a $8$ bit per carattere, la lunghezza non compressa sarebbe $17\cdot 8 = 136$ bit. Allora il \textbf{compression ratio} è:
+\[
+    \frac{\text{dimensione del testo compresso}}{\text{dimensione del testo non compresso}}
+    =
+    \frac{34}{136}
+    =
+    \frac{1}{4}
+    =
+    25\%,
+\]
+mentre il \textbf{compression factor} è il rapporto inverso:
+\[
+    \frac{\text{dimensione del testo non compresso}}{\text{dimensione del testo compresso}}
+    =
+    \frac{136}{34}
+    =
+    4.
+\]
+Il compression ratio dice quindi quale frazione della dimensione iniziale rimane dopo la compressione; il compression factor dice invece di quante volte il testo compresso è più piccolo rispetto al testo non compresso. In questo esempio, usando il confronto a $8$ bit per carattere, il messaggio occupa il $25\%$ della dimensione iniziale, cioè è $4$ volte più piccolo.
+
+\paragraph{Algoritmo di compressione su un testo in input.}
+Nel caso in cui la sorgente non sia nota a priori ma venga ricavata direttamente dal testo, l'applicazione dell'algoritmo di Huffman può essere riassunta nei seguenti passi:
+\begin{enumerate}
+    \item si legge l'intero testo in input $T$ e si contano le occorrenze $\operatorname{occ}(a)$ di ogni simbolo $a$;
+    \item si calcola la probabilità empirica di ogni simbolo:
+          \[
+              p(a)=\frac{\operatorname{occ}(a)}{|T|};
+          \]
+    \item si ordinano i simboli in base alla probabilità, oppure si inseriscono direttamente in una coda di priorità;
+    \item si costruisce l'albero di Huffman fondendo, a ogni passo, i due nodi con probabilità minore;
+    \item quando resta un solo nodo, esso rappresenta la radice dell'albero di Huffman;
+    \item si assegna una parola di codice a ogni simbolo leggendo il cammino dalla radice alla foglia corrispondente;
+    \item si codifica il testo sostituendo ogni simbolo con la sua parola di codice.
+\end{enumerate}
+In una compressione reale, oltre al corpo del messaggio compresso, bisogna però conservare anche l'informazione necessaria alla decodifica, cioè l'albero di Huffman oppure una tabella equivalente dei codici. Per questo motivo, quando il testo è molto piccolo, il vantaggio teorico osservato sul solo corpo compresso può essere ridotto o perfino annullato dal costo di memorizzazione della tabella.
 
 
 
+\subsubsection{Limiti pratici della codifica di Huffman}
+La codifica di Huffman descritta finora è una codifica \textbf{statica}: il codice viene costruito a partire da una distribuzione di probabilità che deve essere nota prima della codifica vera e propria. Quando la distribuzione non è data, ma deve essere dedotta dal testo, è necessario analizzare preliminarmente l'intero input per contare le occorrenze dei simboli e stimare le probabilità empiriche.
 
+Questo significa che la compressione avviene in due fasi distinte:
+\begin{enumerate}
+    \item \textbf{Costruzione del modello}, in cui si stimano le probabilità dei simboli e si costruisce l'albero di Huffman;
+    \item \textbf{Codifica del messaggio}, in cui ogni simbolo del testo viene sostituito dalla parola di codice corrispondente.
+\end{enumerate}
+Questa distinzione è importante perché la prima fase può richiedere tempo e memoria, soprattutto quando il testo è grande o quando l'alfabeto contiene molti simboli distinti.
 
+Inoltre, per poter decodificare il messaggio, il ricevitore deve conoscere lo stesso codice usato dall'encoder. Per questo motivo, insieme al corpo compresso, bisogna memorizzare o trasmettere anche la tabella dei codici, oppure una rappresentazione equivalente dell'albero di Huffman. Questo preambolo aumenta la dimensione complessiva del file compresso e può diventare rilevante quando il testo è corto o quando l'alfabeto è grande. Infine, se la tabella o l'albero vengono persi o corrotti, la decompressione può diventare impossibile, perché il flusso di bit non contiene da solo il significato dei simboli originari.
 
+\subsubsection{Complessità e decodifica}
+\paragraph{Complessità di costruzione.}
+La costruzione dell'albero di Huffman richiede di selezionare ripetutamente i due nodi con probabilità minore. Se si usa una coda di priorità implementata tramite \textbf{min-heap}, e se $n$ indica il numero di simboli distinti della sorgente, il costo complessivo dell'algoritmo è:
+\[
+    O(n\log n).
+\]
+Infatti, a ogni iterazione si estraggono due nodi minimi e si reinserisce il nodo ottenuto dalla loro fusione. Se però i simboli sono già ordinati in base alla probabilità, la costruzione può essere resa lineare usando due code: una per le foglie iniziali e una per i nodi interni generati dalle fusioni.
 
+\paragraph{Decodifica tramite l'albero.}
+Una volta noto l'albero di Huffman, la decodifica è concettualmente semplice. Il decoder parte dalla radice dell'albero e legge il messaggio compresso un bit alla volta. Se legge $0$, si sposta verso il figlio sinistro; se legge $1$, si sposta verso il figlio destro. Quando raggiunge una foglia, emette il simbolo associato a quella foglia e torna alla radice per decodificare il simbolo successivo.
 
+Il motivo per cui questa procedura funziona senza separatori tra le parole di codice è che il codice di Huffman è un codice a prefisso. Appena si raggiunge una foglia, la parola di codice letta è completa e non può essere l'inizio di una parola più lunga.
 
+\subsubsection{Decodifica più veloce}
+Attraversare l'albero bit per bit è un metodo naturale e facile da descrivere, ma può essere lento in un'implementazione reale. Il decoder deve infatti leggere il file compresso bit dopo bit e, per ogni bit, seguire un puntatore nell'albero. Questo può essere poco efficiente, soprattutto per file grandi o per alfabeti molto ricchi.
 
+Per velocizzare la decodifica si possono usare delle \textbf{lookup table}, cioè tabelle parzialmente decodificate costruite a partire dal codice di Huffman. Invece di leggere un solo bit alla volta, il decoder legge blocchi di $k$ bit, ad esempio $8$ o $16$, e usa il blocco letto come indice di una tabella. L'elemento della tabella può indicare uno o più simboli già decodificati e, se necessario, quale tabella usare per continuare la decodifica.
 
+Le slide mostrano questa idea con un piccolo esempio: il flusso compresso viene spezzato in blocchi di lunghezza $k$ e ciascun blocco viene usato per anticipare parte del lavoro che l'attraversamento dell'albero avrebbe svolto passo dopo passo. Il vantaggio è una decodifica più rapida; lo svantaggio è che le tabelle richiedono spazio e devono essere costruite prima dell'inizio della decodifica. Valori più grandi di $k$ aumentano la velocità, ma fanno crescere anche la memoria richiesta e il costo di preparazione delle tabelle.
 
+\subsubsection{Osservazioni su varianza e ridondanza}
+A parità di lunghezza media, può essere preferibile un codice con \textbf{varianza minore} nelle lunghezze delle parole di codice, cioè un codice in cui le lunghezze siano meno sbilanciate. Questo aspetto è rilevante nelle applicazioni pratiche, perché molti sistemi di comunicazione o memorizzazione lavorano con buffer di dimensione fissata. Se alcune parole di codice sono molto più lunghe di altre, il flusso compresso può diventare meno regolare da gestire. Quando durante l'algoritmo sono possibili più fusioni equivalenti, scegliere opportunamente quali sottoalberi fondere può aiutare a ottenere codici con varianza più bassa.
+
+La ridondanza dei codici di Huffman è stata studiata in modo approfondito. Senza entrare nei bound tecnici, l'idea principale è che Huffman è molto efficiente, ma resta vincolato al fatto di assegnare una parola di codice intera a ogni singolo simbolo. Per questo, quando la sorgente è estremamente sbilanciata, ad esempio quando un simbolo ha probabilità molto vicina a $1$, l'entropia può essere molto piccola, mentre Huffman deve comunque usare almeno un bit per codificare quel simbolo. In questi casi la lunghezza media può rimanere relativamente lontana dal limite teorico.
+
+\subsection{Esercizio guidato}
+** scrivere questo esercizio guidato che riassume tutte le codifiche **
 
 \end{document}
