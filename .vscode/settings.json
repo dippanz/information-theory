@@ -1,8 +1,46 @@
 {
     "latex-workshop.formatting.latex": "latexindent",
+    "ltex.language": "it",
+    "ltex.enabled": [
+        "latex",
+        "bibtex",
+        "markdown"
+    ],
+    "ltex.configurationTarget": {
+        "dictionary": "workspaceFolder",
+        "disabledRules": "workspaceFolder",
+        "hiddenFalsePositives": "workspaceFolder"
+    },
     "editor.renderWhitespace": "all",
     "editor.renderControlCharacters": true,
     "editor.unicodeHighlight.invisibleCharacters": true,
     "editor.unicodeHighlight.includeComments": true,
-    "editor.unicodeHighlight.includeStrings": true
+    "editor.unicodeHighlight.includeStrings": true,
+    "ltex.dictionary": {
+        "it": [
+            "array",
+            "bound",
+            "codeword",
+            "codewords",
+            "compression",
+            "Compression",
+            "decoder",
+            "factor",
+            "firstcode",
+            "for",
+            "Huffman",
+            "input",
+            "lookup",
+            "min-heap",
+            "ottimalità",
+            "pseudocodice",
+            "shift",
+            "table"
+        ]
+    },
+    "ltex.hiddenFalsePositives": {
+        "it": [
+            "{\"rule\":\"MORFOLOGIK_RULE_IT_IT\",\"sentence\":\"^\\\\QQuando durante l'algoritmo sono possibili più fusioni equivalenti, scegliere opportunamente quali sottoalberi fondere può aiutare a ottenere codici con varianza più bassa.\\\\E$\"}"
+        ]
+    }
 }
