@@ -4,6 +4,8 @@
 \usepackage{amssymb}
 \usepackage{amsmath}
 \usepackage{amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
 \usepackage[a4paper,left=3cm,right=3cm,top=2.5cm,bottom=2.5cm]{geometry}
 \usepackage[hidelinks]{hyperref}
 \usepackage[normalem]{ulem}
@@ -13,6 +15,9 @@
 \newtheorem{theorem}{Teorema}[section] % Ambiente teorema (numerato per sezione)
 \newtheorem{definizione}{Definizione}[section]
 \renewcommand{\proofname}{\textbf{Dimostrazione}} % Nome italiano per la proof
+\floatname{algorithm}{Algoritmo}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
 
 % Definizione di comandi specifici
 \newcommand{\lbox}[1]{\makebox[1em][l]{#1}} % usato per creare una lbox la quale si puo allineare a sinistra
@@ -1483,11 +1488,11 @@ ottenendo, per esempio, il codice:
     \begin{tabular}{|c|c|}
         \hline
         \textbf{Simbolo} & \textbf{Codice} \\ \hline
-        $A$              & \lbox{10}         \\ \hline
-        $B$              & \lbox{1110}       \\ \hline
-        $E$              & \lbox{1111}       \\ \hline
-        $I$              & \lbox{110}        \\ \hline
-        $L$              & \lbox{0}          \\ \hline
+        $A$              & \lbox{10}       \\ \hline
+        $B$              & \lbox{1110}     \\ \hline
+        $E$              & \lbox{1111}     \\ \hline
+        $I$              & \lbox{110}      \\ \hline
+        $L$              & \lbox{0}        \\ \hline
     \end{tabular}
 \end{center}
 allora il testo di input, senza contare gli spazi, può essere codificato come:
@@ -1503,12 +1508,12 @@ La lunghezza complessiva del messaggio codificato è quindi pari a $34$ bit. Poi
     \frac{34}{17}=2\quad \texttt{bit/symbol}
 \]
 
-La decodifica del messaggio è immediata, basta leggere il messaggio codificato da sinistra a destra e sostituire ogni parola di codice con il simbolo corrispondente. Essendo il codice a prefisso, non ci sono ambiguità: ogni parola di codice è riconoscibile non appena viene letta completamente, senza dover aspettare di leggere ulteriori simboli. 
+La decodifica del messaggio è immediata, basta leggere il messaggio codificato da sinistra a destra e sostituire ogni parola di codice con il simbolo corrispondente. Essendo il codice a prefisso, non ci sono ambiguità: ogni parola di codice è riconoscibile non appena viene letta completamente, senza dover aspettare di leggere ulteriori simboli.
 
 \paragraph{Compression ratio e compression factor.}
 Per valutare la compressione si confronta il messaggio compresso con una rappresentazione standard a $8$ bit per carattere, la lunghezza non compressa sarebbe $17\cdot 8 = 136$ bit. Allora il \textbf{compression ratio} è:
 \[
-    \frac{\text{dimensione del testo compresso}}{\text{dimensione del testo non compresso}}
+    \frac{\text{dimensione del testo compresso}}{\text{dimensione del testo non compresso }}
     =
     \frac{34}{136}
     =
@@ -1590,6 +1595,355 @@ La ridondanza dei codici di Huffman può essere studiata anche con bound più pr
 Consideriamo una sorgente binaria con $p(a)=0.99$ e $p(b)=0.01$. In questo caso l'entropia è molto piccola, perché quasi sempre viene emesso $a$; tuttavia un codice di Huffman binario deve comunque assegnare, ad esempio, $a\mapsto 0$ e $b\mapsto 1$, quindi la lunghezza media resta pari a $1$ bit per simbolo. Questo esempio mostra bene perché, per sorgenti molto sbilanciate, Huffman può essere ottimale tra i codici a prefisso e allo stesso tempo non essere particolarmente vicino all'entropia.
 
 \subsection{Esercizio guidato}
-** scrivere questo esercizio guidato che riassume tutte le codifiche **
+** scrivere questo esercizio guidato che riassume tutte le codifiche fatte fino ad ora **
+
+\subsection{Codifica di Huffman canonica}
+Abbiamo già visto come la codifica classica di Huffman ha delle limitazioni, riassumendo:
+\begin{itemize}
+    \item la struttura ad albero deve essere memorizzata o trasmessa insieme al messaggio compresso, aumentando la dimensione complessiva del file compresso, questa potrebbe occupare una parte molto significativa del file compresso, soprattutto quando il testo è corto o quando l'alfabeto è grande;
+    \item la decodifica tramite l'albero, sebbene concettualmente semplice, può risultare lenta, soprattutto per file grandi o per alfabeti molto ricchi, perché il decoder deve leggere il file compresso bit dopo bit e, per ogni bit, seguire un puntatore nell'albero;
+    \item il codice ottenuto non è unico: a parità di distribuzione di probabilità possono esistere più alberi di Huffman, e quindi più assegnazioni diverse di parole di codice. Queste assegnazioni possono cambiare nella sequenza di bit associata ai simboli, ma conservano le stesse lunghezze delle parole e quindi la stessa lunghezza media.
+\end{itemize}
+Per ovviare a queste limitazioni, si può usare una variante della codifica di Huffman chiamata \textbf{codifica canonica di Huffman}, che non usa un albero o delle tabelle per la decodifica, ma si basa solo sulle lunghezze delle parole di codice. Esse sono sufficienti per poter decodificare il messaggio compresso. Questa tecnica è utile quando l'alfabeto è grande e quando la decodifica deve essere molto veloce.
+
+Partendo proprio da questa osservazione, invece di memorizzare l'intero albero di Huffman, si conserva soltanto l'informazione essenziale: la lunghezza della parola di codice associata a ogni simbolo. A partire da queste lunghezze, associate già a determinati simboli, viene poi costruito un codice a prefisso ordinato secondo la seguenti regole standard:
+\begin{itemize}
+    \item le codewords della stessa lunghezza vengono assegnate in ordine crescente ai simboli, seguendo l'ordine dei simboli stessi\footnote{Ovvero, se $a$ e $b$ sono due simboli con la stessa lunghezza di parola di codice, e se $a$ viene prima di $b$ nell'ordinamento dei simboli, allora la parola di codice di $a$ sarà più piccola (in ordine lessicografico) della parola di codice di $b$.};
+    \item le codewords sono ordinate da quella a lunghezza maggiore a quelle a lunghezza minore.
+\end{itemize}
+
+\textbf{Attenzione:} la codifica canonica \uline{non riassegna le lunghezze ai simboli}. Se l'algoritmo di Huffman classico ha stabilito che un simbolo deve avere una parola lunga $2$ bit, quel simbolo continuerà ad avere una parola lunga $2$ bit anche nel codice canonico. Ciò che cambia è soltanto la specifica sequenza di bit assegnata a quel simbolo. In altre parole, la canonizzazione mantiene fissa la corrispondenza:
+\[
+    \text{simbolo} \longmapsto \text{lunghezza},
+\]
+e ricostruisce in modo ordinato la corrispondenza:
+\[
+    \text{simbolo} \longmapsto \text{codewords}.
+\]
+Questo è essenziale perché le lunghezze determinano la lunghezza media del codice: assegnare una lunghezza diversa a un simbolo cambierebbe il codice ottenuto da Huffman e potrebbe distruggere l'ottimalità.
+
+Il codice ottenuto è equivalente a quello di Huffman dal punto di vista della lunghezza media, ma è molto più comodo da memorizzare e da decodificare. Esempio di codice canonico:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Codifica} \\ \hline
+        $a$              & \lbox{000}        \\ \hline
+        $b$              & \lbox{001}        \\ \hline
+        $c$              & \lbox{010}        \\ \hline
+        $d$              & \lbox{011}        \\ \hline
+        $e$              & \lbox{10}         \\ \hline
+        $f$              & \lbox{11}         \\ \hline
+    \end{tabular}
+\end{table}
+
+Il vantaggio principale è pratico: in una compressione reale non basta trasmettere il corpo del messaggio compresso, ma bisogna anche permettere al decoder di ricostruire il codice usato. Se si trasmette l'intero albero, il preambolo può diventare costoso, soprattutto quando l'alfabeto è grande. Con la rappresentazione canonica, invece, non è necessario memorizzare la struttura dell'albero con puntatori; è sufficiente memorizzare una lista ordinata di simboli e un array che indica il primo codice disponibile per ogni lunghezza.
+
+\subsubsection{Costruzione del codice canonico}
+La costruzione canonica usa tre strutture principali:
+\begin{itemize}
+    \item $\text{num}[\ell]$, che contiene il numero di simboli codificati con parole di lunghezza $\ell$. Ovvero, conta quanti simboli hanno una parola di codice lunga $\ell$ bit partendo come prima posizione da $\ell=1$ fino alla lunghezza massima $L_{\max}$;
+    \item $\text{symb}[\ell]$, che contiene la lista dei simboli aventi parola di codice lunga $\ell$ bit;
+    \item $\text{fc}[\ell]$, cioè \emph{firstcode}, che contiene il primo codice canonico (in formato intero decimale) assegnabile ai simboli di lunghezza $\ell$.
+\end{itemize}
+
+Una volta noto $\text{fc}[\ell]$, i codici di lunghezza $\ell$ vengono assegnati in modo consecutivo ai simboli presenti in $\text{symb}[\ell]$. Se ad esempio $\text{fc}[3]=1$, allora il primo codice di lunghezza $3$ è $001$; i successivi saranno $010$, $011$, e così via, sempre scritti usando esattamente $3$ bit.
+
+\begin{algorithm}[htpb]
+    \caption{Costruzione dell'array $\text{fc}$}
+    \label{alg:firstcode}
+    \begin{algorithmic}[1]
+        \Require $\text{num}[1\ldots L_{\max}]$, dove $\text{num}[\ell]$ conta i simboli con parole lunghe $\ell$ bit
+        \Ensure $\text{fc}[1\ldots L_{\max}]$, dove $\text{fc}[\ell]$ è il primo codice canonico di lunghezza $\ell$
+        \State $\text{fc}[L_{\max}] \gets 0$
+        \For{$\ell \gets L_{\max}-1, L_{\max}-2, \ldots, 1$}
+        \State $\text{fc}[\ell] \gets \dfrac{\text{fc}[\ell+1]+\text{num}[\ell+1]}{2}$
+        \EndFor
+        \State \Return $\text{fc}$
+    \end{algorithmic}
+\end{algorithm}
+
+\paragraph{Costruzione dell'array firstcode.}
+Nel ciclo for, l'indice $\ell$ rappresenta la lunghezza corrente delle parole di codice. La divisione per $2$ corrisponde a uno shift verso destra: si elimina l'ultimo bit sinistro e si risale quindi dal livello $\ell+1$ al livello $\ell$ dell'albero.
+
+Si parte dalla lunghezza massima $L_{\max}$ di una codeword. Il primo codice della lunghezza massima viene posto uguale a zero:
+\[
+    \text{fc}[L_{\max}] = 0.
+\]
+Questo significa che le parole di codice più lunghe vengono allocate partendo dalla parte più sinistra dell'albero binario, cioè da codici del tipo $000\ldots0$. Risalendo, le altre codewords saranno $000\ldots01$, $000\ldots10$, $000\ldots11$, e così via. Questo significa che l'albero che si viene a creare è sbilanciato a sinistra.
+
+Continuando verso le lunghezze più corte usando la formula:
+\[
+    \text{fc}[\ell] =
+    \frac{\text{fc}[\ell+1]+\text{num}[\ell+1]}{2}.
+\]
+Il termine $\text{fc}[\ell+1]+\text{num}[\ell+1]$ rappresenta il primo codice non ancora usato tra quelli lunghi $\ell+1$ bit. Dividere per $2$ equivale a eliminare l'ultimo bit, cioè a risalire di un livello nell'albero. In altre parole, si prende il padre del primo nodo libero al livello successivo.
+
+\paragraph{Esempio.}
+Consideriamo le lunghezze:
+\[
+    |d|=|e|=2,\qquad
+    |c|=|f|=|g|=3,\qquad
+    |a|=|b|=4.
+\]
+Allora:
+\begin{align*}
+    \text{num}  & =[0,2,3,2]                          \\
+    \text{symb} & =[\emptyset, (d,e), (c,f,g), (a,b)]
+\end{align*}
+dove le posizioni degli array partono da $1$, invece che da $0$. Invece, nelle liste dei simboli le posizioni partono da $0$, quindi $\text{symb}[2][0]=d$, $\text{symb}[2][1]=e$, $\text{symb}[3][0]=c$, e così via.
+
+Si parte da:
+\[
+    \text{fc}[4]=0.
+\]
+Quindi:
+\begin{align*}
+    \text{fc}[4] & = \frac{\text{fc}[5]+\text{num}[5]}{2}
+    = \frac{0+4}{2}=2,                                    \\
+    \text{fc}[3] & = \frac{\text{fc}[4]+\text{num}[4]}{2}
+    = \frac{2+0}{2}=1,                                    \\
+    \text{fc}[2] & = \frac{\text{fc}[3]+\text{num}[3]}{2}
+    = \frac{1+1}{2}=1,                                    \\
+    \text{fc}[1] & = \frac{\text{fc}[2]+\text{num}[2]}{2}
+    = \frac{1+3}{2}=2.
+\end{align*}
+Quindi:
+\[
+    \text{fc}=[2,1,1,2,0].
+\]
+
+\textbf{NB:} Il valore $\text{fc}[1]=2$ sembra impossibile, perché con un solo bit si possono rappresentare solo i valori $0$ e $1$. Infatti non è un vero codice: è un valore sentinella usato nella decodifica per indicare che non esistono parole valide di lunghezza $1$ e che quindi bisogna leggere almeno un altro bit.
+
+\medskip
+
+I codici canonici si ottengono scrivendo ogni valore con il numero corretto di bit e assegnando parole consecutive ai simboli della stessa lunghezza, nell'ordine fissato.
+
+I simboli con parola di codice lunga $4$ bit sono $a$ e $b$, le cui lunghezze sono state ricavate dall'algoritmo di Huffman classico. Poiché $\text{fc}[4]=0$, il primo codice di lunghezza $4$ è $0000$; il successivo, ottenuto incrementando il valore di uno, è $0001$.
+
+Allo stesso modo, i simboli con parola lunga $3$ bit sono $c$, $f$ e $g$. Partendo da $\text{fc}[3]=1$, cioè da $001$ scritto su $3$ bit, si assegnano consecutivamente i codici $001$, $010$ e $011$. Infine, i simboli con parola lunga $2$ bit sono $d$ ed $e$: partendo da $\text{fc}[2]=2$, cioè da $10$ scritto su $2$ bit, si ottengono $10$ e $11$. Non essendoci simboli di lunghezza $1$ bit, a quella lunghezza non viene assegnata alcuna parola di codice. Il risultato finale è:
+\[
+    \begin{array}{c|c|c}
+        \text{Simbolo} & \text{Lunghezza} & \text{Codice canonico} \\
+        \hline
+        a              & 4                & \lbox{0000}            \\
+        b              & 4                & \lbox{0001}            \\
+        c              & 3                & \lbox{001}             \\
+        f              & 3                & \lbox{010}             \\
+        g              & 3                & \lbox{011}             \\
+        d              & 2                & \lbox{10}              \\
+        e              & 2                & \lbox{11}
+    \end{array}
+\]
+Il codice ottenuto è ancora un codice a prefisso: nessuna parola è prefisso di un'altra. Questo accade perché l'algoritmo assegna i nodi liberi dell'albero in modo ordinato, da sinistra verso destra, evitando di scegliere un nodo che sia antenato di una parola già assegnata.
+
+\subsubsection{Decodifica del codice canonico}
+La decodifica canonica non attraversa l'albero bit per bit. Il decoder legge progressivamente i bit e mantiene:
+\begin{itemize}
+    \item $v$, il valore numerico dei bit letti fino a quel momento;
+    \item $\ell$, la lunghezza corrente.
+\end{itemize}
+
+\begin{algorithm}[htpb]
+    \caption{Decodifica di una parola canonica}
+    \label{alg:canonical_decoding}
+    \begin{algorithmic}[1]
+        \Require flusso di bit codificato, array $\text{fc}$, array $\text{symb}$
+        \Ensure simbolo decodificato
+        \State $v \gets \texttt{next\_bit()}$
+        \State $\ell \gets 1$
+        \While{$v < \text{fc}[\ell]$}
+        \State $v \gets 2v+\texttt{next\_bit()}$
+        \State $\ell \gets \ell+1$
+        \EndWhile
+        \State \Return $\text{symb}[\ell][v-\text{fc}[\ell]]$
+    \end{algorithmic}
+\end{algorithm}
+
+Finché vale:
+\[
+    v < \text{fc}[\ell],
+\]
+il codice letto è ancora troppo piccolo per essere una parola valida di lunghezza $\ell$, quindi si legge un altro bit. Quando invece la condizione diventa falsa, il simbolo è individuato dalla posizione:
+\[
+    v-\text{fc}[\ell]
+\]
+nella lista $\text{symb}[\ell]$.
+
+Per esempio, con $\text{fc}=[2,2,1,0]$, la sequenza $011$ viene letta così:
+\[
+    v = 0 < \text{fc}[1]=2,
+\]
+quindi si legge un altro bit:
+\[
+    v = 01_2 = 1 < \text{fc}[2]=2,
+\]
+quindi si legge ancora:
+\[
+    v = 011_2=3 \geq \text{fc}[3]=1.
+\]
+La lunghezza corretta è quindi $\ell=3$ e l'indice nella lista dei simboli di lunghezza $3$ è:
+\[
+    3-\text{fc}[3]=3-1=2.
+\]
+Se $\text{symb}[3]=(c,f,g)$, usando indici che partono da zero, il simbolo decodificato è $g$.
+
+\subsubsection{Esempio completo}
+Data la seguente sorgente:
+\begin{center}
+    \begin{tabular}{|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} \\ \hline
+        $a$              & $0.25$               \\ \hline
+        $b$              & $0.03125$            \\ \hline
+        $c$              & $0.03125$            \\ \hline
+        $d$              & $0.125$              \\ \hline
+        $e$              & $0.25$               \\ \hline
+        $f$              & $0.03125$            \\ \hline
+        $g$              & $0.03125$            \\ \hline
+        $h$              & $0.25$               \\ \hline
+    \end{tabular}
+\end{center}
+trovare un codice di Huffman canonico e decodificare il messaggio compresso $\texttt{00111100000001001}$. Per prima cosa applichiamo l'algoritmo di Huffman classico per trovare le lunghezze delle parole di codice, trovando ad esempio:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} & \textbf{Codice Huffman} \\ \hline
+        $a$              & $0.25$               & \lbox{00}               \\ \hline
+        $b$              & $0.03125$            & \lbox{11100}            \\ \hline
+        $c$              & $0.03125$            & \lbox{11101}            \\ \hline
+        $d$              & $0.125$              & \lbox{110}              \\ \hline
+        $e$              & $0.25$               & \lbox{01}               \\ \hline
+        $f$              & $0.03125$            & \lbox{11110}            \\ \hline
+        $g$              & $0.03125$            & \lbox{11111}            \\ \hline
+        $h$              & $0.25$               & \lbox{10}               \\ \hline
+    \end{tabular}
+\end{center}
+
+Da questa tabella si usano soltanto le lunghezze delle parole di codice. Non bisogna riordinare i simboli assegnando, ad esempio, le lunghezze maggiori ai primi simboli della tabella: le lunghezze restano associate agli stessi simboli per cui sono state ottenute con Huffman classico. Quindi $a$, $e$ e $h$ continueranno ad avere lunghezza $2$, $d$ continuerà ad avere lunghezza $3$, mentre $b$, $c$, $f$ e $g$ continueranno ad avere lunghezza $5$. La codifica canonica modifica solo le sequenze di bit, scegliendole in modo ordinato e consecutivo.
+
+Allora:
+\begin{align*}
+    \text{num}  & =[0        , 3      , 1  , 0        , 4        ] \\
+    \text{symb} & =[\emptyset, (a,e,h), (d), \emptyset, (b,c,f,g)].
+\end{align*}
+
+Si costruisce l'array firstcode:
+\begin{align*}
+    \text{fc}[5]&=0 \\
+    \text{fc}[4] & = \frac{\text{fc}[5]+\text{num}[5]}{2}
+    = \frac{0+4}{2}=2,                                    \\
+    \text{fc}[3] & = \frac{\text{fc}[4]+\text{num}[4]}{2}
+    = \frac{2+0}{2}=1,                                    \\
+    \text{fc}[2] & = \frac{\text{fc}[3]+\text{num}[3]}{2}
+    = \frac{1+1}{2}=1,                                    \\
+    \text{fc}[1] & = \frac{\text{fc}[2]+\text{num}[2]}{2}
+    = \frac{1+3}{2}=2.
+\end{align*}
+Quindi:
+\[
+    \text{fc}=[2,1,1,2,0].
+\]
+
+Una volta noto $\text{fc}$, si assegnano i codici canonici partendo dal primo codice disponibile per ogni lunghezza. I simboli di lunghezza $2$ sono $a$, $e$ e $h$: poiché $\text{fc}[2]=1$, i codici assegnati sono $01$, $10$ e $11$. Il simbolo di lunghezza $3$ è $d$, quindi riceve il codice $001$, che corrisponde a $\text{fc}[3]=1$ scritto su $3$ bit. Infine, i simboli di lunghezza $5$ sono $b$, $c$, $f$ e $g$: partendo da $\text{fc}[5]=0$, si ottengono $00000$, $00001$, $00010$ e $00011$.
+
+Il codice canonico finale è:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Simbolo} & \textbf{Probabilità} & \textbf{Lunghezza} & \textbf{Codice canonico} \\ \hline
+        $a$              & $0.25$               & $2$                & \lbox{01}                \\ \hline
+        $b$              & $0.03125$            & $5$                & \lbox{00000}             \\ \hline
+        $c$              & $0.03125$            & $5$                & \lbox{00001}             \\ \hline
+        $d$              & $0.125$              & $3$                & \lbox{001}               \\ \hline
+        $e$              & $0.25$               & $2$                & \lbox{10}                \\ \hline
+        $f$              & $0.03125$            & $5$                & \lbox{00010}             \\ \hline
+        $g$              & $0.03125$            & $5$                & \lbox{00011}             \\ \hline
+        $h$              & $0.25$               & $2$                & \lbox{11}                \\ \hline
+    \end{tabular}
+\end{center}
+
+Decodifichiamo ora il messaggio:
+\[
+    \texttt{00111100000001001}.
+\]
+Applichiamo l'algoritmo di decodifica precedente. Ogni volta che viene riconosciuta una parola di codice, il decoder emette il simbolo corrispondente e poi ricomincia dalla posizione successiva del messaggio compresso. Ricordiamo che le liste in $\text{symb}$ sono indicizzate a partire da $0$.
+
+Decodifichiamo ora la stringa bit per bit, applicando l'algoritmo canonico.
+
+\begin{itemize}
+    \item All'inizio leggiamo \texttt{001}. Dopo il primo bit abbiamo $v=0$ e $\ell=1$:
+    poiché $0<\text{fc}[1]=2$, il prefisso non è ancora completo. Leggiamo allora
+    un secondo bit, ottenendo ancora $v=0$ e $\ell=2$; anche in questo caso
+    $0<\text{fc}[2]=1$, quindi continuiamo. Con il terzo bit si ottiene
+    $v=1$ e $\ell=3$. Ora $1\not<\text{fc}[3]=1$, quindi l'algoritmo si ferma.
+    L'indice del simbolo è
+    \[
+        1-\text{fc}[3]=0,
+    \]
+    e il simbolo corrispondente è $d$.
+
+    \item I bit successivi sono \texttt{11}. Dopo il primo bit si ha $v=1$ e $\ell=1$;
+    poiché $1<\text{fc}[1]=2$, serve ancora un bit. Leggendo il secondo bit si ottiene
+    $v=3$ e $\ell=2$. A questo punto $3\not<\text{fc}[2]=1$, quindi il codice è
+    terminato. L'indice è
+    \[
+        3-\text{fc}[2]=2,
+    \]
+    che corrisponde al simbolo $h$.
+
+    \item Procedendo allo stesso modo, la parola \texttt{10} viene letta come segue:
+    dopo il primo bit $v=1$ e $\ell=1$, quindi $1<\text{fc}[1]=2$ e si deve
+    continuare; dopo il secondo bit $v=2$ e $\ell=2$, e poiché
+    $2\not<\text{fc}[2]=1$ l'algoritmo si arresta. L'indice è
+    \[
+        2-\text{fc}[2]=1,
+    \]
+    perciò il simbolo decodificato è $e$.
+
+    \item La parola seguente è \texttt{00000}. Finché si leggono i primi quattro bit,
+    il valore $v$ rimane uguale a zero e le condizioni
+    \[
+        0<\text{fc}[1],\qquad
+        0<\text{fc}[2],\qquad
+        0<\text{fc}[3],\qquad
+        0<\text{fc}[4]
+    \]
+    sono tutte soddisfatte. Dopo il quinto bit, invece, si ha $\ell=5$ e
+    $\text{fc}[5]=0$, quindi
+    \[
+        0\not<\text{fc}[5]=0.
+    \]
+    Il codice termina e l'indice è
+    \[
+        0-\text{fc}[5]=0.
+    \]
+    Il simbolo corrispondente è $b$.
+
+    \item Restano poi i bit \texttt{01}. Dopo il primo bit si ha $v=0$ e $\ell=1$,
+    con $0<\text{fc}[1]=2$, quindi si legge ancora un bit. Dopo il secondo bit
+    si ottiene $v=1$ e $\ell=2$; siccome $1\not<\text{fc}[2]=1$, il codice è
+    completo. L'indice è
+    \[
+        1-\text{fc}[2]=0,
+    \]
+    e il simbolo ottenuto è $a$.
+
+    \item Infine si incontra di nuovo la parola \texttt{001}, che viene decodificata
+    come prima nel simbolo $d$.
+\end{itemize}
+
+La segmentazione ottenuta dall'algoritmo è quindi:
+\[
+    \texttt{001}\;\texttt{11}\;\texttt{10}\;\texttt{00000}\;\texttt{01}\;\texttt{001},
+\]
+che corrisponde a:
+\[
+    d\;h\;e\;b\;a\;d.
+\]
+Il messaggio decodificato è dunque:
+\[
+    \texttt{dhebad}.
+\]
 
 \end{document}
