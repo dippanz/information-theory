@@ -1944,4 +1944,22 @@ Il messaggio decodificato è dunque:
     \texttt{dhebad}.
 \]
 
+\subsubsection{Osservazioni}
+Il risparmio ottenuto attraverso l'uso del codice canonico è significativo, a maggior ragione quando l'alfabeto è grande. Invece di dover memorizzare o trasmettere un albero con puntatori, è sufficiente memorizzare le lunghezze delle parole di codice e costruire il codice canonico in modo ordinato. Infatti, per trasmettere la codifica canonica, è sufficiente inviare l'array $\text{fc}$ e $\text{symb}$. Questo significa che:
+\begin{itemize}
+    \item per l'array $\text{fc}$, al massimo dovremmo trasmettere $L_{\max}^2$ bits, dove $L_{\max}$ è la lunghezza massima che una codewords può avere (si raggiunge il massimo quando ognuna delle codewords ha lunghezza massima);
+    \item per l'array $\text{symb}$, al massimo dovremmo trasmettere $(|A| + L_{\max})\cdot \log_2(|A|+1)$ bits, dove $|A|$ è la dimensione dell'alfabeto (si raggiunge il massimo quando tutte le codewords hanno lunghezza massima, cioè quando $L_{\max}=|A|-1$).
+\end{itemize}
+
+
+
+
+
+
+
+
+
+
+
+
 \end{document}
