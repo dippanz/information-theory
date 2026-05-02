@@ -1962,6 +1962,61 @@ Questa osservazione va letta insieme al limite generale dei codici di Huffman: s
 \]
 Nel caso del codice ASCII, in cui $|A|=256$, si ottiene $\log_2 |A|=8$: quindi Huffman non può comprimere un testo fino a occupare meno di $\frac{1}{8}$ della dimensione originale, cioè circa il $12{,}5\%$.
 
+\subsection{Codifica di Huffman adattiva}
+La codifica di Huffman vista finora è una codifica \textbf{statica}: prima si conosce o si stima la distribuzione dei simboli, poi si costruisce l'albero e infine si codifica il testo. Questo approccio funziona bene quando la sorgente è nota, ma richiede una fase preliminare di analisi oppure la trasmissione di informazioni aggiuntive, come le probabilità, l'albero o una tabella equivalente.
+
+La \textbf{codifica di Huffman adattiva} elimina questa assunzione: non richiede di conoscere in anticipo le probabilità dei simboli. L'albero viene costruito e aggiornato dinamicamente mentre il testo viene letto. In questo modo il codice usato in un certo istante dipende soltanto dalla porzione di messaggio già osservata.
+
+\subsubsection{Idea intuitiva}
+L'idea di base è costruire, passo dopo passo, un albero di Huffman che sia adatto alla parte di messaggio già codificata. Dopo ogni simbolo letto, le frequenze vengono aggiornate e, se necessario, l'albero viene riorganizzato per conservare le proprietà tipiche di un albero di Huffman: i simboli più frequenti devono tendere a stare più vicini alla radice, mentre quelli meno frequenti possono stare più in profondità.
+
+All'inizio l'albero può essere vuoto oppure contenere soltanto un nodo speciale, indicato con \textbf{NYT} (\emph{Not Yet Transmitted}), che rappresenta tutti i simboli non ancora comparsi nel testo. Questo nodo è necessario perché, quando arriva un simbolo nuovo, il decoder deve capire che non può ancora cercarlo nell'albero corrente.
+
+\begin{algorithm}[htpb]
+    \caption{Schema della codifica di Huffman adattiva}
+    \label{alg:adaptive_huffman}
+    \begin{algorithmic}[1]
+        \Require testo in input, alfabeto $A$
+        \Ensure flusso di bit compresso
+        \State inizializza l'albero con il solo nodo NYT
+        \For{ogni simbolo $a$ del testo}
+        \If{$a$ è già presente nell'albero}
+        \State emetti la parola di codice corrente di $a$
+        \Else
+        \State emetti la parola di codice corrente del nodo NYT
+        \State emetti una rappresentazione esplicita di $a$
+        \State sostituisci il nodo NYT con un nodo interno avente come figli un nuovo NYT e il simbolo $a$
+        \EndIf
+        \State incrementa la frequenza di $a$ e dei suoi antenati
+        \State riorganizza l'albero, se necessario, per mantenere le proprietà di Huffman
+        \EndFor
+    \end{algorithmic}
+\end{algorithm}
+
+Quando un simbolo è già apparso, quindi, viene codificato usando la parola di codice che possiede nell'albero corrente. Quando invece il simbolo è nuovo, si trasmette prima il codice del nodo NYT e poi il simbolo stesso in forma esplicita, ad esempio con una codifica fissa concordata sull'alfabeto. Subito dopo, il simbolo viene inserito nell'albero con frequenza iniziale pari a $1$.
+
+La decodifica funziona in modo sincronizzato con la codifica. Il decoder parte dallo stesso albero iniziale e aggiorna l'albero dopo ogni simbolo decodificato seguendo esattamente le stesse regole dell'encoder. Per questo motivo non è necessario trasmettere l'intero albero: encoder e decoder lo ricostruiscono nello stesso modo, passo dopo passo.
+
+\subsubsection{Vantaggi e svantaggi}
+La codifica adattiva usa una stima variabile delle probabilità dei simboli: all'inizio le frequenze sono povere, ma diventano più rappresentative man mano che il testo viene letto. Questo porta alcuni vantaggi pratici:
+\begin{itemize}
+    \item non serve una scansione preliminare del testo per calcolare tutte le frequenze;
+    \item non è necessario trasmettere all'inizio l'albero di Huffman statico o la tabella delle probabilità;
+    \item viene sfruttata meglio la \textbf{località} del testo, cioè il fatto che in certe zone del messaggio alcuni simboli possano comparire con frequenza temporaneamente alta.
+\end{itemize}
+
+Il vantaggio della località si vede bene in un caso semplice: se il messaggio inizia con una sequenza di caratteri che poi non si ripetono più, in una codifica statica questi caratteri risultano rari sul testo complessivo e quindi finiscono molto in basso nell'albero. Nella codifica adattiva, invece, i simboli vengono inseriti e usati subito rispetto al contesto corrente; solo in seguito, se altri simboli diventano più frequenti, verranno spinti più in profondità.
+
+Il prezzo da pagare è che la codifica adattiva non sempre usa meno bit della codifica statica calcolata sull'intero testo. Se si ignora il costo del preambolo, cioè il costo necessario a trasmettere probabilità, albero o tabella, Huffman statico può risultare migliore perché conosce già la distribuzione finale. Tuttavia, se si considera anche questo overhead, la codifica adattiva diventa spesso competitiva: usa un solo passaggio sul testo e non deve allegare al file compresso una descrizione completa del modello.
+
+\subsubsection{Osservazione sui compressori universali}
+La codifica adattiva migliora la flessibilità del modello, ma non rende possibile comprimere bene ogni stringa. Non esiste un compressore universale senza perdita che riduca la lunghezza di tutti gli input.
+
+Il motivo è un semplice argomento di conteggio. Le stringhe binarie di lunghezza $n$ sono esattamente $2^n$. Se un compressore senza perdita comprimesse tutte queste stringhe in stringhe più corte di $n$ bit, dovrebbe assegnare a ciascun input una codifica diversa, altrimenti il decoder non potrebbe ricostruire univocamente il messaggio originale. Ma le stringhe binarie di lunghezza minore di $n$ sono:
+\[
+    1+2+2^2+\cdots+2^{n-1}=2^n-1,
+\]
+quindi sono meno degli input possibili. Di conseguenza, qualche stringa non può essere compressa. Più in generale, la frazione di stringhe di lunghezza $n$ comprimibili fino a $m$ bit è al più $2^{m-n}$. Ogni compressore, quindi, comprime bene alcuni input, ma ne lascia invariati o ne espande altri.
 
 
 
