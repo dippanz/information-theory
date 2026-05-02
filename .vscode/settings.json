@@ -18,30 +18,19 @@
     "editor.unicodeHighlight.includeStrings": true,
     "ltex.dictionary": {
         "it": [
-            "array",
-            "bits",
-            "bound",
-            "codeword",
-            "codewords",
-            "compression",
-            "Compression",
-            "decoder",
-            "factor",
-            "firstcode",
-            "for",
-            "Huffman",
-            "input",
-            "lookup",
-            "min-heap",
             "ottimalità",
-            "pseudocodice",
-            "shift",
-            "table"
+            "overhead",
+            "pseudocodice"
         ]
     },
     "ltex.hiddenFalsePositives": {
         "it": [
             "{\"rule\":\"MORFOLOGIK_RULE_IT_IT\",\"sentence\":\"^\\\\QQuando durante l'algoritmo sono possibili più fusioni equivalenti, scegliere opportunamente quali sottoalberi fondere può aiutare a ottenere codici con varianza più bassa.\\\\E$\"}"
+        ]
+    },
+    "ltex.disabledRules": {
+        "it": [
+            "ST_01_005"
         ]
     }
 }
