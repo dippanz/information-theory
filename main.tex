@@ -1606,10 +1606,10 @@ Abbiamo già visto come la codifica classica di Huffman ha delle limitazioni, ri
 \end{itemize}
 Per ovviare a queste limitazioni, si può usare una variante della codifica di Huffman chiamata \textbf{codifica canonica di Huffman}, che non usa un albero o delle tabelle per la decodifica, ma si basa solo sulle lunghezze delle parole di codice. Esse sono sufficienti per poter decodificare il messaggio compresso. Questa tecnica è utile quando l'alfabeto è grande e quando la decodifica deve essere molto veloce.
 
-Partendo proprio da questa osservazione, invece di memorizzare l'intero albero di Huffman, si conserva soltanto l'informazione essenziale: la lunghezza della parola di codice associata a ogni simbolo. A partire da queste lunghezze, associate già a determinati simboli, viene poi costruito un codice a prefisso ordinato secondo la seguenti regole standard:
+Partendo proprio da questa osservazione, invece di memorizzare l'intero albero di Huffman, si conserva soltanto l'informazione essenziale: la lunghezza della parola di codice associata a ogni simbolo. A partire da queste lunghezze, associate già a determinati simboli, viene poi costruito un codice a prefisso ordinato secondo le seguenti regole standard:
 \begin{itemize}
     \item le codewords della stessa lunghezza vengono assegnate in ordine crescente ai simboli, seguendo l'ordine dei simboli stessi\footnote{Ovvero, se $a$ e $b$ sono due simboli con la stessa lunghezza di parola di codice, e se $a$ viene prima di $b$ nell'ordinamento dei simboli, allora la parola di codice di $a$ sarà più piccola (in ordine lessicografico) della parola di codice di $b$.};
-    \item le codewords sono ordinate da quella a lunghezza maggiore a quelle a lunghezza minore.
+    \item in ordine lessicografico, le codewords compaiono anche dalle più lunghe alle più corte.
 \end{itemize}
 
 \textbf{Attenzione:} la codifica canonica \uline{non riassegna le lunghezze ai simboli}. Se l'algoritmo di Huffman classico ha stabilito che un simbolo deve avere una parola lunga $2$ bit, quel simbolo continuerà ad avere una parola lunga $2$ bit anche nel codice canonico. Ciò che cambia è soltanto la specifica sequenza di bit assegnata a quel simbolo. In altre parole, la canonizzazione mantiene fissa la corrispondenza:
@@ -1664,7 +1664,7 @@ Una volta noto $\text{fc}[\ell]$, i codici di lunghezza $\ell$ vengono assegnati
 \end{algorithm}
 
 \paragraph{Costruzione dell'array firstcode.}
-Nel ciclo for, l'indice $\ell$ rappresenta la lunghezza corrente delle parole di codice. La divisione per $2$ corrisponde a uno shift verso destra: si elimina l'ultimo bit sinistro e si risale quindi dal livello $\ell+1$ al livello $\ell$ dell'albero.
+Nel ciclo for, l'indice $\ell$ rappresenta la lunghezza corrente delle parole di codice. La divisione per $2$ corrisponde a uno shift verso destra: si elimina l'ultimo bit a destra e si risale quindi dal livello $\ell+1$ al livello $\ell$ dell'albero.
 
 Si parte dalla lunghezza massima $L_{\max}$ di una codeword. Il primo codice della lunghezza massima viene posto uguale a zero:
 \[
@@ -1677,7 +1677,7 @@ Continuando verso le lunghezze più corte usando la formula:
     \text{fc}[\ell] =
     \frac{\text{fc}[\ell+1]+\text{num}[\ell+1]}{2}.
 \]
-Il termine $\text{fc}[\ell+1]+\text{num}[\ell+1]$ rappresenta il primo codice non ancora usato tra quelli lunghi $\ell+1$ bit. Dividere per $2$ equivale a eliminare l'ultimo bit, cioè a risalire di un livello nell'albero. In altre parole, si prende il padre del primo nodo libero al livello successivo.
+Il termine $\text{fc}[\ell+1]+\text{num}[\ell+1]$ rappresenta il primo codice non ancora usato tra quelli lunghi $\ell+1$ bit. Dividere per $2$ equivale a eliminare il bit più a destra, cioè a risalire di un livello nell'albero. In altre parole, si prende il padre del primo nodo libero al livello successivo.
 
 \paragraph{Esempio.}
 Consideriamo le lunghezze:
@@ -1945,12 +1945,22 @@ Il messaggio decodificato è dunque:
 \]
 
 \subsubsection{Osservazioni}
-Il risparmio ottenuto attraverso l'uso del codice canonico è significativo, a maggior ragione quando l'alfabeto è grande. Invece di dover memorizzare o trasmettere un albero con puntatori, è sufficiente memorizzare le lunghezze delle parole di codice e costruire il codice canonico in modo ordinato. Infatti, per trasmettere la codifica canonica, è sufficiente inviare l'array $\text{fc}$ e $\text{symb}$. Questo significa che:
+Il risparmio ottenuto attraverso l'uso del codice canonico è significativo, a maggior ragione quando l'alfabeto è grande. Invece di dover memorizzare o trasmettere un albero con puntatori, è sufficiente memorizzare le lunghezze delle parole di codice e costruire il codice canonico in modo ordinato. Infatti, l'array $\text{num}$ serve durante la costruzione di $\text{fc}$, ma non deve essere salvato nel file compresso: per trasmettere la codifica canonica è sufficiente inviare gli array $\text{fc}$ e $\text{symb}$. Questo significa che:
 \begin{itemize}
-    \item per l'array $\text{fc}$, al massimo dovremmo trasmettere $L_{\max}^2$ bits, dove $L_{\max}$ è la lunghezza massima che una codewords può avere (si raggiunge il massimo quando ognuna delle codewords ha lunghezza massima);
-    \item per l'array $\text{symb}$, al massimo dovremmo trasmettere $(|A| + L_{\max})\cdot \log_2(|A|+1)$ bits, dove $|A|$ è la dimensione dell'alfabeto (si raggiunge il massimo quando tutte le codewords hanno lunghezza massima, cioè quando $L_{\max}=|A|-1$).
+    \item per l'array $\text{fc}$ servono al massimo $L_{\max}^2$ bit, perché ci sono al più $L_{\max}$ valori di \emph{firstcode} e ciascuno può essere rappresentato con al più $L_{\max}$ bit;
+    \item per l'array $\text{symb}$ servono al massimo $(|A| + L_{\max})\log_2(|A|+1)$ bit, dove $|A|$ è la dimensione dell'alfabeto: la struttura contiene complessivamente i $|A|$ simboli della sorgente, più l'informazione necessaria a separare le liste associate alle diverse lunghezze.
 \end{itemize}
 
+Il punto importante è che non bisogna memorizzare la struttura dell'albero tramite puntatori. Il risparmio rispetto alla rappresentazione esplicita dell'albero è quindi dell'ordine di:
+\[
+    \Theta(|A|\log_2(|A|+1)).
+\]
+
+Questa osservazione va letta insieme al limite generale dei codici di Huffman: se l'entropia della sorgente è molto grande, il possibile bit in più rispetto all'entropia diventa trascurabile. Se invece la sorgente è molto sbilanciata, Huffman resta limitato dal fatto che un codice a prefisso binario non può rappresentare un simbolo usando meno di $1$ bit. Perciò, se i simboli dell'alfabeto $A$ sono rappresentati originariamente con parole fisse di lunghezza $\log_2 |A|$, il rapporto tra dimensione compressa e dimensione originale non può scendere sotto:
+\[
+    \frac{1}{\log_2 |A|}.
+\]
+Nel caso del codice ASCII, in cui $|A|=256$, si ottiene $\log_2 |A|=8$: quindi Huffman non può comprimere un testo fino a occupare meno di $\frac{1}{8}$ della dimensione originale, cioè circa il $12{,}5\%$.
 
 
 
