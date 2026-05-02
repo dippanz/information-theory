@@ -19,6 +19,7 @@
     "ltex.dictionary": {
         "it": [
             "array",
+            "bits",
             "bound",
             "codeword",
             "codewords",
