@@ -1699,18 +1699,16 @@ Si parte da:
 \]
 Quindi:
 \begin{align*}
-    \text{fc}[4] & = \frac{\text{fc}[5]+\text{num}[5]}{2}
-    = \frac{0+4}{2}=2,                                    \\
     \text{fc}[3] & = \frac{\text{fc}[4]+\text{num}[4]}{2}
-    = \frac{2+0}{2}=1,                                    \\
+    = \frac{0+2}{2}=1,                                    \\
     \text{fc}[2] & = \frac{\text{fc}[3]+\text{num}[3]}{2}
-    = \frac{1+1}{2}=1,                                    \\
+    = \frac{1+3}{2}=2,                                    \\
     \text{fc}[1] & = \frac{\text{fc}[2]+\text{num}[2]}{2}
-    = \frac{1+3}{2}=2.
+    = \frac{2+2}{2}=2.
 \end{align*}
 Quindi:
 \[
-    \text{fc}=[2,1,1,2,0].
+    \text{fc}=[2,2,1,0].
 \]
 
 \textbf{NB:} Il valore $\text{fc}[1]=2$ sembra impossibile, perché con un solo bit si possono rappresentare solo i valori $0$ e $1$. Infatti non è un vero codice: è un valore sentinella usato nella decodifica per indicare che non esistono parole valide di lunghezza $1$ e che quindi bisogna leggere almeno un altro bit.
