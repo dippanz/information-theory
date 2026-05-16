@@ -18,6 +18,9 @@
     "editor.unicodeHighlight.includeStrings": true,
     "ltex.dictionary": {
         "it": [
+            "array",
+            "decoder",
+            "Huffman",
             "ottimalità",
             "overhead",
             "pseudocodice"

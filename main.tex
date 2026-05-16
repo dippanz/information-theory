@@ -2018,6 +2018,32 @@ Il motivo è un semplice argomento di conteggio. Le stringhe binarie di lunghezz
 \]
 quindi sono meno degli input possibili. Di conseguenza, qualche stringa non può essere compressa. Più in generale, la frazione di stringhe di lunghezza $n$ comprimibili fino a $m$ bit è al più $2^{m-n}$. Ogni compressore, quindi, comprime bene alcuni input, ma ne lascia invariati o ne espande altri.
 
+Questa osservazione prepara il passaggio successivo: la codifica di Huffman è ottimale solo se si resta dentro il suo quadro, cioè con un modello fissato e con parole di codice associate ai singoli simboli. La \autoref{fig:beyond_huffman_arithmetic} riassume le principali vie d'uscita da questi vincoli.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.92\textwidth]{arithmetic-coding/beyond-huffman}
+    \caption{Possibili modi per superare i vincoli entro cui la codifica di Huffman è ottimale: aggiornare il modello, codificare blocchi di simboli o rappresentare l'intero messaggio mediante un intervallo.}
+    \label{fig:beyond_huffman_arithmetic}
+\end{figure}
+
+\subsection{Codifica aritmetica}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
