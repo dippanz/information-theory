@@ -2295,12 +2295,28 @@ La codifica può quindi trasmettere:
     \texttt{0100111}.
 \]
 
-Vediamo anche la decodifica. Il numero $x=\frac{39}{128}$ cade:
+Vediamo anche la decodifica. Il numero $x=\frac{39}{128}$ rimane fisso: a ogni passo si ridivide l'intervallo corrente e si sceglie il sotto intervallo che contiene $x$.
+\begin{center}
+    \begingroup
+    \scriptsize
+    \setlength{\tabcolsep}{2pt}
+    \renewcommand{\arraystretch}{1.28}
+    \begin{tabular}{|c|c|c|c|c|}
+        \hline
+        \textbf{Intervallo corrente} & \textbf{$a$}                         & \textbf{$b$}                         & \textbf{$c$}                         & \textbf{Simbolo decodificato} \\ \hline
+        $[0,1)$                      & $\boldsymbol{[0,1/2)}$       & $[1/2,3/4)$                 & $[3/4,1)$                   & $a$                           \\ \hline
+        $[0,1/2)$                    & $[0,1/4)$                   & $\boldsymbol{[1/4,3/8)}$    & $[3/8,1/2)$                 & $b$                           \\ \hline
+        $[1/4,3/8)$                  & $\boldsymbol{[1/4,5/16)}$   & $[5/16,11/32)$              & $[11/32,3/8)$               & $a$                           \\ \hline
+        $[1/4,5/16)$                 & $[1/4,9/32)$                & $[9/32,19/64)$              & $\boldsymbol{[19/64,5/16)}$ & $c$                           \\ \hline
+    \end{tabular}
+    \endgroup
+\end{center}
+In forma discorsiva, la stessa procedura è:
 \begin{itemize}
-    \item in $[0,\frac{1}{2})$, quindi il primo simbolo è $a$;
-    \item poi, restringendo l'intervallo a $[0,\frac{1}{2})$, cade in $[\frac{1}{4},\frac{3}{8})$, quindi il secondo simbolo è $b$;
-    \item poi, restringendo l'intervallo a $[\frac{1}{4},\frac{3}{8})$, cade in $[\frac{1}{4},\frac{5}{16})$, quindi il terzo simbolo è $a$;
-    \item infine cade in $[\frac{19}{64},\frac{5}{16})$, quindi il quarto simbolo è $c$.
+    \item in $[0,1/2)$, quindi il primo simbolo è $a$;
+    \item poi, restringendo l'intervallo a $[0,1/2)$, cade in $[1/4,3/8)$, quindi il secondo simbolo è $b$;
+    \item poi, restringendo l'intervallo a $[1/4,3/8)$, cade in $[1/4,5/16)$, quindi il terzo simbolo è $a$;
+    \item infine cade in $[19/64,5/16)$, quindi il quarto simbolo è $c$.
 \end{itemize}
 Il messaggio ricostruito è dunque \texttt{abac}.
 
