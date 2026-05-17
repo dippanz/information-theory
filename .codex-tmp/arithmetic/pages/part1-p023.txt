@@ -1,0 +1,5 @@
+﻿   Example
+Let us consider the sequence S=abac with probabilities
+p(a)=1/2, p(b)=p(c )=1/4.
+The final interval is [19/64, 5/16)
+

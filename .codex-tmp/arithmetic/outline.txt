@@ -1,0 +1,110 @@
+﻿part1 p.001: Arithmetic coding | WEDNESDAY MARCH 26, 2025
+part1 p.002: Recall that: | Given a C code, L(C) represents the average length | of its codewords representing the symbols of the | source. | The efficiency of the code is the value
+part1 p.003: Can we do better than | Huffman? | ❑Huffman encoding cannot encode one symbol in less than 1 bit. | ❑One of the main disadvantages of static Huffman encoding | concerns the case where there is a symbol that has very high
+part1 p.004: Can we do better than | Huffman? | ◼   Huffman Coding is optimal in its framework: | ◼   Static model          Adaptive Huffman | Block
+part1 p.005: The key idea in arithmetic | coding | ❑Arithmetic coding was proposed by Peter Elias (another student | of Fano together with Huffman) | ❑It was presented by Abramson in his book Information Theory
+part1 p.006: The key-idea | ❑The output of the arithmetic coding algorithm is, as usual, | a stream of bits | ❑It might be thought as a situation where an initial | preceding bit 0 is assumed, with the stream of bits
+part1 p.007: Bit streams and binary | representations of a fractional | number | A bit stream 𝑏1 𝑏2 𝑏3 … 𝑏𝑘 can be interpreted as a real number in the range | [0,1) by prepending «0,» to it, i.e.:
+part1 p.008: Example: | How to encode 0.825 | 0,825*2=1,65 U=1 | 0,65 *2=1,3    U=1 | When we find a value we have seen before,
+part1 p.009: Exercise: | Finding the binary representation of 1/3: | ◦ 01 | Finding the binary representation of 3/32: | ◦ 000110ത
+part1 p.010: Encoding algorithm | Arithmetic coding | INPUT: String to be encoded & alphabet with probability distribution | (probabilities are calculated using frequencies, or another source) | 1.    Inizialize the range [0,1)
+part1 p.011: Example | Let us encode the string BILL GATES | We need the frequencies of the characters in the text | chr       freq. | space     0.1
+part1 p.012: We partition the interval | according to the probabilities | character   probability   range | space       0.1           [0.00, 0.10) | A           0.1           [0.10, 0.20)
+part1 p.013: Encoding the text | chr                          low                          high | 0.0                          1.0 | B                            0.2                          0.3 | I                            0.25                         0.26
+part1 p.014: Another example | Input: BBBC
+part1 p.015: …continued… | The final range is [0.812,0.825) and its binary representation is | [0.1101000, 0.1101001) | The final range is identified by its lower bound. | The sequence 1101000 (7 bits) is transmitted
+part1 p.016: How to proceed? | Finding the arithmetic coding of the string SWISS_MISS and the following | statistical model (the same model will be used at each step of the | algorithm): | The cumulative frequence is used to decode the message
+part1 p.017: How to proceed? | Low and High are updated at each step as follows: | NewHigh:=OldLow+Range*HighRange(X); | NewLow:=OldLow+Range*LowRange(X); | where
+part1 p.018: The encoding process | We produce as output 71353375
+part1 p.019: AC-Coding (S)
+part1 p.020: Example
+part1 p.021: Example | Let us consider the sequence S=abac with probabilities | p(a)=1/2, p(b)=p(c )=1/4. | The cumulative probabilities are 𝑓𝑐 = σ𝑖<𝑐 𝑝(𝑖) | 1                3
+part1 p.022: Example | Let us consider the sequence S=abac with probabilities | p(a)=1/2, p(b)=p(c )=1/4. | The final interval is [19/64, 5/16)
+part1 p.023: Example | Let us consider the sequence S=abac with probabilities | p(a)=1/2, p(b)=p(c )=1/4. | The final interval is [19/64, 5/16)
+part1 p.024: Example | Let us consider the sequence S=abac with probabilities | p(a)=1/2, p(b)=p(c )=1/4. | The final interval is [19/64, 5/16)
+part1 p.025: 
+part2 p.001: Arithmetic coding | (part 2) | TUESDAY APRIL 1, 2025
+part2 p.002: The key idea in arithmetic | coding | ❑Arithmetic coding completely overcomes the idea of | replacing an input symbol with a codeword. Instead, it | transforms a stream of input symbols into a single floating-
+part2 p.003: Bit streams and binary | representations of a fractional | number | A bit stream 𝑏1 𝑏2 𝑏3 … 𝑏𝑘 can be interpreted as a real number in the range | [0,1) by prepending «0,» to it, i.e.:
+part2 p.004: Example: | How to encode 0.825 | 0,825*2=1,65 U=1 | 0,65 *2=1,3    U=1 | When we find a value we have seen before,
+part2 p.005: Exercise: | Finding the binary representation of 1/3: | ◦ 01 | Finding the binary representation of 3/32: | ◦ 000110ത
+part2 p.006: Some remarks | 1.   A key concept is the one of dyadic fraction, namely a fraction of the | form 𝑣/2𝑘 where v and k are positive integers. | 2.   The real number associated to a finite bit stream 𝑏1 𝑏2 𝑏3 … 𝑏𝑘 is | indeed the dyadic fraction 𝑣𝑎𝑙(𝑏1 𝑏2 𝑏3 … 𝑏𝑘 )/2𝑘 where 𝑣𝑎𝑙 𝑠 is the
+part2 p.007: Encoding algorithm | Arithmetic coding | INPUT: String to be encoded & alphabet with probability distribution | (probabilities are calculated using frequencies, or another source) | 1.    Inizialize the range [0,1)
+part2 p.008: An example | Input: BBBC
+part2 p.009: …continued… | The final range is [0.812,0.825) and its binary representation is | [0.1101000, 0.1101001) | The final range is identified by its lower bound. | The sequence 1101000 (7 bits) is transmitted
+part2 p.010: How to proceed? | Finding the arithmetic coding of the string SWISS_MISS and the following | statistical model (the same model will be used at each step of the | algorithm): | The cumulative frequence is used to decode the message
+part2 p.011: How to proceed? | 1.   Low and High are updated at each step as follows: | NewHigh:=OldLow+Range*HighRange(X); | NewLow:=OldLow+Range*LowRange(X); | where
+part2 p.012: The encoding process | We produce as output 71353375
+part2 p.013: AC-Coding (S) | Size of the new | range | Lower bound of the | new interval
+part2 p.014: Example
+part2 p.015: Example | Let us consider the sequence S=abac with probabilities | p(a)=1/2, p(b)=p(c )=1/4. | The cumulative probabilities are 𝑓𝑐 = σ𝑖<𝑐 𝑝(𝑖) | 1                3
+part2 p.016: Example | Let us consider the sequence S=abac with probabilities | p(a)=1/2, p(b)=p(c )=1/4. | The final interval is [19/64, 5/16)
+part2 p.017: Example | Let us consider the sequence S=abac with probabilities | p(a)=1/2, p(b)=p(c )=1/4. | The final interval is [19/64, 5/16)
+part2 p.018: Example | Let us consider the sequence S=abac with probabilities | p(a)=1/2, p(b)=p(c )=1/4. | The final interval is [19/64, 5/16). | A possible real number within the interval is 39/128
+part2 p.019: Decoding algorithm: how does | it work? | INPUT: String to be decoded & alphabet with probability distribution | 1.    Initialize the range [0,1) | 2.    For each symbol of the string:
+part2 p.020: Decoding: example | Let us suppose the following alphabet | Input: 1101000 = 0.812 | Output: BBBC
+part2 p.021: AC-Decoding (b,n)
+part2 p.022: Decoding is correct | 1.   The decoding process is correct because encoder and decoder are | synchronized, in fact they use the same statistical model to | decompose the current interval, and both start from the interval | [0, 1).
+part2 p.023: Example | Let us take the result <39/128 , 4> and assume that the input | distribution is p(a)=1/2, p(b)=p(c )=1/4 | The decoder executes the decompression algorithm starting with the | initial interval [0,1)
+part2 p.024: Solution | 1.   In the first iteration the initial range will be subdivided in three | subintervals one for each symbol of the alphabet. These intervals | follow a predefined order; in particular, for this example, the first | interval is associated to the symbol a, the second to b and the last
+part2 p.025: Solution | 4.   In the second iteration the new interval [0, 1/2 ) will be subdivided | in the subintervals [0, 1/4),[ 1/4,3/8 ), [ 3/8 , 1/2). The second | symbol generated will be b because 39/128 ∈ [1/4 , 3/8 ). | 5.   Continuing in this way, the third and the fourth iterations will
+part2 p.026: Some remarks | ❑Arithmetic coding is better than Huffman when we have asymmetrical | distributions, since it can be closer to the entropy | Example: Let us consider the source S with the alphabet A={a,b} and | p(a)=99/100 and p(b)=1/100. In this case,
+part2 p.027: Exercise | Which is the arithmetic encoding of the string abaab by using the | previous model?
+part2 p.028: How many bits? | ❑ Intuitively the arithmetic encoding scheme performs well because we | associate large subintervals to frequent symbols (given that the interval size 𝑠𝑖 | decreases as 𝑃[𝑆 [𝑖]] ≤ 1), and a large final interval requires fewer bits to | specify a number inside it.
+part2 p.029: Which number to choose | inside the interval? | Let us consider the problem of choosing a number inside the interval | [ln , ln + 𝑠𝑛 ) that has the form of a dyadic fraction 𝑣/2𝑘 and can be | encoded with the fewest bits (i.e. smallest k).
+part2 p.030: Arithmetic Coding: number of | bits | Lemma: Take a real number 𝑥 = 0, 𝑏1 𝑏2 …. | If we truncate it to the first 𝑑 bits, we obtain a real number | 𝑡𝑟𝑢𝑛𝑐𝑑 𝑥 ∈ [𝑥 − 2−𝑑 , 𝑥].
+part2 p.031: Arithmetic Coding: number of | bits | Corollary: The truncation of the element l+s/2 of the interval [l,l+s) to | 2 | the first ⌈log ⌉ bits falls in the interval [l,l+s)
+part2 p.032: In our example | 𝑠       19  1  1  39 | The final interval is [19/64, 20/64). The value 𝑙4 + 4 =      + ∗ = | 2       64  64 2 128 | If we truncate the binary representation at the first log 2 128 =
+part2 p.033: Arithmetic coding: optimality | Theorem: The number of bits emitted by AC for a sequence of length n is at most | 2 + 𝑛𝐻 𝑆 , | where 𝐻(𝑆) is the entropy of the source. | Proof: By using the previous corollary, we know that the number of bits in output is
+part2 p.034: Some remarks | ❑ There is a waste of only two bits on an entire input sequence S , hence 2/n bits per | symbol. This is a vanishing lost as the input sequence becomes longer and longer. | ❑The size of the output is a function of the set of symbols constituting S with their | multiplicities, but not of their order.
+part2 p.035: Dynamic model. It is possible to re- | compute the probability distribution | at each step. | Input: String bccb with the alphabet source {a,b,c} | Let us suppose that all the probabilities are 1/3.
+part2 p.036: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | 32
+part2 p.037: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | high 1 | low 0
+part2 p.038: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | high 1 | (P[c]=1/3)
+part2 p.039: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | high 1 | (P[c]=1/3)
+part2 p.040: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | high 1 | (P[c]=1/3)
+part2 p.041: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | high 1 | (P[c]=1/3)
+part2 p.042: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | high 1 | (P[c]=1/3)
+part2 p.043: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | high 1 | (P[c]=1/3)                c
+part2 p.044: Example | The range from low to high is divided among the symbols of the | alphabet according to their probability. | high 1 | (P[c]=1/3)                c
+part2 p.045: …continued… (the probabilities | can be re-computed at each step) | high 1 | c | 0.6667
+part2 p.046: …continued… (the probabilities | can be re-computed at each step) | b | high 1 | c
+part2 p.047: …continued… (the probabilities | can be re-computed at each step) | b | high 1 | c
+part2 p.048: …continued… (the probabilities | can be re-computed at each step) | b | high 1           high = 0.6667 | c
+part2 p.049: …continued… (the probabilities | can be re-computed at each step) | b | high 1            high = 0.6667 | c
+part2 p.050: …continued… | high      0.6667 | (P[c]=1/4) | (P[b]=2/4) | (P[a]=1/4)
+part2 p.051: …continued… | high      0.6667 | (P[c]=1/4)            c | 0.5834 | (P[b]=2/4)            b
+part2 p.052: …continued… | c | high      0.6667 | (P[c]=1/4)            c | 0.5834
+part2 p.053: …continued… | c | high      0.6667            high = 0.6667 | (P[c]=1/4)            c | 0.5834
+part2 p.054: …continued… | c | high      0.6667            high = 0.6667 | (P[c]=1/4)            c | 0.5834                            New probabilities
+part2 p.055: …continued… | high      0.6667 | (P[c]=2/5) | (P[b]=2/5) | (P[a]=1/5)
+part2 p.056: …continued… | high      0.6667 | (P[c]=2/5)            c | 0.6334 | (P[b]=2/5)            b
+part2 p.057: …continued… | c | high      0.6667 | (P[c]=2/5)            c | 0.6334
+part2 p.058: …continued… | c | high      0.6667            high = 0.6667 | (P[c]=2/5)            c | 0.6334
+part2 p.059: …continued… | c | high      0.6667            high = 0.6667 | (P[c]=2/5)            c                        New probabilities | P[a]=1/6
+part2 p.060: …continued… | high      0.6667 | (P[c]=3/6) | (P[b]=2/6) | (P[a]=1/6)
+part2 p.061: …continued… | high      0.6667 | (P[c]=3/6) | c | 0.6501
+part2 p.062: …continued… | b | high      0.6667 | (P[c]=3/6) | c
+part2 p.063: …continued… | b | high      0.6667            high = 0.6501 | (P[c]=3/6) | c
+part2 p.064: …continued… | b | high      0.6667            high = 0.6501 | (P[c]=3/6) | c            Final interval
+part2 p.065: In summary | 1 | 1/3          c | 0.6667 | 1/3
+part2 p.066: In summary | 1 | 1/3          c | 0.6667 | 1/3
+part2 p.067: In summary | 1 | 1/3 | 0.6667 | c
+part2 p.068: In summary | 1 | 1/3 | 0.6667 | c
+part2 p.069: In summary | 1 | 1/3 | 0.6667 | c                       0. 6667
+part2 p.070: In summary | 1 | 1/3 | 0.6667 | c                       0. 6667
+part2 p.071: In summary | 1 | 1/3 | 0.6667 | c                       0. 6667        0. 6667
+part2 p.072: In summary | 1 | 1/3 | 0.6667 | c                       0. 6667        0. 6667
+part2 p.073: In summary | 1 | 1/3 | 0.6667 | c                       0. 6667        0. 6667
+part2 p.074: Decoding | Suppose we have to decode 0.6390 | The decoder must know the probabilities of the symbols, as | it simulates the behaviour of the encoder. | It starts with low=0 and high=1 and divides the interval in
+part2 p.075: Decoding - II | The transmitted number falls in the interval corresponding | to b, so b will be the first symbol of the decoding. | The decoder evaluates the new values for low (0.3333) and | high (0.6667), updates the symbol probabilities and divides
+part2 p.076: Decoding - III | 0.6390 in [0.3333, 0.6667)        b | 0.6390 in [0.5834, 0.6667)        c... | And so on… | 40
+part2 p.077: Arithmetic coding in practice | 1. The number x produced by the coding phase is known only when the entire input is | processed: this is a disadvantage in situations like digital communications, in which for | the sake of speed, we desire to start encoding/decoding before the source/compressed | string is completely scanned; some possible solutions are:
+part2 p.078: Exercise | Let us consider the input text T=MISSISSIPPI | 1.   Find the arithmetic coding by using the dynamic approach | 2.   Find the Huffman code for T | 3.   Find the canonical Huffman coding
+part2 p.079: Arithmetic coding vs. Huffman coding | A detailed comparison is provided in | Bookstein, A., & Klein, S. T. (1993). Is Huffman coding dead? | Computing, 50(4), 279–296. | In a typical English-language text, space is the most common symbol,
+part2 p.080: Arithmetic coding vs. Huffman coding | In a collection of texts and images, Huffman is likely to | be used for texts and arithmetic encoding for images. | If the given probabilities are correct, Arithmetic | encoding may perform better. If, on the other hand, the
+part2 p.081: Mid-term exam
+part2 p.082: Mid-term exam | The midterm exam will take place on April 16th (new date), at 9:00 AM in Room 5 of | the Department of Mathematics and Computer Science. Registration through the | student portal is required in order to take the exam. The exam will last 75 minutes | will consist of five exercises.
+part2 p.083: Some exercises to practice for the midterm exam | 1.    Given the sequence of integers {10, 5, 8, 3, 12}, compute its gamma encoding | 2.    Given the text abbcccdd, which is its arithmetic coding? Also describe the | decoding process. | 3.    Construct the binary Huffman code for a source with probabilities 0.3, 0.25, 0.15,
+part2 p.084: Some exercises to practice for the midterm exam | 6.        For each of the following sets of codewords, determine whether the code is | uniquely decodable. Describe which algorithm should be applied to answer this | question and explain why it is appropriate. | If the code is not uniquely decodable, provide an example of a sequence that can
+part2 p.085: 

@@ -1,0 +1,13 @@
+﻿    Can we do better than
+    Huffman?
+❑Huffman encoding cannot encode one symbol in less than 1 bit.
+❑One of the main disadvantages of static Huffman encoding
+concerns the case where there is a symbol that has very high
+probability.
+ ❑One way to overcome this limitation is to use blocks of characters as
+  symbols. In this way, the per-symbol inefficiency is spread over the
+  entire block.
+ ❑However, the use of blocks is difficult to implement since we need a
+  block for every possible combination of characters and thus the
+  number of groups increases greatly with the length of the blocks.
+

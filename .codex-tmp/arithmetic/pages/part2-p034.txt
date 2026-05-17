@@ -1,0 +1,14 @@
+﻿       Some remarks
+❑ There is a waste of only two bits on an entire input sequence S , hence 2/n bits per
+symbol. This is a vanishing lost as the input sequence becomes longer and longer.
+❑The size of the output is a function of the set of symbols constituting S with their
+multiplicities, but not of their order.
+❑Huffman coding could require 𝑛 + 𝑛𝐻(𝑆) bits for compressing a sequence of n
+symbols, so Arithmetic Coding is much better.
+❑On the other hand, it must be said that (Canonical) Huffman is faster and can
+decompress any portion of the compressed file provided that we known its first
+codeword. This is however impossible for Arithmetic Coding which allows only the
+whole decompression of the compressed file.
+❑As we are going to see, Arithmetic Coding can compute the representation
+on the fly thus it can easily accommodate the use of dynamic modeling.
+

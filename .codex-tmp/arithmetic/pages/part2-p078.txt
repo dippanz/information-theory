@@ -1,0 +1,6 @@
+﻿Exercise
+Let us consider the input text T=MISSISSIPPI
+1.   Find the arithmetic coding by using the dynamic approach
+2.   Find the Huffman code for T
+3.   Find the canonical Huffman coding
+

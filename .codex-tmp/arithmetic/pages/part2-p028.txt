@@ -1,0 +1,16 @@
+﻿     How many bits?
+❑ Intuitively the arithmetic encoding scheme performs well because we
+associate large subintervals to frequent symbols (given that the interval size 𝑠𝑖
+decreases as 𝑃[𝑆 [𝑖]] ≤ 1), and a large final interval requires fewer bits to
+specify a number inside it.
+❑From step 5 of the pseudocode of AC-Coding (S ) is easy to determine the size
+𝑠𝑛 of the final interval associated to an input sequence S of length n:
+         𝑠𝑛 = 𝑠𝑛−1 ∗ 𝑃 𝑆 𝑛 = 𝑠𝑛−2 ∗ 𝑃 𝑆 𝑛 − 1 ∗ 𝑃 𝑆 𝑛 = ⋯ =
+                                            𝑛
+
+         = 𝑠0 ∗ 𝑃 𝑆 1 ∗ ⋯ ∗ 𝑃 𝑆 𝑛       = ෑ 𝑃[𝑆 𝑖 ]
+                                           𝑖=1
+❑Since the size of the interval impacts onto the number of bits returned in the
+compressed output, we derive that the output size is independent of the
+permutation of S ’s characters
+

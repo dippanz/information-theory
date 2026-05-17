@@ -1,0 +1,9 @@
+﻿Decoding is correct
+1.   The decoding process is correct because encoder and decoder are
+     synchronized, in fact they use the same statistical model to
+     decompose the current interval, and both start from the interval
+     [0, 1).
+2.   The diﬀerence is that the encoder uses symbols to choose the
+     subintervals, whereas the decoder uses the number b to choose
+     (the same) subintervals to zoom in.
+

@@ -1,0 +1,12 @@
+﻿How to proceed?
+1.   Low and High are updated at each step as follows:
+     NewHigh:=OldLow+Range*HighRange(X);
+     NewLow:=OldLow+Range*LowRange(X);
+     where
+     Range=OldHigh−OldLow and
+     LowRange(X) and HighRange(X) are the lower bound and the upper
+        bound of the interval corresponding to X, respectively.
+2.   At each step the length of the current range is
+     NewRange= NewHigh - NewLow=
+                =Range*(HighRange(X) – LowRange(X))
+

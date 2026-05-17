@@ -1,0 +1,12 @@
+﻿    The key idea in arithmetic
+    coding
+❑Arithmetic coding completely overcomes the idea of
+replacing an input symbol with a codeword. Instead, it
+transforms a stream of input symbols into a single floating-
+point number in [0,1)
+❑The longer and more complex the message, the more bits
+are required to represent the output number.
+ ❑the compressed output is not a concatenation of codewords associated to the
+  symbols of the alphabet.
+ ❑rather, a bit of the output can represent more than one input symbols.
+

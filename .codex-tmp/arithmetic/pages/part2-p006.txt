@@ -1,0 +1,9 @@
+﻿Some remarks
+1.   A key concept is the one of dyadic fraction, namely a fraction of the
+     form 𝑣/2𝑘 where v and k are positive integers.
+2.   The real number associated to a finite bit stream 𝑏1 𝑏2 𝑏3 … 𝑏𝑘 is
+     indeed the dyadic fraction 𝑣𝑎𝑙(𝑏1 𝑏2 𝑏3 … 𝑏𝑘 )/2𝑘 where 𝑣𝑎𝑙 𝑠 is the
+     value of the binary string s. Conversely, a fraction 𝑣/2𝑘 can be
+     written as . 𝑏𝑖𝑛𝑘 (𝑣) which is the binary representation of the
+     integer v as a bit string of length k (eventually padded with zeroes)
+

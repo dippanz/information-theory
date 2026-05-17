@@ -1,0 +1,22 @@
+﻿ Bit streams and binary
+ representations of a fractional
+ number
+ A bit stream 𝑏1 𝑏2 𝑏3 … 𝑏𝑘 can be interpreted as a real number in the range
+ [0,1) by prepending «0,» to it, i.e.:
+                                                  𝑘
+
+                              0, 𝑏1 𝑏2 … 𝑏𝑘 = ෍ 𝑏𝑖 2−𝑖
+                                                 𝑖=1
+
+ Any real number x in the range [0,1) can be converted in a possibly infinite
+ sequence of bits by using the following algorithm.
+ The loop ends when a level of accuracy is defined:
+Converter(x)                                        The loop has to end when the
+                                                         condition accuracy is satisfied: we
+                                                         can decide a level of accuracy in
+                                                         the representation of x, we can
+                                                         stop when we emitted a certain
+                                                         number of bits in output or when
+                                                         we establish that the
+                :: denotes concatenations among bits     representation of x is periodic.
+

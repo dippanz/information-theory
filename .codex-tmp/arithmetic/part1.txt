@@ -1,0 +1,239 @@
+Arithmetic coding
+WEDNESDAY MARCH 26, 2025
+Recall that:
+               Given a C code, L(C) represents the average length
+               of its codewords representing the symbols of the
+               source.
+               The efficiency of the code is the value
+                        𝐻 (𝑆)
+               ϑ 𝐶 = 𝑑 . From Shannon Theorem it follows
+                        𝐿(𝐶)
+               that 0 ≤ 𝜗 𝐶 ≤ 1.
+               The redudancy of the code is
+                                          𝐿 𝐶 − 𝐻𝑑 (𝑆)
+                      𝜌 𝐶 =1−𝜗 𝐶 =                     .
+                                             𝐿(𝐶)
+               In case of Huffman codes, the upper bound on the
+               redudancy approaches to 1 when the most
+               frequent symbol has probability close to 1.
+               Moreover, we have seen that upper bound on 𝜌 for
+               a source approaches 1 if and only if the probability
+               of any source symbol tends to 1 or 0.
+    Can we do better than
+    Huffman?
+❑Huffman encoding cannot encode one symbol in less than 1 bit.
+❑One of the main disadvantages of static Huffman encoding
+concerns the case where there is a symbol that has very high
+probability.
+ ❑One way to overcome this limitation is to use blocks of characters as
+  symbols. In this way, the per-symbol inefficiency is spread over the
+  entire block.
+ ❑However, the use of blocks is difficult to implement since we need a
+  block for every possible combination of characters and thus the
+  number of groups increases greatly with the length of the blocks.
+    Can we do better than
+    Huffman?
+◼   Huffman Coding is optimal in its framework:
+
+    ◼   Static model          Adaptive Huffman
+
+                                      Block
+    ◼   One symbol, one codeword
+                                      coding
+                                      arithmetic
+                                      coding
+    The key idea in arithmetic
+    coding
+❑Arithmetic coding was proposed by Peter Elias (another student
+of Fano together with Huffman)
+❑It was presented by Abramson in his book Information Theory
+and Coding (1963). Early implementations were developed by
+[Rissanen 76], [Pasco 76], and [Rubin 79].
+❑[Moffat et al. 98] and [Witten et al. 87] discussed many
+theoretical and practical details of the encoding.
+❑Arithmetic coding completely overcomes the idea of replacing an
+input symbol with a codeword. Instead, it transforms a stream of
+input symbols into a single floating-point number in [0,1)
+❑The longer and more complex the message, the more bits are
+required to represent the output number.
+ The key-idea
+❑The output of the arithmetic coding algorithm is, as usual,
+a stream of bits
+❑It might be thought as a situation where an initial
+preceding bit 0 is assumed, with the stream of bits
+representing a binary decimal, a value ranging from 0 to 1.
+
+                   01101010 → 0.01101010
+Bit streams and binary
+representations of a fractional
+number
+A bit stream 𝑏1 𝑏2 𝑏3 … 𝑏𝑘 can be interpreted as a real number in the range
+[0,1) by prepending «0,» to it, i.e.:
+                                            𝑘
+
+                           0, 𝑏1 𝑏2 … 𝑏𝑘 = ෍ 𝑏𝑖 2−𝑖
+                                           𝑖=1
+
+Any real number x in the range [0,1) can be converted in a possibly infinite
+sequence of bits by using the following algorithm.
+The loop ends when a level of accuracy is defined:
+                              Converter(x)
+
+
+
+
+                                                          :: denotes concatenations among bits
+ Example:
+How to encode 0.825
+0,825*2=1,65 U=1
+0,65 *2=1,3    U=1
+                      When we find a value we have seen before,
+0,3 *2=0,6     U=0    then we can stop the loop, so
+                      the representation is periodic
+0,6 *2=1,2      U=1
+0,2 *2=0,4     U=0    Ex: 0,11010011001…=0,1101001
+
+0,4 *2=0,8     U=0
+ 0.8 *2=1.6     U=1
+0,6 *2=1,2      U=1
+….
+Exercise:
+Finding the binary representation of 1/3:
+ ◦ 01
+
+
+
+
+Finding the binary representation of 3/32:
+ ◦ 000110ത
+Encoding algorithm
+Arithmetic coding
+INPUT: String to be encoded & alphabet with probability distribution
+(probabilities are calculated using frequencies, or another source)
+1.    Inizialize the range [0,1)
+2.    For each symbol of the input string:
+     1.   Divide the current interval into n subintervals (n= cardinality of the
+          alphabet). Each subinterval will have a size proportional to the
+          probability associated with each element in the initial alphabet.
+     2.   Select as the current interval the one corresponding to the symbol being
+          analyzed (input)
+3.    The lower bound of the last interval (converted to binary) is the
+      result of our encoding (output)
+   Example
+   Let us encode the string BILL GATES
+   We need the frequencies of the characters in the text
+                    chr       freq.
+                    space     0.1
+                    A         0.1
+                    B         0.1
+                    E         0.1
+                    G         0.1
+                    I         0.1
+                    L         0.2
+                    S         0.1
+                    T         0.1
+
+Note: To explain the algorithm with the example, the numbers we show will be in base
+10, but of course in practice they are always in base 2
+
+
+                                                                                12
+We partition the interval
+according to the probabilities
+character   probability   range
+space       0.1           [0.00, 0.10)
+A           0.1           [0.10, 0.20)
+B           0.1           [0.20, 0.30)
+E           0.1           [0.30, 0.40)
+G           0.1           [0.40, 0.50)
+I           0.1           [0.50, 0.60)
+L           0.2           [0.60, 0.80)
+S           0.1           [0.80, 0.90)
+T           0.1           [0.90, 1.00)
+
+                                         13
+Encoding the text
+ chr                          low                          high
+                              0.0                          1.0
+ B                            0.2                          0.3
+ I                            0.25                         0.26
+ L                            0.256                        0.258
+ L                            0.2572                       0.2576
+ Space                        0.25720                      0.25724
+ G                            0.257216                     0.257220
+ A                            0.2572164                    0.2572168
+ T                            0.25721676                   0.2572168
+ E                            0.257216772                  0.257216776
+ S                            0.2572167752                 0.2572167756
+
+ The final value 0.2572167752 is the encoding of the string BILL GATES
+
+
+
+                                                                          14
+Another example
+
+Input: BBBC
+…continued…
+
+
+The final range is [0.812,0.825) and its binary representation is
+[0.1101000, 0.1101001)
+The final range is identified by its lower bound.
+
+The sequence 1101000 (7 bits) is transmitted
+    How to proceed?
+Finding the arithmetic coding of the string SWISS_MISS and the following
+statistical model (the same model will be used at each step of the
+algorithm):
+
+
+
+
+The cumulative frequence is used to decode the message
+The symbols and the frequencies must be sent before the compressed text
+The encoding process needs two variables, Low e High, inizialized to 0 and 1
+(initial interval)
+How to proceed?
+Low and High are updated at each step as follows:
+NewHigh:=OldLow+Range*HighRange(X);
+NewLow:=OldLow+Range*LowRange(X);
+where
+Range=OldHigh−OldLow
+LowRange(X) and HighRange(X) are the lower bound and the upper
+bound of the interval corresponding to X, respectively.
+  The encoding process
+
+
+
+
+We produce as output 71353375
+AC-Coding (S)
+Example
+  Example
+Let us consider the sequence S=abac with probabilities
+p(a)=1/2, p(b)=p(c )=1/4.
+The cumulative probabilities are 𝑓𝑐 = σ𝑖<𝑐 𝑝(𝑖)
+                                       1                3
+                  𝑓𝑎 = 0, 𝑓𝑏 = 𝑝 𝑎 = , 𝑓𝑐 = 𝑝 𝑎 + 𝑝 𝑏 =
+                                       2                4
+The loop is repeated 4 times and the intervals are:
+                    1
+◦ 𝑙1 , 𝑙1 + 𝑠1 = 0, 2
+                  1 1   1
+◦ 𝑙2 , 𝑙2 + 𝑠2 = 4 , 4 + 8
+◦ …
+◦ …
+   Example
+Let us consider the sequence S=abac with probabilities
+p(a)=1/2, p(b)=p(c )=1/4.
+The final interval is [19/64, 5/16)
+   Example
+Let us consider the sequence S=abac with probabilities
+p(a)=1/2, p(b)=p(c )=1/4.
+The final interval is [19/64, 5/16)
+   Example
+Let us consider the sequence S=abac with probabilities
+p(a)=1/2, p(b)=p(c )=1/4.
+The final interval is [19/64, 5/16)
+

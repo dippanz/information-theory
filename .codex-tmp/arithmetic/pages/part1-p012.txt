@@ -1,0 +1,15 @@
+﻿We partition the interval
+according to the probabilities
+character   probability   range
+space       0.1           [0.00, 0.10)
+A           0.1           [0.10, 0.20)
+B           0.1           [0.20, 0.30)
+E           0.1           [0.30, 0.40)
+G           0.1           [0.40, 0.50)
+I           0.1           [0.50, 0.60)
+L           0.2           [0.60, 0.80)
+S           0.1           [0.80, 0.90)
+T           0.1           [0.90, 1.00)
+
+                                         13
+

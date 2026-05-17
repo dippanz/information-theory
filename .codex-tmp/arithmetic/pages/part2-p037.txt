@@ -1,0 +1,14 @@
+﻿   Example
+The range from low to high is divided among the symbols of the
+alphabet according to their probability.
+
+
+              high 1
+
+
+
+
+              low 0
+
+                               32
+

@@ -1,0 +1,14 @@
+﻿Some remarks
+❑Arithmetic coding is better than Huffman when we have asymmetrical
+distributions, since it can be closer to the entropy
+Example: Let us consider the source S with the alphabet A={a,b} and
+p(a)=99/100 and p(b)=1/100. In this case,
+                              100             100
+           𝐻 𝑆 = 𝑝 𝑎 𝑙𝑜𝑔2         + 𝑝(𝑏) 𝑙𝑜𝑔2     ≅ 0,08056
+                               99              1
+
+Any prefix code (and an Huffman code, as well) must use at least one bit
+per symbol, so the average length of the code must be at least 1, which is
+much greater than the entropy!
+In arithmetic coding, binary encoding of a fractional number is used.
+

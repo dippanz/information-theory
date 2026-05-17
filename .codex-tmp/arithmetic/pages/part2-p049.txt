@@ -1,0 +1,17 @@
+﻿  …continued… (the probabilities
+  can be re-computed at each step)
+              b
+
+ high 1            high = 0.6667
+          c
+0.6667
+          b
+0.3333
+          a
+                   low = 0.3333
+ low 0
+                                      ▪ P[a]=1/4
+                  New probabilities   ▪ P[b]=2/4
+                                      ▪ P[c]=1/4
+                       33
+

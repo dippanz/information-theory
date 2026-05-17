@@ -1,0 +1,10 @@
+﻿Exercise:
+Finding the binary representation of 1/3:
+ ◦ 01
+
+
+
+
+Finding the binary representation of 3/32:
+ ◦ 000110ത
+

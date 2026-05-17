@@ -1,0 +1,17 @@
+﻿     Mid-term exam
+The midterm exam will take place on April 16th (new date), at 9:00 AM in Room 5 of
+the Department of Mathematics and Computer Science. Registration through the
+student portal is required in order to take the exam. The exam will last 75 minutes
+will consist of five exercises.
+❑The exercises may be either theoretical or problem-solving. The topics of the
+exercises will cover lectures from 1 to 7.
+❑Examples include:
+  ❑What is the average code length and its relation to entropy?
+  ❑Given a certain code, determine whether it is uniquely decodable (UD), explaining the
+   method used.
+❑The final exam will include five questions, as well. The final grade will be given by
+the average of the grade from the two written tests (midterm and final).
+❑Those who take the midterm can choose to have their final grade recorded, if it is at
+least 18, or try to improve by the oral exam.
+❑For the others, the written exam and the oral exam are both mandatory.
+

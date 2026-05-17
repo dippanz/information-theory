@@ -2028,6 +2028,328 @@ Questa osservazione prepara il passaggio successivo: la codifica di Huffman è o
 \end{figure}
 
 \subsection{Codifica aritmetica}
+La codifica di Huffman resta ottimale finché si lavora dentro il suo modello: a ogni simbolo viene assegnata una parola di codice intera, e quindi un simbolo non può essere rappresentato con meno di un bit. Questo vincolo diventa molto evidente quando la distribuzione è sbilanciata. Se, ad esempio, una sorgente binaria ha $p(a)=0.99$ e $p(b)=0.01$, l'entropia è:
+\[
+    H(S)
+    =
+    0.99\log_2\frac{1}{0.99}
+    +
+    0.01\log_2\frac{1}{0.01}
+    \simeq 0.08056
+    \quad \text{bit/simbolo}.
+\]
+Qualunque codice a prefisso binario sui singoli simboli usa però almeno un bit per ogni simbolo. La \textbf{codifica aritmetica} supera questo limite cambiando punto di vista: non associa una parola di codice a ogni simbolo, ma rappresenta l'intero messaggio come un numero reale in un sotto intervallo di $[0,1)$.
+
+L'idea è questa: si parte dall'intervallo $[0,1)$ e, per ogni simbolo letto, lo si suddivide in sotto intervalli proporzionali alle probabilità dei simboli. Il sotto intervallo corrispondente al simbolo corrente diventa il nuovo intervallo corrente. Alla fine, qualunque numero interno all'intervallo finale identifica l'intero messaggio, purché encoder e decoder condividano lo stesso modello probabilistico e lo stesso ordine dei simboli.
+
+\subsubsection{Bit stream e frazioni dyadiche}
+Un bit stream finito $b_1b_2\ldots b_k$ rappresenta la frazione binaria:
+\[
+    0.b_1b_2\ldots b_k
+    =
+    \sum_{i=1}^{k} b_i2^{-i}.
+\]
+Equivalentemente, se $\operatorname{val}(b_1b_2\ldots b_k)$ indica il valore intero della stringa binaria, allora:
+\[
+    0.b_1b_2\ldots b_k
+    =
+    \frac{\operatorname{val}(b_1b_2\ldots b_k)}{2^k}.
+\]
+Le frazioni di questa forma, cioè $v/2^k$, sono dette \textbf{frazioni dyadiche}. Per produrre un output binario, la codifica aritmetica deve quindi scegliere una frazione dyadica contenuta nell'intervallo finale. Più l'intervallo finale è grande, meno bit servono per specificare un suo punto interno; più è piccolo, più bit sono necessari.
+
+\subsubsection{Algoritmo di codifica}
+Sia $A=\{\sigma_1,\ldots,\sigma_m\}$ un alfabeto ordinato. Per ogni simbolo $\sigma\in A$, indichiamo con $p(\sigma)$ la sua probabilità e con:
+\[
+    F(\sigma)
+    =
+    \sum_{\tau < \sigma} p(\tau)
+\]
+la probabilità cumulativa dei simboli che lo precedono nell'ordine fissato. Il simbolo $\sigma$ occupa quindi, nell'intervallo unitario, la porzione:
+\[
+    [F(\sigma),F(\sigma)+p(\sigma)).
+\]
+
+Durante la codifica non è necessario memorizzare continuamente sia l'estremo inferiore sia quello superiore. È spesso più comodo mantenere:
+\begin{itemize}
+    \item $l_i$, l'estremo inferiore dell'intervallo dopo aver letto i primi $i$ simboli;
+    \item $s_i$, la lunghezza dell'intervallo dopo aver letto i primi $i$ simboli.
+\end{itemize}
+Si inizializza $l_0=0$ e $s_0=1$. Se il simbolo letto al passo $i$ è $S[i]$, allora:
+\begin{equation}\label{eq:arithmetic_update_size}
+    s_i=s_{i-1}\cdot p(S[i]),
+\end{equation}
+\begin{equation}\label{eq:arithmetic_update_low}
+    l_i=l_{i-1}+s_{i-1}\cdot F(S[i]).
+\end{equation}
+L'intervallo corrente è quindi:
+\[
+    I_i=[l_i,l_i+s_i).
+\]
+
+\begin{algorithm}[htpb]
+    \caption{Codifica aritmetica statica}
+    \label{alg:arithmetic_coding}
+    \begin{algorithmic}[1]
+        \Require sequenza $S=s_1s_2\ldots s_n$, probabilità $p(\sigma)$ e cumulative $F(\sigma)$
+        \Ensure un numero dyadico $x\in[l_n,l_n+s_n)$ e la lunghezza $n$
+        \State $s_0 \gets 1$
+        \State $l_0 \gets 0$
+        \For{$i=1,\ldots,n$}
+        \State $s_i \gets s_{i-1}\cdot p(S[i])$
+        \State $l_i \gets l_{i-1}+s_{i-1}\cdot F(S[i])$
+        \EndFor
+        \State scegli una frazione dyadica $x\in[l_n,l_n+s_n)$
+        \State \Return $\langle x,n\rangle$
+    \end{algorithmic}
+\end{algorithm}
+
+La lunghezza $n$ è necessaria perché un singolo numero reale non dice da solo quando fermare la decodifica. In alternativa si può aggiungere al modello un simbolo speciale di fine file, spesso indicato come \texttt{EOF}, e fermarsi quando il decoder lo ricostruisce.
+
+Un fatto importante segue subito dalla \eqref{eq:arithmetic_update_size}. Dopo $n$ simboli si ha:
+\begin{equation}\label{eq:arithmetic_final_size}
+    s_n
+    =
+    \prod_{i=1}^{n} p(S[i]).
+\end{equation}
+La lunghezza dell'intervallo finale dipende quindi dalle probabilità dei simboli che compaiono nel messaggio, con le loro molteplicità, ma non dall'ordine in cui compaiono. L'ordine cambia la posizione dell'intervallo, non la sua ampiezza.
+
+\subsubsection{Esempio statico: codifica di \texttt{BBBC}}
+Consideriamo l'alfabeto $A=\{A,B,C\}$ con:
+\[
+    p(A)=0.4,\qquad p(B)=0.5,\qquad p(C)=0.1.
+\]
+Con l'ordine $A<B<C$, l'intervallo unitario viene diviso come:
+\[
+    A:[0,0.4),\qquad
+    B:[0.4,0.9),\qquad
+    C:[0.9,1).
+\]
+Codifichiamo il messaggio \texttt{BBBC}. A ogni passo scegliamo il sotto intervallo associato al simbolo corrente:
+\begin{center}
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{Passo} & \textbf{Simbolo letto} & \textbf{Intervallo corrente} \\ \hline
+        $0$            & --                     & $[0,1)$                      \\ \hline
+        $1$            & $B$                    & $[0.4,0.9)$                  \\ \hline
+        $2$            & $B$                    & $[0.6,0.85)$                 \\ \hline
+        $3$            & $B$                    & $[0.7,0.825)$                \\ \hline
+        $4$            & $C$                    & $[0.8125,0.825)$             \\ \hline
+    \end{tabular}
+\end{center}
+L'intervallo finale è dunque $[0.8125,0.825)$. Una possibile frazione dyadica contenuta in questo intervallo è:
+\[
+    0.1101000_2
+    =
+    \frac{104}{128}
+    =
+    0.8125.
+\]
+Seguendo la convenzione delle slide, si può quindi trasmettere la stringa di bit:
+\[
+    \texttt{1101000}.
+\]
+Il decoder, conoscendo le probabilità e la lunghezza del messaggio, ripete la stessa suddivisione: il numero $0.8125$ cade prima nel sottointervallo di $B$, poi ancora in quello di $B$, poi ancora in quello di $B$, e infine in quello di $C$. L'output ricostruito è quindi \texttt{BBBC}.
+
+\subsubsection{Algoritmo di decodifica}
+La decodifica è simmetrica rispetto alla codifica. L'encoder usa il simbolo corrente per scegliere il sottointervallo; il decoder usa il numero trasmesso per capire in quale sottointervallo cade. Se $x=0.b$ è il numero rappresentato dalla stringa binaria compressa, il decoder parte da $[0,1)$ e ripete la suddivisione per $n$ passi.
+
+\begin{algorithm}[htpb]
+    \caption{Decodifica aritmetica statica}
+    \label{alg:arithmetic_decoding}
+    \begin{algorithmic}[1]
+        \Require numero $x$, lunghezza $n$, probabilità $p(\sigma)$ e cumulative $F(\sigma)$
+        \Ensure sequenza originale $S$
+        \State $S \gets \varepsilon$
+        \State $s_0 \gets 1$
+        \State $l_0 \gets 0$
+        \For{$i=1,\ldots,n$}
+        \State trova l'unico simbolo $\sigma$ tale che $x\in[l_{i-1}+s_{i-1}F(\sigma),\,l_{i-1}+s_{i-1}(F(\sigma)+p(\sigma)))$
+        \State $S \gets S\sigma$
+        \State $s_i \gets s_{i-1}\cdot p(\sigma)$
+        \State $l_i \gets l_{i-1}+s_{i-1}\cdot F(\sigma)$
+        \EndFor
+        \State \Return $S$
+    \end{algorithmic}
+\end{algorithm}
+
+La correttezza dipende dalla sincronizzazione tra encoder e decoder. Entrambi devono usare lo stesso ordine dei simboli, le stesse probabilità e la stessa regola di aggiornamento. Se uno di questi elementi cambia, il numero trasmesso viene interpretato rispetto a una partizione diversa e la decodifica non ricostruisce più il messaggio originale.
+
+\subsubsection{Esempio completo: \texttt{abac}}
+Consideriamo il messaggio:
+\[
+    S=\texttt{abac}
+\]
+con:
+\[
+    p(a)=\frac{1}{2},
+    \qquad
+    p(b)=p(c)=\frac{1}{4}.
+\]
+Con l'ordine $a<b<c$, le probabilità cumulative sono:
+\[
+    F(a)=0,\qquad F(b)=\frac{1}{2},\qquad F(c)=\frac{3}{4}.
+\]
+Applicando le formule di aggiornamento si ottiene:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Passo} & \textbf{Simbolo} & \textbf{Lunghezza $s_i$} & \textbf{Intervallo $[l_i,l_i+s_i)$} \\ \hline
+        $0$            & --               & $1$                      & $[0,1)$                             \\ \hline
+        $1$            & $a$              & $\frac{1}{2}$            & $\left[0,\frac{1}{2}\right)$        \\ \hline
+        $2$            & $b$              & $\frac{1}{8}$            & $\left[\frac{1}{4},\frac{3}{8}\right)$ \\ \hline
+        $3$            & $a$              & $\frac{1}{16}$           & $\left[\frac{1}{4},\frac{5}{16}\right)$ \\ \hline
+        $4$            & $c$              & $\frac{1}{64}$           & $\left[\frac{19}{64},\frac{5}{16}\right)$ \\ \hline
+    \end{tabular}
+\end{center}
+L'intervallo finale è:
+\[
+    \left[\frac{19}{64},\frac{5}{16}\right)
+    =
+    \left[\frac{38}{128},\frac{40}{128}\right).
+\]
+Il punto centrale dell'intervallo è:
+\[
+    \frac{19}{64}+\frac{1}{2}\cdot\frac{1}{64}
+    =
+    \frac{39}{128}.
+\]
+Essendo $\frac{39}{128}$ una frazione dyadica, la sua rappresentazione binaria su $7$ bit frazionari è:
+\[
+    \frac{39}{128}
+    =
+    0.0100111_2.
+\]
+La codifica può quindi trasmettere:
+\[
+    \texttt{0100111}.
+\]
+
+Vediamo anche la decodifica. Il numero $x=\frac{39}{128}$ cade:
+\begin{itemize}
+    \item in $[0,\frac{1}{2})$, quindi il primo simbolo è $a$;
+    \item poi, restringendo l'intervallo a $[0,\frac{1}{2})$, cade in $[\frac{1}{4},\frac{3}{8})$, quindi il secondo simbolo è $b$;
+    \item poi, restringendo l'intervallo a $[\frac{1}{4},\frac{3}{8})$, cade in $[\frac{1}{4},\frac{5}{16})$, quindi il terzo simbolo è $a$;
+    \item infine cade in $[\frac{19}{64},\frac{5}{16})$, quindi il quarto simbolo è $c$.
+\end{itemize}
+Il messaggio ricostruito è dunque \texttt{abac}.
+
+\subsubsection{Quanti bit servono?}
+Dato un intervallo finale $[l,l+s)$, vogliamo scegliere una frazione dyadica interna usando meno bit possibile. Il criterio usato nelle slide è scegliere il punto centrale $l+s/2$ e troncarne la rappresentazione binaria a un numero sufficiente di bit.
+
+\begin{theorem}
+    Sia $x=0.b_1b_2\ldots$ un numero reale in $[0,1)$ e sia $\operatorname{trunc}_d(x)$ il numero ottenuto mantenendo solo i primi $d$ bit della sua rappresentazione binaria. Allora:
+    \[
+        \operatorname{trunc}_d(x)\in[x-2^{-d},x].
+    \]
+\end{theorem}
+\begin{proof}
+    La differenza tra $x$ e la sua troncatura dipende solo dai bit dopo la posizione $d$:
+    \[
+        x-\operatorname{trunc}_d(x)
+        =
+        \sum_{i=1}^{\infty} b_{d+i}2^{-(d+i)}
+        \leq
+        \sum_{i=1}^{\infty} 2^{-(d+i)}
+        =
+        2^{-d}.
+    \]
+    Inoltre la troncatura non può essere maggiore di $x$, perché sostituisce alcuni bit successivi con zeri.
+\end{proof}
+
+Applicando il teorema a $x=l+s/2$, basta prendere:
+\[
+    d=\left\lceil\log_2\frac{2}{s}\right\rceil.
+\]
+Infatti $2^{-d}\leq s/2$, quindi:
+\[
+    \operatorname{trunc}_d\left(l+\frac{s}{2}\right)
+    \geq
+    l+\frac{s}{2}-\frac{s}{2}
+    =
+    l
+\]
+e, allo stesso tempo,
+\[
+    \operatorname{trunc}_d\left(l+\frac{s}{2}\right)
+    \leq
+    l+\frac{s}{2}
+    <
+    l+s.
+\]
+La troncatura cade quindi dentro l'intervallo finale.
+
+Usando \eqref{eq:arithmetic_final_size}, il numero di bit emessi per una sequenza $S$ di lunghezza $n$ è al più:
+\[
+    \left\lceil\log_2\frac{2}{s_n}\right\rceil
+    \leq
+    2-\log_2 s_n
+    =
+    2-\log_2\prod_{i=1}^{n}p(S[i])
+    =
+    2-\sum_{i=1}^{n}\log_2 p(S[i]).
+\]
+Se le probabilità sono stimate dalle frequenze empiriche della sequenza, raggruppando i termini uguali si ottiene:
+\[
+    2-\sum_{\sigma\in A} n_\sigma \log_2 p(\sigma)
+    =
+    2+nH(S),
+\]
+dove $n_\sigma$ è il numero di occorrenze di $\sigma$ e $H(S)$ è l'entropia della sorgente. In media, quindi, il costo è:
+\[
+    H(S)+\frac{2}{n}
+    \quad \text{bit/simbolo}.
+\]
+Lo spreco di due bit è sull'intera sequenza, non su ogni simbolo; per messaggi lunghi il termine $2/n$ diventa trascurabile. Questo è il punto in cui la codifica aritmetica supera il limite pratico di Huffman sui singoli simboli.
+
+\subsubsection{Modello dinamico}
+Finora abbiamo considerato un modello statico: le probabilità sono fissate prima di iniziare e restano uguali per tutta la codifica. La codifica aritmetica, però, si presta bene anche a un \textbf{modello dinamico}, in cui le probabilità vengono aggiornate dopo ogni simbolo letto.
+
+Nel modello dinamico encoder e decoder partono dallo stesso modello iniziale e lo aggiornano nello stesso modo. Per esempio, si può partire da un conteggio iniziale uniforme, cioè assegnare una occorrenza fittizia a ogni simbolo dell'alfabeto. Dopo aver codificato o decodificato un simbolo, si incrementa il suo conteggio e si ricalcolano le probabilità. Questo permette al modello di adattarsi localmente al testo, senza conoscere in anticipo l'intera distribuzione.
+
+\paragraph{Esempio dinamico.}
+Codifichiamo il messaggio \texttt{bccb} sull'alfabeto $A=\{a,b,c\}$, partendo dai conteggi iniziali:
+\[
+    \operatorname{occ}(a)=\operatorname{occ}(b)=\operatorname{occ}(c)=1.
+\]
+All'inizio le probabilità sono tutte $1/3$. Dopo ogni simbolo, il conteggio del simbolo osservato viene incrementato:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Passo} & \textbf{Simbolo} & \textbf{Probabilità usate $(a,b,c)$} & \textbf{Intervallo scelto} \\ \hline
+        $1$            & $b$              & $\left(\frac{1}{3},\frac{1}{3},\frac{1}{3}\right)$ & $\left[\frac{1}{3},\frac{2}{3}\right)$ \\ \hline
+        $2$            & $c$              & $\left(\frac{1}{4},\frac{2}{4},\frac{1}{4}\right)$ & $\left[\frac{7}{12},\frac{2}{3}\right)$ \\ \hline
+        $3$            & $c$              & $\left(\frac{1}{5},\frac{2}{5},\frac{2}{5}\right)$ & $\left[\frac{19}{30},\frac{2}{3}\right)$ \\ \hline
+        $4$            & $b$              & $\left(\frac{1}{6},\frac{2}{6},\frac{3}{6}\right)$ & $\left[\frac{23}{36},\frac{13}{20}\right)$ \\ \hline
+    \end{tabular}
+\end{center}
+In forma decimale, l'intervallo finale è circa:
+\[
+    [0.6389,0.6500).
+\]
+Le slide scelgono come rappresentante il valore $0.6390$, che cade dentro l'intervallo. Il decoder, partendo dallo stesso modello uniforme, riconosce:
+\[
+    0.6390\in\left[\frac{1}{3},\frac{2}{3}\right)
+    \quad \Rightarrow \quad b.
+\]
+Poi aggiorna le probabilità, restringe l'intervallo, e trova:
+\[
+    0.6390\in\left[\frac{7}{12},\frac{2}{3}\right)
+    \quad \Rightarrow \quad c.
+\]
+Continuando con gli stessi aggiornamenti, ricostruisce i simboli successivi $c$ e $b$. L'aspetto essenziale è che il numero trasmesso non cambia: cambia invece, passo dopo passo, la partizione dell'intervallo usata per interpretarlo.
+
+\subsubsection{Aspetti pratici e confronto con Huffman}
+La descrizione matematica della codifica aritmetica usa numeri reali e intervalli arbitrariamente piccoli. In una implementazione reale questo non è possibile, quindi si usano versioni a precisione finita. Una variante pratica molto importante è il \textbf{range coding}, matematicamente equivalente alla codifica aritmetica ma implementato con estremi interi e rinormalizzazioni.
+
+Ci sono due problemi pratici da tenere presenti:
+\begin{itemize}
+    \item il numero finale sarebbe noto solo dopo aver letto tutto l'input; per lavorare in streaming si può dividere il testo in blocchi oppure emettere man mano i prefissi binari comuni agli estremi dell'intervallo corrente;
+    \item se l'intervallo diventa molto piccolo, gli estremi richiedono sempre più precisione; per questo le implementazioni confrontano e riscalano periodicamente gli intervalli.
+\end{itemize}
+
+Rispetto a Huffman, la codifica aritmetica ha un vantaggio teorico molto forte: può avvicinarsi all'entropia anche quando le probabilità sono molto sbilanciate, perché non è costretta a usare un numero intero di bit per ogni simbolo. D'altra parte, Huffman canonico è più semplice, spesso più veloce, e permette una decodifica più locale: se si conosce un punto di ingresso valido nel flusso compresso, si può ripartire da lì. Nella codifica aritmetica, invece, il significato di un bit dipende dall'intero intervallo corrente, quindi è molto più difficile iniziare la decodifica a metà del flusso.
+
+In pratica, se il modello probabilistico è accurato, la codifica aritmetica può comprimere meglio, specialmente su sorgenti molto sbilanciate o dati come immagini. Se invece il modello è povero o il costo computazionale è prioritario, Huffman resta una scelta robusta e conveniente.
 
 
 

@@ -1,0 +1,13 @@
+﻿Solution
+1.   In the first iteration the initial range will be subdivided in three
+     subintervals one for each symbol of the alphabet. These intervals
+     follow a predefined order; in particular, for this example, the first
+     interval is associated to the symbol a, the second to b and the last
+     one to c. The size of every subinterval is proportional to the
+     probability of the respective symbol:
+     [0, 1/2 ), [1/2 , 3/4) and [ 3/4 , 1).
+2.   At this point the algorithm will generate the symbol a because
+     39/128 ∈ [0, 1/2).
+3.   After that it will update the subinterval executing the steps 8 and 9,
+     thus synchronizing itself with the encoder.
+

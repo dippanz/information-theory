@@ -1,0 +1,22 @@
+﻿ Some exercises to practice for the midterm exam
+6.        For each of the following sets of codewords, determine whether the code is
+          uniquely decodable. Describe which algorithm should be applied to answer this
+          question and explain why it is appropriate.
+          If the code is not uniquely decodable, provide an example of a sequence that can
+          be decoded in more than one way.
+     1.      C={01, 0011, 2, 102, 0120}
+     2.      C={0100, 0011, 2, 102, 2012, 2001, 0220, 12102}
+7.        Given the following symbols and their frequencies: (A, 45), (B, 13), (C, 12), (D, 16),
+          (E, 9), (F, 5), construct the canonical Huffman code and explain one advantage of
+          canonical Huffman coding compared to a generic Huffman code
+8.        Given the following source with its symbol probabilities: (A, 0.4), (B, 0.2), (C, 0.2),
+          (D, 0.1), (E, 0.1), construct the binary Huffman code for the source. Then,
+          compute its average code length, its efficiency and its redundancy.
+9.        State Shannon’s theorem regarding the relationship between the average code
+          length of a uniquely decodable code for a memoryless source and the entropy of
+          that source. Also provide a sketch of its proof.
+10. A memoryless source emits the following 8 symbols with their respective
+    probabilities: (A, 0.22), (B, 0.18), (C, 0.15), (D, 0.13), (E, 0.10), (F, 0.09), (G, 0.07),
+    (H, 0.06). Construct a Huffman code over a ternary alphabet for this source.
+    Compute its average code length and the entropy of the source.
+

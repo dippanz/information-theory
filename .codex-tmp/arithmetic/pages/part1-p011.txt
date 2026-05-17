@@ -1,0 +1,20 @@
+﻿   Example
+   Let us encode the string BILL GATES
+   We need the frequencies of the characters in the text
+                    chr       freq.
+                    space     0.1
+                    A         0.1
+                    B         0.1
+                    E         0.1
+                    G         0.1
+                    I         0.1
+                    L         0.2
+                    S         0.1
+                    T         0.1
+
+Note: To explain the algorithm with the example, the numbers we show will be in base
+10, but of course in practice they are always in base 2
+
+
+                                                                                12
+

@@ -1,0 +1,23 @@
+﻿Arithmetic Coding: number of
+bits
+Corollary: The truncation of the element l+s/2 of the interval [l,l+s) to
+              2
+the first ⌈log ⌉ bits falls in the interval [l,l+s)
+             𝑠
+                                  2
+Proof: It is enough to set d= ⌈log ⌉ and apply the lemma, by observing
+              𝑠                   𝑠
+      −𝑑
+that 2 ≤
+            2
+
+At this point we can specialize AC-Coding(S ) in order to return the first
+        2                                                         𝑠
+  log         bits of the binary representation of the value 𝑙𝑛 + 𝑛
+       𝑠𝑛                                                         2
+
+
+
+This means that a number in a smaller interval needs more bits to be
+encoded.
+

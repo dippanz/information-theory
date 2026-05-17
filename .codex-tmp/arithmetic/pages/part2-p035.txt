@@ -1,0 +1,10 @@
+﻿Dynamic model. It is possible to re-
+compute the probability distribution
+at each step.
+Input: String bccb with the alphabet source {a,b,c}
+Let us suppose that all the probabilities are 1/3.
+When we encode b all the symbols have the same probabity.
+The arithmetic encoding maintains two numbers, low and high,
+representing the interval [low,high) subset of [0,1)
+Firstly low=0 and high=1
+

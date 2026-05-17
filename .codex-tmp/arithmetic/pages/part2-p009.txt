@@ -1,0 +1,9 @@
+﻿…continued…
+
+
+The final range is [0.812,0.825) and its binary representation is
+[0.1101000, 0.1101001)
+The final range is identified by its lower bound.
+
+The sequence 1101000 (7 bits) is transmitted
+

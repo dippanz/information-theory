@@ -1,0 +1,11 @@
+﻿Example
+Let us take the result <39/128 , 4> and assume that the input
+distribution is p(a)=1/2, p(b)=p(c )=1/4
+
+
+The decoder executes the decompression algorithm starting with the
+initial interval [0,1)
+
+
+As exercise, we can recover the original input.
+

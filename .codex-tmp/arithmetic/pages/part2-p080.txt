@@ -1,0 +1,14 @@
+﻿Arithmetic coding vs. Huffman coding
+
+   In a collection of texts and images, Huffman is likely to
+   be used for texts and arithmetic encoding for images.
+   If the given probabilities are correct, Arithmetic
+   encoding may perform better. If, on the other hand, the
+   statistical model is incorrect, then Huffman encoding is
+   more robust to errors.
+
+
+
+
+                               50
+

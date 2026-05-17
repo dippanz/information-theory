@@ -1,0 +1,15 @@
+﻿    The key idea in arithmetic
+    coding
+❑Arithmetic coding was proposed by Peter Elias (another student
+of Fano together with Huffman)
+❑It was presented by Abramson in his book Information Theory
+and Coding (1963). Early implementations were developed by
+[Rissanen 76], [Pasco 76], and [Rubin 79].
+❑[Moffat et al. 98] and [Witten et al. 87] discussed many
+theoretical and practical details of the encoding.
+❑Arithmetic coding completely overcomes the idea of replacing an
+input symbol with a codeword. Instead, it transforms a stream of
+input symbols into a single floating-point number in [0,1)
+❑The longer and more complex the message, the more bits are
+required to represent the output number.
+

@@ -1,0 +1,16 @@
+﻿          Some exercises to practice for the midterm exam
+1.    Given the sequence of integers {10, 5, 8, 3, 12}, compute its gamma encoding
+2.    Given the text abbcccdd, which is its arithmetic coding? Also describe the
+      decoding process.
+3.    Construct the binary Huffman code for a source with probabilities 0.3, 0.25, 0.15,
+      0.15, 0.05, 0.05, 0.05. Compute its average word length and the entropy of the
+      source.
+4.    Determine (if possible) a prefix code with the following word lengths. Which
+      theoretical result is used to answer this question and why?
+     1.   {1, 2, 2, 2, 2, 3, 3, 3, 3, 4, 4, 4, 4, 4} over a 3-symbol alphabet.
+     2.   {1, 1, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 4} over a 4-symbol alphabet
+
+5.    Compute the average codeword length of the binary Shannon-Fano code and the
+      binary Huffman code for the source 𝑆 with probabilities 0.4, 0.25, 0.15, 0.1, 0.1.
+      Compare these values with the entropy 𝐻2 (𝑆)
+

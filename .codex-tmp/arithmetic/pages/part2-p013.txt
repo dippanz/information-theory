@@ -1,0 +1,8 @@
+﻿AC-Coding (S)
+
+                Size of the new
+                     range
+
+                Lower bound of the
+                   new interval
+

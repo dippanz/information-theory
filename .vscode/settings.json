@@ -20,10 +20,15 @@
         "it": [
             "array",
             "decoder",
+            "dyadica",
+            "dyadiche",
+            "dyadico",
+            "encoder",
             "Huffman",
             "ottimalità",
             "overhead",
-            "pseudocodice"
+            "pseudocodice",
+            "stream"
         ]
     },
     "ltex.hiddenFalsePositives": {
