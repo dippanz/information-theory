@@ -1822,13 +1822,13 @@ Da questa tabella si usano soltanto le lunghezze delle parole di codice. Non bis
 
 Allora:
 \begin{align*}
-    \text{num}  & =[0        , 3      , 1  , 0        , 4        ] \\
+    \text{num}  & =[0        , 3      , 1  , 0        , 4        ]  \\
     \text{symb} & =[\emptyset, (a,e,h), (d), \emptyset, (b,c,f,g)].
 \end{align*}
 
 Si costruisce l'array firstcode:
 \begin{align*}
-    \text{fc}[5]&=0 \\
+    \text{fc}[5] & =0                                     \\
     \text{fc}[4] & = \frac{\text{fc}[5]+\text{num}[5]}{2}
     = \frac{0+4}{2}=2,                                    \\
     \text{fc}[3] & = \frac{\text{fc}[4]+\text{num}[4]}{2}
@@ -1871,64 +1871,64 @@ Decodifichiamo ora la stringa bit per bit, applicando l'algoritmo canonico.
 
 \begin{itemize}
     \item All'inizio leggiamo \texttt{001}. Dopo il primo bit abbiamo $v=0$ e $\ell=1$:
-    poiché $0<\text{fc}[1]=2$, il prefisso non è ancora completo. Leggiamo allora
-    un secondo bit, ottenendo ancora $v=0$ e $\ell=2$; anche in questo caso
-    $0<\text{fc}[2]=1$, quindi continuiamo. Con il terzo bit si ottiene
-    $v=1$ e $\ell=3$. Ora $1\not<\text{fc}[3]=1$, quindi l'algoritmo si ferma.
-    L'indice del simbolo è
-    \[
-        1-\text{fc}[3]=0,
-    \]
-    e il simbolo corrispondente è $d$.
+          poiché $0<\text{fc}[1]=2$, il prefisso non è ancora completo. Leggiamo allora
+          un secondo bit, ottenendo ancora $v=0$ e $\ell=2$; anche in questo caso
+          $0<\text{fc}[2]=1$, quindi continuiamo. Con il terzo bit si ottiene
+          $v=1$ e $\ell=3$. Ora $1\not<\text{fc}[3]=1$, quindi l'algoritmo si ferma.
+          L'indice del simbolo è
+          \[
+              1-\text{fc}[3]=0,
+          \]
+          e il simbolo corrispondente è $d$.
 
     \item I bit successivi sono \texttt{11}. Dopo il primo bit si ha $v=1$ e $\ell=1$;
-    poiché $1<\text{fc}[1]=2$, serve ancora un bit. Leggendo il secondo bit si ottiene
-    $v=3$ e $\ell=2$. A questo punto $3\not<\text{fc}[2]=1$, quindi il codice è
-    terminato. L'indice è
-    \[
-        3-\text{fc}[2]=2,
-    \]
-    che corrisponde al simbolo $h$.
+          poiché $1<\text{fc}[1]=2$, serve ancora un bit. Leggendo il secondo bit si ottiene
+          $v=3$ e $\ell=2$. A questo punto $3\not<\text{fc}[2]=1$, quindi il codice è
+          terminato. L'indice è
+          \[
+              3-\text{fc}[2]=2,
+          \]
+          che corrisponde al simbolo $h$.
 
     \item Procedendo allo stesso modo, la parola \texttt{10} viene letta come segue:
-    dopo il primo bit $v=1$ e $\ell=1$, quindi $1<\text{fc}[1]=2$ e si deve
-    continuare; dopo il secondo bit $v=2$ e $\ell=2$, e poiché
-    $2\not<\text{fc}[2]=1$ l'algoritmo si arresta. L'indice è
-    \[
-        2-\text{fc}[2]=1,
-    \]
-    perciò il simbolo decodificato è $e$.
+          dopo il primo bit $v=1$ e $\ell=1$, quindi $1<\text{fc}[1]=2$ e si deve
+          continuare; dopo il secondo bit $v=2$ e $\ell=2$, e poiché
+          $2\not<\text{fc}[2]=1$ l'algoritmo si arresta. L'indice è
+          \[
+              2-\text{fc}[2]=1,
+          \]
+          perciò il simbolo decodificato è $e$.
 
     \item La parola seguente è \texttt{00000}. Finché si leggono i primi quattro bit,
-    il valore $v$ rimane uguale a zero e le condizioni
-    \[
-        0<\text{fc}[1],\qquad
-        0<\text{fc}[2],\qquad
-        0<\text{fc}[3],\qquad
-        0<\text{fc}[4]
-    \]
-    sono tutte soddisfatte. Dopo il quinto bit, invece, si ha $\ell=5$ e
-    $\text{fc}[5]=0$, quindi
-    \[
-        0\not<\text{fc}[5]=0.
-    \]
-    Il codice termina e l'indice è
-    \[
-        0-\text{fc}[5]=0.
-    \]
-    Il simbolo corrispondente è $b$.
+          il valore $v$ rimane uguale a zero e le condizioni
+          \[
+              0<\text{fc}[1],\qquad
+              0<\text{fc}[2],\qquad
+              0<\text{fc}[3],\qquad
+              0<\text{fc}[4]
+          \]
+          sono tutte soddisfatte. Dopo il quinto bit, invece, si ha $\ell=5$ e
+          $\text{fc}[5]=0$, quindi
+          \[
+              0\not<\text{fc}[5]=0.
+          \]
+          Il codice termina e l'indice è
+          \[
+              0-\text{fc}[5]=0.
+          \]
+          Il simbolo corrispondente è $b$.
 
     \item Restano poi i bit \texttt{01}. Dopo il primo bit si ha $v=0$ e $\ell=1$,
-    con $0<\text{fc}[1]=2$, quindi si legge ancora un bit. Dopo il secondo bit
-    si ottiene $v=1$ e $\ell=2$; siccome $1\not<\text{fc}[2]=1$, il codice è
-    completo. L'indice è
-    \[
-        1-\text{fc}[2]=0,
-    \]
-    e il simbolo ottenuto è $a$.
+          con $0<\text{fc}[1]=2$, quindi si legge ancora un bit. Dopo il secondo bit
+          si ottiene $v=1$ e $\ell=2$; siccome $1\not<\text{fc}[2]=1$, il codice è
+          completo. L'indice è
+          \[
+              1-\text{fc}[2]=0,
+          \]
+          e il simbolo ottenuto è $a$.
 
     \item Infine si incontra di nuovo la parola \texttt{001}, che viene decodificata
-    come prima nel simbolo $d$.
+          come prima nel simbolo $d$.
 \end{itemize}
 
 La segmentazione ottenuta dall'algoritmo è quindi:
@@ -2038,9 +2038,9 @@ La codifica di Huffman resta ottimale finché si lavora dentro il suo modello: a
     \simeq 0.08056
     \quad \text{bit/simbolo}.
 \]
-Qualunque codice a prefisso binario sui singoli simboli usa però almeno un bit per ogni simbolo. La \textbf{codifica aritmetica} supera questo limite cambiando punto di vista: non associa una parola di codice a ogni simbolo, ma rappresenta l'intero messaggio come un numero reale in un sotto intervallo di $[0,1)$.
+Qualunque codice a prefisso binario sui singoli simboli usa però almeno un bit per ogni simbolo. La \textbf{codifica aritmetica} supera questo limite cambiando punto di vista: non associa una parola di codice a ogni simbolo, ma rappresenta l'intero messaggio come un numero reale in un sottointervallo di $[0,1)$.
 
-L'idea è questa: si parte dall'intervallo $[0,1)$ e, per ogni simbolo letto, lo si suddivide in sotto intervalli proporzionali alle probabilità dei simboli. Il sotto intervallo corrispondente al simbolo corrente diventa il nuovo intervallo corrente. Alla fine, qualunque numero interno all'intervallo finale identifica l'intero messaggio, purché encoder e decoder condividano lo stesso modello probabilistico e lo stesso ordine dei simboli.
+L'idea è questa: si parte dall'intervallo $[0,1)$ e, per ogni simbolo letto, lo si suddivide in sottointervalli proporzionali alle probabilità dei simboli. Il sottointervallo corrispondente al simbolo corrente diventa il nuovo intervallo corrente. Alla fine, qualunque numero interno all'intervallo finale identifica l'intero messaggio, purché encoder e decoder condividano lo stesso modello probabilistico e lo stesso ordine dei simboli.
 
 \subsubsection{Bit stream e frazioni dyadiche}
 Un bit stream finito $b_1b_2\ldots b_k$ rappresenta la frazione binaria:
@@ -2055,9 +2055,33 @@ Equivalentemente, se $\operatorname{val}(b_1b_2\ldots b_k)$ indica il valore int
     =
     \frac{\operatorname{val}(b_1b_2\ldots b_k)}{2^k}.
 \]
-Le frazioni di questa forma, cioè $v/2^k$, sono dette \textbf{frazioni dyadiche}. Per produrre un output binario, la codifica aritmetica deve quindi scegliere una frazione dyadica contenuta nell'intervallo finale. Più l'intervallo finale è grande, meno bit servono per specificare un suo punto interno; più è piccolo, più bit sono necessari. 
+Le frazioni di questa forma, cioè $v/2^k$, sono dette \textbf{frazioni dyadiche}. Per produrre un output binario, la codifica aritmetica deve quindi scegliere una frazione dyadica contenuta nell'intervallo finale. Più l'intervallo finale è grande, meno bit servono per specificare un suo punto interno; più è piccolo, più bit sono necessari.
 
 In altre parole, quando si parla di frazioni dyadiche il denominatore è sempre una potenza di $2$, per cui la sua conversione binaria è rappresentata da una sequenza di bit finita.
+
+Per convertire un numero reale $x\in[0,1)$ nella sua rappresentazione binaria frazionaria si usa un procedimento molto semplice: si moltiplica ripetutamente per $2$ e, a ogni passo, si guarda se il risultato ha superato oppure no la parte intera $1$. Il bit emesso è proprio quella parte intera.
+
+\begin{algorithm}[htpb]
+    \caption{Conversione di un numero frazionario in binario}
+    \label{alg:fractional_binary_converter}
+    \begin{algorithmic}[1]
+        \Require numero reale $x\in[0,1)$
+        \Ensure bit stream che rappresenta $x$ alla precisione scelta
+        \State $\text{output} \gets \varepsilon$
+        \Repeat
+        \State $x \gets 2x$
+        \If{$x<1$}
+        \State $\text{output} \gets \text{output}\mathbin{::}0$
+        \Else
+        \State $\text{output} \gets \text{output}\mathbin{::}1$
+        \State $x \gets x-1$
+        \EndIf
+        \Until{$x=0$ oppure è stata raggiunta la precisione richiesta}
+        \State \Return output
+    \end{algorithmic}
+\end{algorithm}
+
+Il simbolo $::$ indica la concatenazione di un nuovo bit alla stringa già prodotta. Se durante l'algoritmo si arriva a $x=0$, la rappresentazione binaria è finita: questo è esattamente ciò che accade per le frazioni dyadiche. Se invece il resto non diventa mai zero, la rappresentazione è infinita o periodica, e allora bisogna fermarsi dopo un numero di bit stabilito.
 
 \subsubsection{Algoritmo di codifica}
 Sia $A=\{\sigma_1,\ldots,\sigma_m\}$ un alfabeto ordinato. Per ogni simbolo $\sigma\in A$, indichiamo con $p(\sigma)$ la sua probabilità e con:
@@ -2134,31 +2158,52 @@ Codifichiamo il messaggio \texttt{BBBC}. A ogni passo il sotto intervallo associ
     \renewcommand{\arraystretch}{1.28}
     \begin{tabular}{|c|c|c|c|c|c|}
         \hline
-        \textbf{Intervallo corrente} & \textbf{$A$} & \textbf{$B$} & \textbf{$C$} & \textbf{Input} & \textbf{Azione} \\ \hline
-        $[0,1)$          & $[0,0.4)$     & $\boldsymbol{[0.4,0.9)}$      & $[0.9,1)$          & $B$ & Dividi \\ \hline
-        $[0.4,0.9)$      & $[0.4,0.6)$   & $\boldsymbol{[0.6,0.85)}$     & $[0.85,0.9)$       & $B$ & Dividi \\ \hline
-        $[0.6,0.85)$     & $[0.6,0.7)$   & $\boldsymbol{[0.7,0.825)}$    & $[0.825,0.85)$     & $B$ & Dividi \\ \hline
-        $[0.7,0.825)$    & $[0.7,0.75)$  & $[0.75,0.8125)$              & $\boldsymbol{[0.8125,0.825)}$ & $C$ & Stop \\ \hline
-        $\boldsymbol{[0.8125,0.825)}$ & \multicolumn{5}{c|}{} \\ \hline
+        \textbf{Intervallo corrente}  & \textbf{$A$}          & \textbf{$B$}               & \textbf{$C$}                  & \textbf{Input} & \textbf{Azione} \\ \hline
+        $[0,1)$                       & $[0,0.4)$             & $\boldsymbol{[0.4,0.9)}$   & $[0.9,1)$                     & $B$            & Dividi          \\ \hline
+        $[0.4,0.9)$                   & $[0.4,0.6)$           & $\boldsymbol{[0.6,0.85)}$  & $[0.85,0.9)$                  & $B$            & Dividi          \\ \hline
+        $[0.6,0.85)$                  & $[0.6,0.7)$           & $\boldsymbol{[0.7,0.825)}$ & $[0.825,0.85)$                & $B$            & Dividi          \\ \hline
+        $[0.7,0.825)$                 & $[0.7,0.75)$          & $[0.75,0.8125)$            & $\boldsymbol{[0.8125,0.825)}$ & $C$            & Stop            \\ \hline
+        $\boldsymbol{[0.8125,0.825)}$ & \multicolumn{5}{c|}{}                                                                                                 \\ \hline
     \end{tabular}
     \endgroup
 \end{center}
 L'intervallo finale è dunque $[0.8125,0.825)$. Una possibile frazione dyadica contenuta in questo intervallo è:
 \[
+    0.8125
+    =
+    \frac{13}{16}.
+\]
+Convertiamola ora in binario:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Passo} & \textbf{Moltiplicazione} & \textbf{Bit emesso} & \textbf{Nuovo resto} \\ \hline
+        $1$            & $0.8125\cdot 2=1.625$    & $1$                 & $0.625$              \\ \hline
+        $2$            & $0.625\cdot 2=1.25$      & $1$                 & $0.25$               \\ \hline
+        $3$            & $0.25\cdot 2=0.5$        & $0$                 & $0.5$                \\ \hline
+        $4$            & $0.5\cdot 2=1.0$         & $1$                 & $0$                  \\ \hline
+    \end{tabular}
+\end{center}
+Quindi:
+\[
+    0.8125=0.1101_2.
+\]
+Gli zeri finali dopo la virgola non cambiano il valore, perciò possiamo scrivere anche:
+\[
+    0.1101_2
+    =
     0.1101000_2
     =
-    \frac{104}{128}
-    =
-    0.8125.
+    \frac{104}{128}.
 \]
-Seguendo la convenzione delle slide, si può quindi trasmettere la stringa di bit:
+La stringa di bit trasmessa è quindi:
 \[
     \texttt{1101000}.
 \]
-Il decoder, conoscendo le probabilità e la lunghezza del messaggio, ripete la stessa suddivisione: il numero $0.8125$ cade prima nel sottointervallo di $B$, poi ancora in quello di $B$, poi ancora in quello di $B$, e infine in quello di $C$. L'output ricostruito è quindi \texttt{BBBC}.
+Il decoder, conoscendo le probabilità e la lunghezza del messaggio, ripete la stessa suddivisione: il numero $0.8125$ cade prima nel sotto intervallo di $B$, poi ancora in quello di $B$, poi ancora in quello di $B$, e infine in quello di $C$. L'output ricostruito è quindi \texttt{BBBC}.
 
 \subsubsection{Algoritmo di decodifica}
-La decodifica è simmetrica rispetto alla codifica. L'encoder usa il simbolo corrente per scegliere il sottointervallo; il decoder usa il numero trasmesso per capire in quale sottointervallo cade. Se $x=0.b$ è il numero rappresentato dalla stringa binaria compressa, il decoder parte da $[0,1)$ e ripete la suddivisione per $n$ passi.
+La decodifica è simmetrica rispetto alla codifica. L'encoder usa il simbolo corrente per scegliere il sotto intervallo; il decoder usa il numero trasmesso per capire in quale sotto intervallo cade. Se $x=0.b$ è il numero rappresentato dalla stringa binaria compressa, il decoder parte da $[0,1)$ e ripete la suddivisione per $n$ passi.
 
 \begin{algorithm}[htpb]
     \caption{Decodifica aritmetica statica}
@@ -2171,7 +2216,7 @@ La decodifica è simmetrica rispetto alla codifica. L'encoder usa il simbolo cor
         \State $l_0 \gets 0$
         \For{$i=1,\ldots,n$}
         \State trova l'unico simbolo $\sigma$ tale che $x\in[l_{i-1}+s_{i-1}F(\sigma),\,l_{i-1}+s_{i-1}(F(\sigma)+p(\sigma)))$
-        \State $S \gets S\sigma$
+        \State $S \gets S::\sigma$
         \State $s_i \gets s_{i-1}\cdot p(\sigma)$
         \State $l_i \gets l_{i-1}+s_{i-1}\cdot F(\sigma)$
         \EndFor
@@ -2200,11 +2245,11 @@ Applicando le formule di aggiornamento si ottiene:
 \begin{center}
     \begin{tabular}{|c|c|c|c|}
         \hline
-        \textbf{Passo} & \textbf{Simbolo} & \textbf{Lunghezza $s_i$} & \textbf{Intervallo $[l_i,l_i+s_i)$} \\ \hline
-        $0$            & --               & $1$                      & $[0,1)$                             \\ \hline
-        $1$            & $a$              & $\frac{1}{2}$            & $\left[0,\frac{1}{2}\right)$        \\ \hline
-        $2$            & $b$              & $\frac{1}{8}$            & $\left[\frac{1}{4},\frac{3}{8}\right)$ \\ \hline
-        $3$            & $a$              & $\frac{1}{16}$           & $\left[\frac{1}{4},\frac{5}{16}\right)$ \\ \hline
+        \textbf{Passo} & \textbf{Simbolo} & \textbf{Lunghezza $s_i$} & \textbf{Intervallo $[l_i,l_i+s_i)$}       \\ \hline
+        $0$            & --               & $1$                      & $[0,1)$                                   \\ \hline
+        $1$            & $a$              & $\frac{1}{2}$            & $\left[0,\frac{1}{2}\right)$              \\ \hline
+        $2$            & $b$              & $\frac{1}{8}$            & $\left[\frac{1}{4},\frac{3}{8}\right)$    \\ \hline
+        $3$            & $a$              & $\frac{1}{16}$           & $\left[\frac{1}{4},\frac{5}{16}\right)$   \\ \hline
         $4$            & $c$              & $\frac{1}{64}$           & $\left[\frac{19}{64},\frac{5}{16}\right)$ \\ \hline
     \end{tabular}
 \end{center}
@@ -2322,10 +2367,10 @@ All'inizio le probabilità sono tutte $1/3$. Dopo ogni simbolo, il conteggio del
 \begin{center}
     \begin{tabular}{|c|c|c|c|}
         \hline
-        \textbf{Passo} & \textbf{Simbolo} & \textbf{Probabilità usate $(a,b,c)$} & \textbf{Intervallo scelto} \\ \hline
-        $1$            & $b$              & $\left(\frac{1}{3},\frac{1}{3},\frac{1}{3}\right)$ & $\left[\frac{1}{3},\frac{2}{3}\right)$ \\ \hline
-        $2$            & $c$              & $\left(\frac{1}{4},\frac{2}{4},\frac{1}{4}\right)$ & $\left[\frac{7}{12},\frac{2}{3}\right)$ \\ \hline
-        $3$            & $c$              & $\left(\frac{1}{5},\frac{2}{5},\frac{2}{5}\right)$ & $\left[\frac{19}{30},\frac{2}{3}\right)$ \\ \hline
+        \textbf{Passo} & \textbf{Simbolo} & \textbf{Probabilità usate $(a,b,c)$}               & \textbf{Intervallo scelto}                 \\ \hline
+        $1$            & $b$              & $\left(\frac{1}{3},\frac{1}{3},\frac{1}{3}\right)$ & $\left[\frac{1}{3},\frac{2}{3}\right)$     \\ \hline
+        $2$            & $c$              & $\left(\frac{1}{4},\frac{2}{4},\frac{1}{4}\right)$ & $\left[\frac{7}{12},\frac{2}{3}\right)$    \\ \hline
+        $3$            & $c$              & $\left(\frac{1}{5},\frac{2}{5},\frac{2}{5}\right)$ & $\left[\frac{19}{30},\frac{2}{3}\right)$   \\ \hline
         $4$            & $b$              & $\left(\frac{1}{6},\frac{2}{6},\frac{3}{6}\right)$ & $\left[\frac{23}{36},\frac{13}{20}\right)$ \\ \hline
     \end{tabular}
 \end{center}
