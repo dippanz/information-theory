@@ -2055,7 +2055,9 @@ Equivalentemente, se $\operatorname{val}(b_1b_2\ldots b_k)$ indica il valore int
     =
     \frac{\operatorname{val}(b_1b_2\ldots b_k)}{2^k}.
 \]
-Le frazioni di questa forma, cioè $v/2^k$, sono dette \textbf{frazioni dyadiche}. Per produrre un output binario, la codifica aritmetica deve quindi scegliere una frazione dyadica contenuta nell'intervallo finale. Più l'intervallo finale è grande, meno bit servono per specificare un suo punto interno; più è piccolo, più bit sono necessari.
+Le frazioni di questa forma, cioè $v/2^k$, sono dette \textbf{frazioni dyadiche}. Per produrre un output binario, la codifica aritmetica deve quindi scegliere una frazione dyadica contenuta nell'intervallo finale. Più l'intervallo finale è grande, meno bit servono per specificare un suo punto interno; più è piccolo, più bit sono necessari. 
+
+In altre parole, quando si parla di frazioni dyadiche il denominatore è sempre una potenza di $2$, per cui la sua conversione binaria è rappresentata da una sequenza di bit finita.
 
 \subsubsection{Algoritmo di codifica}
 Sia $A=\{\sigma_1,\ldots,\sigma_m\}$ un alfabeto ordinato. Per ogni simbolo $\sigma\in A$, indichiamo con $p(\sigma)$ la sua probabilità e con:
@@ -2103,7 +2105,7 @@ L'intervallo corrente è quindi:
     \end{algorithmic}
 \end{algorithm}
 
-La lunghezza $n$ è necessaria perché un singolo numero reale non dice da solo quando fermare la decodifica. In alternativa si può aggiungere al modello un simbolo speciale di fine file, spesso indicato come \texttt{EOF}, e fermarsi quando il decoder lo ricostruisce.
+La lunghezza $n$ è necessaria perché un singolo numero reale non dice da solo quando fermare la decodifica. In alternativa si può aggiungere al modello un simbolo speciale di fine file, spesso indicato come \texttt{EOF}, e fermarsi quando il decoder lo ricostruisce. Il valore $x$ è solitamente l'intervallo inferiore $l_n$, ma si può scegliere qualsiasi frazione dyadica contenuta in $[l_n,l_n+s_n)$.
 
 Un fatto importante segue subito dalla \eqref{eq:arithmetic_update_size}. Dopo $n$ simboli si ha:
 \begin{equation}\label{eq:arithmetic_final_size}
@@ -2124,17 +2126,22 @@ Con l'ordine $A<B<C$, l'intervallo unitario viene diviso come:
     B:[0.4,0.9),\qquad
     C:[0.9,1).
 \]
-Codifichiamo il messaggio \texttt{BBBC}. A ogni passo scegliamo il sotto intervallo associato al simbolo corrente:
+Codifichiamo il messaggio \texttt{BBBC}. A ogni passo il sotto intervallo associato al simbolo corrente diventa il nuovo intervallo corrente:
 \begin{center}
-    \begin{tabular}{|c|c|c|}
+    \begingroup
+    \footnotesize
+    \setlength{\tabcolsep}{3pt}
+    \renewcommand{\arraystretch}{1.28}
+    \begin{tabular}{|c|c|c|c|c|c|}
         \hline
-        \textbf{Passo} & \textbf{Simbolo letto} & \textbf{Intervallo corrente} \\ \hline
-        $0$            & --                     & $[0,1)$                      \\ \hline
-        $1$            & $B$                    & $[0.4,0.9)$                  \\ \hline
-        $2$            & $B$                    & $[0.6,0.85)$                 \\ \hline
-        $3$            & $B$                    & $[0.7,0.825)$                \\ \hline
-        $4$            & $C$                    & $[0.8125,0.825)$             \\ \hline
+        \textbf{Intervallo corrente} & \textbf{$A$} & \textbf{$B$} & \textbf{$C$} & \textbf{Input} & \textbf{Azione} \\ \hline
+        $[0,1)$          & $[0,0.4)$     & $\boldsymbol{[0.4,0.9)}$      & $[0.9,1)$          & $B$ & Dividi \\ \hline
+        $[0.4,0.9)$      & $[0.4,0.6)$   & $\boldsymbol{[0.6,0.85)}$     & $[0.85,0.9)$       & $B$ & Dividi \\ \hline
+        $[0.6,0.85)$     & $[0.6,0.7)$   & $\boldsymbol{[0.7,0.825)}$    & $[0.825,0.85)$     & $B$ & Dividi \\ \hline
+        $[0.7,0.825)$    & $[0.7,0.75)$  & $[0.75,0.8125)$              & $\boldsymbol{[0.8125,0.825)}$ & $C$ & Stop \\ \hline
+        $\boldsymbol{[0.8125,0.825)}$ & \multicolumn{5}{c|}{} \\ \hline
     \end{tabular}
+    \endgroup
 \end{center}
 L'intervallo finale è dunque $[0.8125,0.825)$. Una possibile frazione dyadica contenuta in questo intervallo è:
 \[
