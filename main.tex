@@ -2453,6 +2453,9 @@ La troncatura cade quindi dentro l'intervallo finale.
 
 Il termine aggiuntivo di due bit è pagato sull'intera sequenza, non su ogni simbolo; per messaggi lunghi il contributo medio $2/n$ diventa quindi trascurabile. Questo è il punto in cui la codifica aritmetica supera il limite pratico di Huffman sui singoli simboli: invece di arrotondare la lunghezza di ogni parola di codice, arrotonda una sola volta il numero che rappresenta l'intero messaggio.
 
+\paragraph{Nota pratica.}
+Il vantaggio appena descritto riguarda il numero di bit emessi, non necessariamente la velocità dell'algoritmo. Nelle implementazioni reali, \textbf{Huffman canonico} è spesso più veloce della codifica aritmetica: le parole di codice sono organizzate in modo regolare, quindi encoder e decoder possono usare tabelle di ricerca molto semplici. Inoltre, se si conosce l'inizio di una parola di codice, Huffman permette di decomprimere anche una porzione del file compresso. La codifica aritmetica, invece, rappresenta l'intera sequenza attraverso un unico intervallo finale e il decoder deve ricostruire i simboli in ordine; per questo, di norma, non consente di saltare direttamente a una porzione arbitraria del messaggio. In sintesi: la codifica aritmetica può essere migliore dal punto di vista del rapporto di compressione, mentre Huffman canonico resta spesso più conveniente dal punto di vista computazionale.
+
 \subsubsection{Modello dinamico}
 Finora abbiamo considerato un modello statico: le probabilità sono fissate prima di iniziare e restano uguali per tutta la codifica. La codifica aritmetica, però, si presta bene anche a un \textbf{modello dinamico}, in cui le probabilità vengono aggiornate dopo ogni simbolo letto.
 
