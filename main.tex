@@ -2249,12 +2249,12 @@ Applicando le formule di aggiornamento si ottiene:
     \renewcommand{\arraystretch}{1.28}
     \begin{tabular}{|c|c|c|c|c|c|}
         \hline
-        \textbf{Intervallo corrente} & \textbf{$a$}             & \textbf{$b$}               & \textbf{$c$}                & \textbf{Input} & \textbf{Azione} \\ \hline
-        $[0,1)$                      & $\boldsymbol{[0,1/2)}$   & $[1/2,3/4)$                & $[3/4,1)$                  & $a$            & Dividi          \\ \hline
-        $[0,1/2)$                    & $[0,1/4)$                & $\boldsymbol{[1/4,3/8)}$   & $[3/8,1/2)$                & $b$            & Dividi          \\ \hline
-        $[1/4,3/8)$                  & $\boldsymbol{[1/4,5/16)}$ & $[5/16,11/32)$             & $[11/32,3/8)$              & $a$            & Dividi          \\ \hline
-        $[1/4,5/16)$                 & $[1/4,9/32)$             & $[9/32,19/64)$             & $\boldsymbol{[19/64,5/16)}$ & $c$            & Stop            \\ \hline
-        $\boldsymbol{[19/64,5/16)}$  & \multicolumn{5}{c|}{}                                                                                              \\ \hline
+        \textbf{Intervallo corrente} & \textbf{$a$}              & \textbf{$b$}             & \textbf{$c$}                & \textbf{Input} & \textbf{Azione} \\ \hline
+        $[0,1)$                      & $\boldsymbol{[0,1/2)}$    & $[1/2,3/4)$              & $[3/4,1)$                   & $a$            & Dividi          \\ \hline
+        $[0,1/2)$                    & $[0,1/4)$                 & $\boldsymbol{[1/4,3/8)}$ & $[3/8,1/2)$                 & $b$            & Dividi          \\ \hline
+        $[1/4,3/8)$                  & $\boldsymbol{[1/4,5/16)}$ & $[5/16,11/32)$           & $[11/32,3/8)$               & $a$            & Dividi          \\ \hline
+        $[1/4,5/16)$                 & $[1/4,9/32)$              & $[9/32,19/64)$           & $\boldsymbol{[19/64,5/16)}$ & $c$            & Stop            \\ \hline
+        $\boldsymbol{[19/64,5/16)}$  & \multicolumn{5}{c|}{}                                                                                                 \\ \hline
     \end{tabular}
     \endgroup
 \end{center}
@@ -2303,11 +2303,11 @@ Vediamo anche la decodifica. Il numero $x=\frac{39}{128}$ rimane fisso: a ogni p
     \renewcommand{\arraystretch}{1.28}
     \begin{tabular}{|c|c|c|c|c|}
         \hline
-        \textbf{Intervallo corrente} & \textbf{$a$}                         & \textbf{$b$}                         & \textbf{$c$}                         & \textbf{Simbolo decodificato} \\ \hline
-        $[0,1)$                      & $\boldsymbol{[0,1/2)}$       & $[1/2,3/4)$                 & $[3/4,1)$                   & $a$                           \\ \hline
-        $[0,1/2)$                    & $[0,1/4)$                   & $\boldsymbol{[1/4,3/8)}$    & $[3/8,1/2)$                 & $b$                           \\ \hline
-        $[1/4,3/8)$                  & $\boldsymbol{[1/4,5/16)}$   & $[5/16,11/32)$              & $[11/32,3/8)$               & $a$                           \\ \hline
-        $[1/4,5/16)$                 & $[1/4,9/32)$                & $[9/32,19/64)$              & $\boldsymbol{[19/64,5/16)}$ & $c$                           \\ \hline
+        \textbf{Intervallo corrente} & \textbf{$a$}              & \textbf{$b$}             & \textbf{$c$}                & \textbf{Simbolo decodificato} \\ \hline
+        $[0,1)$                      & $\boldsymbol{[0,1/2)}$    & $[1/2,3/4)$              & $[3/4,1)$                   & $a$                           \\ \hline
+        $[0,1/2)$                    & $[0,1/4)$                 & $\boldsymbol{[1/4,3/8)}$ & $[3/8,1/2)$                 & $b$                           \\ \hline
+        $[1/4,3/8)$                  & $\boldsymbol{[1/4,5/16)}$ & $[5/16,11/32)$           & $[11/32,3/8)$               & $a$                           \\ \hline
+        $[1/4,5/16)$                 & $[1/4,9/32)$              & $[9/32,19/64)$           & $\boldsymbol{[19/64,5/16)}$ & $c$                           \\ \hline
     \end{tabular}
     \endgroup
 \end{center}
@@ -2321,7 +2321,7 @@ In forma discorsiva, la stessa procedura è:
 Il messaggio ricostruito è dunque \texttt{abac}.
 
 \subsubsection{Quanti bit servono?}
-Dato un intervallo finale $[l,l+s)$, vogliamo scegliere una frazione dyadica interna usando meno bit possibile. Il criterio usato nelle slide è scegliere il punto centrale $l+s/2$ e troncarne la rappresentazione binaria a un numero sufficiente di bit.
+Dato un intervallo finale $[l,l+s)$, vogliamo scegliere una frazione dyadica interna usando meno bit possibile. Il criterio è scegliere il punto centrale $l+s/2$ e troncarne la rappresentazione binaria a un numero sufficiente di bit.
 
 \begin{theorem}
     Sia $x=0.b_1b_2\ldots$ un numero reale in $[0,1)$ e sia $\operatorname{trunc}_d(x)$ il numero ottenuto mantenendo solo i primi $d$ bit della sua rappresentazione binaria. Allora:
@@ -2338,24 +2338,56 @@ Dato un intervallo finale $[l,l+s)$, vogliamo scegliere una frazione dyadica int
         \leq
         \sum_{i=1}^{\infty} 2^{-(d+i)}
         =
+        2^{-d} \sum_{i=1}^{\infty} 2^{-i} =
         2^{-d}.
     \]
-    Inoltre la troncatura non può essere maggiore di $x$, perché sostituisce alcuni bit successivi con zeri.
+    Inoltre la troncatura non può essere maggiore di $x$, perché sostituisce alcuni bit successivi con zeri. Quindi abbiamo che:
+    \[
+        x-\operatorname{trunc}_d(x) \leq 2^{-d} \quad \rightarrow \quad x-2^{-d} \leq \operatorname{trunc}_d(x) \leq x.
+    \]
 \end{proof}
 
-Applicando il teorema a $x=l+s/2$, basta prendere:
+Il punto importante è interpretare la troncatura come un errore controllato. Troncando la rappresentazione binaria a $d$ bit, infatti, non si può ottenere un numero più grande di quello di partenza: si cancellano solo i bit successivi, cioè si sostituisce la coda binaria con zeri. Per questo la troncatura può soltanto spostare il punto verso sinistra.
+
+Il teorema dice inoltre quanto può essere grande questo spostamento. Se il punto di partenza è $x$, allora:
+\[
+    x-\operatorname{trunc}_d(x)\leq 2^{-d}.
+\]
+Quindi $2^{-d}$ è una stima del massimo errore possibile quando si conservano solo $d$ bit.
+
+Nel nostro caso scegliamo come punto di partenza il centro dell'intervallo finale:
+\[
+    x=l+\frac{s}{2}.
+\]
+Questo punto dista esattamente $s/2$ dal bordo sinistro $l$. Se la troncatura può spostarlo verso sinistra di al massimo $2^{-d}$, allora vogliamo imporre che questo spostamento massimo non superi la distanza dal bordo sinistro:
+\[
+    2^{-d}\leq \frac{s}{2}.
+\]
+In questo modo, anche nel caso peggiore, il punto troncato non può uscire dall'intervallo passando sotto $l$.
+
+Risolviamo ora la condizione rispetto a $d$:
+\[
+    2^{-d}\leq \frac{s}{2}
+    \quad\Longleftrightarrow\quad
+    2^d\geq \frac{2}{s}
+    \quad\Longleftrightarrow\quad
+    d\geq \log_2\frac{2}{s}.
+\]
+Poiché $d$ deve essere un numero intero di bit, scegliamo il più piccolo intero che soddisfa questa disuguaglianza:
 \[
     d=\left\lceil\log_2\frac{2}{s}\right\rceil.
 \]
-Infatti $2^{-d}\leq s/2$, quindi:
+Con questa scelta si ha infatti $2^{-d}\leq s/2$, quindi:
 \[
     \operatorname{trunc}_d\left(l+\frac{s}{2}\right)
+    \geq
+    l+\frac{s}{2}-2^{-d}
     \geq
     l+\frac{s}{2}-\frac{s}{2}
     =
     l
 \]
-e, allo stesso tempo,
+e, allo stesso tempo:
 \[
     \operatorname{trunc}_d\left(l+\frac{s}{2}\right)
     \leq
@@ -2365,28 +2397,61 @@ e, allo stesso tempo,
 \]
 La troncatura cade quindi dentro l'intervallo finale.
 
-Usando \eqref{eq:arithmetic_final_size}, il numero di bit emessi per una sequenza $S$ di lunghezza $n$ è al più:
-\[
-    \left\lceil\log_2\frac{2}{s_n}\right\rceil
-    \leq
-    2-\log_2 s_n
-    =
-    2-\log_2\prod_{i=1}^{n}p(S[i])
-    =
-    2-\sum_{i=1}^{n}\log_2 p(S[i]).
-\]
-Se le probabilità sono stimate dalle frequenze empiriche della sequenza, raggruppando i termini uguali si ottiene:
-\[
-    2-\sum_{\sigma\in A} n_\sigma \log_2 p(\sigma)
-    =
-    2+nH(S),
-\]
-dove $n_\sigma$ è il numero di occorrenze di $\sigma$ e $H(S)$ è l'entropia della sorgente. In media, quindi, il costo è:
-\[
-    H(S)+\frac{2}{n}
-    \quad \text{bit/simbolo}.
-\]
-Lo spreco di due bit è sull'intera sequenza, non su ogni simbolo; per messaggi lunghi il termine $2/n$ diventa trascurabile. Questo è il punto in cui la codifica aritmetica supera il limite pratico di Huffman sui singoli simboli.
+\begin{theorem}[Costo della codifica aritmetica]
+    Sia $S$ una sequenza di lunghezza $n$ e sia $s_n$ l'ampiezza dell'intervallo finale prodotto dalla codifica aritmetica statica. Il numero di bit sufficienti per rappresentare una frazione dyadica interna all'intervallo finale è al più:
+    \[
+        2-\sum_{i=1}^{n}\log_2 p(S[i]).
+    \]
+    Se le probabilità sono stimate dalle frequenze empiriche della sequenza, allora il costo totale è al più:
+    \[
+        2+nH(S),
+    \]
+    e quindi il costo medio è al più:
+    \[
+        H(S)+\frac{2}{n}
+        \quad \text{bit/simbolo}.
+    \]
+\end{theorem}
+
+\begin{proof}
+    Dal risultato precedente sappiamo che è sufficiente scegliere:
+    \[
+        d=\left\lceil\log_2\frac{2}{s_n}\right\rceil
+    \]
+    bit. Poiché per ogni numero reale $y$ vale $\lceil y\rceil\leq y+1$, otteniamo:
+    \[
+        d
+        =
+        \left\lceil\log_2\frac{2}{s_n}\right\rceil
+        \leq
+        \log_2\frac{2}{s_n}+1
+        =
+        2-\log_2 s_n.
+    \]
+    Usando \eqref{eq:arithmetic_final_size}, cioè $s_n=\prod_{i=1}^{n}p(S[i])$, segue:
+    \[
+        d
+        \leq
+        2-\log_2\prod_{i=1}^{n}p(S[i])
+        =
+        2-\sum_{i=1}^{n}\log_2 p(S[i]).
+    \]
+    Se le probabilità sono stimate dalle frequenze empiriche, cioè $p(\sigma)=n_\sigma/n$, possiamo raggruppare i termini uguali:
+    \[
+        2-\sum_{i=1}^{n}\log_2 p(S[i])
+        =
+        2-\sum_{\sigma\in A} n_\sigma \log_2 p(\sigma)
+        =
+        2+nH(S),
+    \]
+    dove $n_\sigma$ è il numero di occorrenze di $\sigma$ nella sequenza e, in questo caso, $H(S)$ è l'entropia empirica. Dividendo per $n$ si ottiene il costo medio per simbolo:
+    \[
+        H(S)+\frac{2}{n}
+        \quad \text{bit/simbolo}.
+    \]
+\end{proof}
+
+Il termine aggiuntivo di due bit è pagato sull'intera sequenza, non su ogni simbolo; per messaggi lunghi il contributo medio $2/n$ diventa quindi trascurabile. Questo è il punto in cui la codifica aritmetica supera il limite pratico di Huffman sui singoli simboli: invece di arrotondare la lunghezza di ogni parola di codice, arrotonda una sola volta il numero che rappresenta l'intero messaggio.
 
 \subsubsection{Modello dinamico}
 Finora abbiamo considerato un modello statico: le probabilità sono fissate prima di iniziare e restano uguali per tutta la codifica. La codifica aritmetica, però, si presta bene anche a un \textbf{modello dinamico}, in cui le probabilità vengono aggiornate dopo ogni simbolo letto.
