@@ -1,6 +1,0 @@
-﻿Which number to choose
-inside the interval?
-Let us consider the problem of choosing a number inside the interval
-[ln , ln + 𝑠𝑛 ) that has the form of a dyadic fraction 𝑣/2𝑘 and can be
-encoded with the fewest bits (i.e. smallest k).
-

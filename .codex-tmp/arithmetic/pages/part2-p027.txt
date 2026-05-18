@@ -1,4 +1,0 @@
-﻿Exercise
-Which is the arithmetic encoding of the string abaab by using the
-previous model?
-

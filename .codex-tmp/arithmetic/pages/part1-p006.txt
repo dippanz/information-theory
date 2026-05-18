@@ -1,9 +1,0 @@
-﻿ The key-idea
-❑The output of the arithmetic coding algorithm is, as usual,
-a stream of bits
-❑It might be thought as a situation where an initial
-preceding bit 0 is assumed, with the stream of bits
-representing a binary decimal, a value ranging from 0 to 1.
-
-                   01101010 → 0.01101010
-

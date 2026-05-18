@@ -1,9 +1,0 @@
-﻿How to proceed?
-Low and High are updated at each step as follows:
-NewHigh:=OldLow+Range*HighRange(X);
-NewLow:=OldLow+Range*LowRange(X);
-where
-Range=OldHigh−OldLow
-LowRange(X) and HighRange(X) are the lower bound and the upper
-bound of the interval corresponding to X, respectively.
-

@@ -1,4 +1,0 @@
-﻿An example
-
-Input: BBBC
-
