@@ -19,11 +19,13 @@
     "ltex.dictionary": {
         "it": [
             "array",
+            "autodelimitanti",
             "decoder",
             "dyadica",
             "dyadiche",
             "dyadico",
             "encoder",
+            "gap",
             "Huffman",
             "ottimalità",
             "overhead",

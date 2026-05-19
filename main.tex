@@ -2526,6 +2526,499 @@ Rispetto a Huffman, la codifica aritmetica ha un vantaggio teorico molto forte: 
 
 In pratica, se il modello probabilistico è accurato, la codifica aritmetica può comprimere meglio, specialmente su sorgenti molto sbilanciate o dati come immagini. Se invece il modello è povero o il costo computazionale è prioritario, Huffman resta una scelta robusta e conveniente.
 
+\subsection{Codifica universale degli interi}
+Finora abbiamo studiato codici per simboli di una sorgente discreta, assumendo di conoscere o stimare una distribuzione di probabilità. In molti algoritmi di compressione, però, nasce un problema leggermente diverso: bisogna rappresentare una sequenza di \textbf{interi positivi}
+\[
+    S=s_1,s_2,\ldots,s_n,
+    \qquad s_i\in\mathbb{N},\ s_i\geq 1,
+\]
+senza sapere in anticipo quanto grandi potranno essere gli interi e senza voler trasmettere una tabella di probabilità. L'obiettivo è costruire rappresentazioni binarie:
+\begin{itemize}
+    \item \textbf{a lunghezza variabile}, così da usare poche cifre per interi piccoli;
+    \item \textbf{autodelimitanti}, cioè decodificabili senza separatori esterni;
+    \item \textbf{a prefisso}, così che la decodifica sia istantanea.
+\end{itemize}
+
+La richiesta sugli interi positivi non è davvero restrittiva. Se si vogliono rappresentare anche lo zero e gli interi negativi, si può prima applicare una trasformazione biunivoca verso gli interi positivi, ad esempio:
+\begin{equation}\label{eq:integer_positive_mapping}
+    z\mapsto
+    \begin{cases}
+        2z+1, & z\geq 0,\\
+        -2z,  & z<0.
+    \end{cases}
+\end{equation}
+In questo modo:
+\[
+    0\mapsto 1,\quad -1\mapsto 2,\quad 1\mapsto 3,\quad -2\mapsto 4,\quad 2\mapsto 5,\ldots
+\]
+e qualsiasi codice per interi positivi può essere usato anche per interi con segno.
+
+\paragraph{Dove compare questo problema.}
+Un caso molto importante è quello dei motori di ricerca. Per ogni termine $t$ viene memorizzata una lista di documenti in cui $t$ compare. Se i documenti hanno identificativi interi ordinati:
+\[
+    d_1<d_2<\cdots<d_m,
+\]
+conviene memorizzare non direttamente gli identificativi, ma i \textbf{gap}
+\[
+    d_1,\ d_2-d_1,\ d_3-d_2,\ldots,d_m-d_{m-1}.
+\]
+Questi gap tendono spesso a essere piccoli, quindi un codice a lunghezza variabile può risparmiare molto spazio rispetto a una rappresentazione fissa a $32$ o $64$ bit. Lo stesso tipo di esigenza appare anche in algoritmi come LZ77, LZ78 o in passaggi intermedi di schemi basati su trasformate: il compressore produce interi, e gli interi piccoli sono generalmente più frequenti di quelli grandi.
+
+\subsubsection{Perché il binario semplice non basta}
+La rappresentazione binaria naturale di un intero $x$ ha lunghezza:
+\[
+    |B(x)|=\left\lfloor\log_2 x\right\rfloor+1.
+\]
+Questa è molto compatta, ma \uline{non è un codice a prefisso}. Per esempio:
+\[
+    B(1)=\texttt{1},
+    \qquad
+    B(2)=\texttt{10},
+    \qquad
+    B(3)=\texttt{11},
+    \qquad
+    B(4)=\texttt{100},
+\]
+se si riceve una stringa come \texttt{11011}, non è chiaro dove finisca il primo intero e dove inizi il successivo. Si nota subito come $B(2)$ sia un prefisso di $B(4)$, questo significa che la rappresentazione binaria naturale non può essere usata come codice a prefisso per interi positivi.
+
+Una soluzione semplice, quando si conosce un massimo $m=\max_j s_j$, è usare una rappresentazione fissa di lunghezza:
+\begin{equation}\label{eq:fixed_length_integer_code}
+    \left\lfloor\log_2 m\right\rfloor+1
+\end{equation}
+bit per ogni intero. Questo funziona bene se tutti gli interi sono concentrati nello stesso intervallo e hanno dimensioni simili, ma è inefficiente quando molti valori sono piccoli e pochi valori sono grandi. In quel caso il valore massimo costringe tutti gli interi a pagare la stessa lunghezza.
+
+\begin{definizione}
+    Un \textbf{codice universale per interi} è un codice binario a prefisso che associa a ogni intero positivo $x$ una parola di codice. Intuitivamente, il codice è universale quando, anche senza conoscere la distribuzione esatta degli interi, assegna a $x$ una lunghezza dell'ordine di $\log x$:
+    \[
+        l(x)=O(\log x).
+    \]
+    Nella definizione classica, inoltre, per ogni distribuzione monotona sugli interi, cioè con $p(i)\geq p(i+1)$, la lunghezza media del codice universale resta proporzionale, a meno di una costante, alla lunghezza media di un codice ottimo costruito conoscendo quella distribuzione.
+\end{definizione}
+
+L'aggettivo \emph{universale} va quindi letto in questo senso: non si pretende di essere ottimi per una singola distribuzione nota, come accade con Huffman; si vuole invece un codice ragionevolmente vicino al comportamento ottimo per un'intera famiglia di distribuzioni decrescenti, senza dover trasmettere al decoder alcuna tabella di probabilità.
+
+Se la distribuzione è nota sia all'encoder sia al decoder, un codice di Huffman può essere più conveniente. Se invece la distribuzione non è nota con precisione, oppure è nota solo al mittente ma non al ricevente, Huffman richiederebbe anche il costo di comunicare l'albero o le lunghezze delle parole di codice. I codici universali per interi evitano proprio questo costo: \uline{encoder e decoder condividono una regola fissa}.
+
+\subsubsection{Codice unario}
+Il codice unario è il più semplice codice istantaneo per interi positivi. L'intero $x$ viene rappresentato da $x-1$ zeri seguiti da un uno:
+\begin{equation}\label{eq:unary_code}
+    U(x)=0^{x-1}1.
+\end{equation}
+I primi valori sono:
+\[
+    U(1)=\texttt{1},\quad
+    U(2)=\texttt{01},\quad
+    U(3)=\texttt{001},\quad
+    U(4)=\texttt{0001}.
+\]
+La decodifica è immediata: si contano gli zeri fino al primo $1$. La lunghezza della parola è:
+\[
+    |U(x)|=x.
+\]
+Il codice è quindi a prefisso, ma \textbf{non è universale}, perché la sua lunghezza cresce linearmente in $x$ invece che come $\log x$.
+
+\paragraph{Codici ottimali rispetto a una distribuzione.}
+Un codice è ottimale, rispetto a una distribuzione $p$, quando le lunghezze soddisfano approssimativamente:
+\[
+    l(x)\simeq \log_2\frac{1}{p(x)}.
+\]
+Se $l(x)=x$, allora:
+\[
+    x=\log_2\frac{1}{p(x)}
+    \quad\Longleftrightarrow\quad
+    p(x)=2^{-x}.
+\]
+Dunque il codice unario è adatto quando la probabilità decresce molto rapidamente: i primi interi sono estremamente probabili e gli interi grandi diventano subito trascurabili. Con lo stesso ragionamento, la codifica fissa di \eqref{eq:fixed_length_integer_code} è naturale quando gli interi sono circa uniformi nell'intervallo $\{1,2,\ldots,m\}$.
+
+\subsubsection{Codici di Elias: gamma e delta}
+I due codici universali più classici presentati nelle slide sono i codici di Elias, introdotti da Peter Elias nel 1975: il \textbf{codice gamma} e il \textbf{codice delta}. Entrambi partono da una stessa idea: la rappresentazione binaria di $x$ è compatta, ma non dice dove finisce; allora si codifica anche la sua lunghezza in modo autodelimitante.
+
+\paragraph{Codice gamma.}
+Sia $B(x)$ la rappresentazione binaria naturale di $x$ e sia:
+\[
+    N=\left\lfloor\log_2 x\right\rfloor.
+\]
+Allora $|B(x)|=N+1$, cioè:
+\[
+    2^N\leq x<2^{N+1}.
+\]
+Il codice gamma di $x$ è:
+\begin{equation}\label{eq:gamma_code}
+    \gamma(x)=0^N B(x).
+\end{equation}
+In altre parole, si scrivono prima $N$ zeri e poi la rappresentazione binaria di $x$ su $N+1$ bit. La lunghezza è:
+\begin{equation}\label{eq:gamma_length}
+    |\gamma(x)|
+    =
+    N+(N+1)
+    =
+    2\left\lfloor\log_2 x\right\rfloor+1.
+\end{equation}
+Perciò il codice gamma usa circa $2\log_2 x+1$ bit, quindi è universale.
+
+\begin{table}[htpb]
+    \centering
+    \small
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{$x$} & \textbf{$B(x)$} & \textbf{$\gamma(x)$} \\ \hline
+        $1$          & \texttt{1}      & \texttt{1}           \\ \hline
+        $2$          & \texttt{10}     & \texttt{010}         \\ \hline
+        $3$          & \texttt{11}     & \texttt{011}         \\ \hline
+        $4$          & \texttt{100}    & \texttt{00100}       \\ \hline
+        $5$          & \texttt{101}    & \texttt{00101}       \\ \hline
+        $6$          & \texttt{110}    & \texttt{00110}       \\ \hline
+        $7$          & \texttt{111}    & \texttt{00111}       \\ \hline
+        $8$          & \texttt{1000}   & \texttt{0001000}     \\ \hline
+        $9$          & \texttt{1001}   & \texttt{0001001}     \\ \hline
+    \end{tabular}
+    \caption{Primi valori del codice gamma di Elias.}
+    \label{tab:gamma_codewords}
+\end{table}
+
+\paragraph{Decodifica gamma.}
+Per decodificare una parola gamma:
+\begin{enumerate}
+    \item si contano gli zeri iniziali fino al primo $1$; sia $N$ il loro numero;
+    \item il primo $1$ incontrato è il bit più significativo di $B(x)$;
+    \item si leggono in totale $N+1$ bit a partire da quel $1$;
+    \item la stringa ottenuta viene interpretata come rappresentazione binaria di $x$.
+\end{enumerate}
+
+\paragraph{Esempio 1: codifica e decodifica gamma di $9$.}
+Poiché:
+\[
+    9=(1001)_2,
+    \qquad
+    \left\lfloor\log_2 9\right\rfloor=3,
+\]
+si scrivono tre zeri seguiti da $1001$:
+\[
+    \gamma(9)=\texttt{0001001}.
+\]
+In decodifica, leggendo \texttt{0001001}, si incontrano tre zeri prima del primo $1$, quindi $N=3$. Si leggono allora $N+1=4$ bit a partire dal primo $1$:
+\[
+    \texttt{1001}_2=9.
+\]
+
+L'inefficienza del codice gamma sta nel modo in cui codifica la lunghezza $|B(x)|$: usa una parte unaria, quindi per interi molto grandi questa intestazione diventa costosa. Si può mostrare che il gamma è particolarmente adatto a distribuzioni circa del tipo:
+\[
+    p(x)\simeq \frac{1}{2x^2}.
+\]
+Infatti la sua lunghezza è circa $2\log_2 x$, e quindi corrisponde a probabilità proporzionali a $x^{-2}$.
+
+\paragraph{Codice delta.}
+Il codice delta migliora il gamma codificando in modo più efficiente la lunghezza di $B(x)$. Sia ancora:
+\[
+    N=\left\lfloor\log_2 x\right\rfloor,
+    \qquad |B(x)|=N+1.
+\]
+Il codice delta è formato da due parti:
+\begin{equation}\label{eq:delta_code}
+    \delta(x)=\gamma(N+1)\ \operatorname{tail}(B(x)),
+\end{equation}
+dove $\operatorname{tail}(B(x))$ indica la rappresentazione binaria di $x$ privata del bit più significativo. Il bit più significativo non serve, perché per un intero positivo è sempre $1$.
+
+La lunghezza è:
+\begin{equation}\label{eq:delta_length}
+    |\delta(x)|
+    =
+    |\gamma(N+1)|+N
+    =
+    2\left\lfloor\log_2(N+1)\right\rfloor+1+N.
+\end{equation}
+Poiché $N\simeq\log_2 x$, per $x$ grande si ottiene:
+\[
+    |\delta(x)|
+    \simeq
+    1+\log_2 x+2\log_2\log_2 x.
+\]
+Il codice delta è quindi ancora universale, ma per interi grandi è più corto del gamma.
+
+\paragraph{Esempio 2: codifica delta di $14$.}
+Per $x=14$ si ha:
+\[
+    B(14)=\texttt{1110},
+    \qquad
+    N=\left\lfloor\log_2 14\right\rfloor=3,
+    \qquad
+    N+1=4.
+\]
+Ora:
+\[
+    \gamma(4)=\texttt{00100},
+\]
+mentre la rappresentazione binaria di $14$ senza il primo bit è:
+\[
+    \operatorname{tail}(B(14))=\texttt{110}.
+\]
+Quindi:
+\[
+    \delta(14)=\texttt{00100}\,\texttt{110}
+    =
+    \texttt{00100110}.
+\]
+
+\paragraph{Decodifica delta.}
+Per decodificare una parola delta:
+\begin{enumerate}
+    \item si decodifica anzitutto una parola gamma iniziale; il risultato è $N+1$;
+    \item si calcola $N=(N+1)-1$;
+    \item si leggono i successivi $N$ bit;
+    \item si antepone un $1$ a questi $N$ bit e si interpreta il risultato in binario.
+\end{enumerate}
+
+Per esempio, decodifichiamo:
+\[
+    \texttt{001010011}.
+\]
+La parte iniziale \texttt{00101} è una parola gamma:
+\[
+    \gamma(5)=\texttt{00101}.
+\]
+Quindi $N+1=5$ e $N=4$. I successivi $4$ bit sono:
+\[
+    \texttt{0011}.
+\]
+Anteponendo il bit più significativo si ottiene:
+\[
+    \texttt{1}\,\texttt{0011}=\texttt{10011}_2=19.
+\]
+Dunque:
+\[
+    \delta(19)=\texttt{001010011}.
+\]
+
+Anche per il delta si può leggere la lunghezza come indizio della distribuzione per cui il codice è più naturale. Poiché:
+\[
+    |\delta(x)|\simeq \log_2 x+2\log_2\log_2 x,
+\]
+il codice delta è adatto a distribuzioni circa del tipo:
+\[
+    p(x)\simeq \frac{1}{2x(\log x)^2}.
+\]
+
+\begin{theorem}[I codici gamma e delta sono a prefisso]
+    I codici $\gamma$ e $\delta$ di Elias sono codici a prefisso, quindi sono istantaneamente decodificabili.
+\end{theorem}
+
+\begin{proof}
+    Nel codice gamma, la sequenza iniziale di zeri determina in modo univoco quanti bit devono essere letti per completare $B(x)$. Dopo aver letto quei bit, la parola è terminata e nessun bit successivo può farne ancora parte. Dunque una parola gamma completa non può essere prefisso di un'altra parola gamma.
+
+    Nel codice delta, la prima parte è una parola gamma che determina in modo univoco il valore $N+1$, cioè la lunghezza della rappresentazione binaria di $x$. Una volta noto $N$, il decoder sa esattamente quanti bit successivi leggere. Anche qui la fine della parola è determinata internamente dalla parola stessa, quindi il codice è a prefisso.
+\end{proof}
+
+\subsubsection{Codice di Fibonacci}
+Il codice di Fibonacci usa una struttura diversa. Si basa sul seguente risultato.
+
+\begin{theorem}[Teorema di Zeckendorf]
+    Ogni intero positivo può essere rappresentato in modo unico come somma di numeri di Fibonacci distinti, di indice almeno $2$, senza usare due numeri di Fibonacci consecutivi.
+\end{theorem}
+
+Usiamo la convenzione:
+\[
+    F_0=0,\quad
+    F_1=1,\quad
+    F_2=1,\quad
+    F_3=2,\quad
+    F_4=3,\quad
+    F_5=5,\quad
+    F_6=8,\ldots
+\]
+Per esempio:
+\[
+    110=89+21.
+\]
+La rappresentazione alternativa $110=89+13+8$ non è la rappresentazione di Zeckendorf, perché usa due numeri consecutivi, $13$ e $8$.
+
+Formalmente, se:
+\begin{equation}\label{eq:zeckendorf_representation}
+    N=\sum_{i=0}^{k-1} d_i F_{i+2},
+    \qquad d_i\in\{0,1\},
+\end{equation}
+e la cifra più a destra usata è $d_{k-1}=1$, il codice di Fibonacci è:
+\begin{equation}\label{eq:fibonacci_code}
+    \operatorname{Fib}(N)=d_0d_1\cdots d_{k-1}1.
+\end{equation}
+L'ultimo $1$ è un bit aggiuntivo di terminazione.
+
+\paragraph{Perché è a prefisso.}
+Nella rappresentazione di Zeckendorf non compaiono mai due $1$ consecutivi. Aggiungendo un $1$ finale, ogni parola di codice termina invece con la sottostringa \texttt{11}. Poiché \texttt{11} non può comparire all'interno della rappresentazione, il decoder riconosce la fine della parola appena vede due $1$ consecutivi. Per questo il codice è a prefisso.
+
+\begin{table}[htpb]
+    \centering
+    \small
+    \begin{tabular}{|c|c|c|}
+        \hline
+        \textbf{$N$} & \textbf{Rappresentazione di Zeckendorf} & \textbf{Codice di Fibonacci} \\ \hline
+        $1$          & $F_2$                                   & \texttt{11}                  \\ \hline
+        $2$          & $F_3$                                   & \texttt{011}                 \\ \hline
+        $3$          & $F_4$                                   & \texttt{0011}                \\ \hline
+        $4$          & $F_2+F_4$                               & \texttt{1011}                \\ \hline
+        $5$          & $F_5$                                   & \texttt{00011}               \\ \hline
+        $6$          & $F_2+F_5$                               & \texttt{10011}               \\ \hline
+        $7$          & $F_3+F_5$                               & \texttt{01011}               \\ \hline
+        $8$          & $F_6$                                   & \texttt{000011}              \\ \hline
+        $9$          & $F_2+F_6$                               & \texttt{100011}              \\ \hline
+    \end{tabular}
+    \caption{Primi valori del codice di Fibonacci.}
+    \label{tab:fibonacci_codewords}
+\end{table}
+
+\paragraph{Esempio 3: codifica di Fibonacci di $73$.}
+Dalla decomposizione di Zeckendorf:
+\[
+    73=55+13+5
+    =
+    F_{10}+F_7+F_5.
+\]
+Le posizioni del codice corrispondono, da sinistra a destra, ai coefficienti di:
+\[
+    F_2,F_3,F_4,F_5,F_6,F_7,F_8,F_9,F_{10}.
+\]
+Quindi mettiamo $1$ nelle posizioni associate a $F_5$, $F_7$ e $F_{10}$:
+\[
+    d_0d_1\cdots d_8=\texttt{000101001}.
+\]
+Aggiungendo il bit finale di terminazione:
+\[
+    \operatorname{Fib}(73)=\texttt{0001010011}.
+\]
+
+La decodifica è altrettanto diretta: si rimuove l'ultimo $1$, si associa ai bit rimanenti la sequenza:
+\[
+    1,2,3,5,8,13,21,34,55,\ldots
+\]
+e si sommano i valori in corrispondenza dei bit uguali a $1$.
+
+Per esempio:
+\[
+    \texttt{100011}
+\]
+termina con \texttt{11}. Rimuovendo l'ultimo $1$ resta:
+\[
+    \texttt{10001}.
+\]
+I bit $1$ corrispondono a $F_2=1$ e $F_6=8$, quindi:
+\[
+    1+8=9.
+\]
+
+Il codice di Fibonacci è universale: si può dimostrare che l'intero $x$ viene rappresentato usando al più:
+\begin{equation}\label{eq:fibonacci_length_bound}
+    1+\log_{\varphi}\left(\sqrt{5}\,x\right)
+\end{equation}
+bit, dove:
+\[
+    \varphi=\frac{1+\sqrt{5}}{2}\simeq 1.61803
+\]
+è il rapporto aureo. Inoltre è un codice \textbf{sincronizzante}: la sottostringa \texttt{11} permette di riconoscere il confine della parola di codice. Questo è utile in presenza di errori, perché dopo una corruzione locale il decoder può ritrovare un punto di allineamento leggendo fino al successivo terminatore.
+
+\begin{theorem}[Universalità dei codici gamma, delta e Fibonacci]
+    I codici gamma, delta e Fibonacci rappresentano ogni intero positivo $x$ usando $O(\log x)$ bit.
+\end{theorem}
+
+\begin{proof}
+    Per il codice gamma, da \eqref{eq:gamma_length}:
+    \[
+        |\gamma(x)|
+        =
+        2\left\lfloor\log_2 x\right\rfloor+1
+        =
+        O(\log x).
+    \]
+    Per il codice delta, da \eqref{eq:delta_length}:
+    \[
+        |\delta(x)|
+        =
+        \left\lfloor\log_2 x\right\rfloor
+        +
+        2\left\lfloor\log_2\left(\left\lfloor\log_2 x\right\rfloor+1\right)\right\rfloor
+        +
+        1.
+    \]
+    Il termine dominante è $\log_2 x$, mentre $\log_2\log_2 x$ cresce più lentamente; dunque anche $|\delta(x)|=O(\log x)$. Per Fibonacci, il limite \eqref{eq:fibonacci_length_bound} è logaritmico in $x$, quindi anche quel codice è universale.
+\end{proof}
+
+\subsubsection{Codici di Rice}
+Le slide introducono infine i \textbf{codici di Rice}. Sono codici per interi molto usati in compressione audio e immagine, ma vanno distinti dai codici universali in senso stretto: per un parametro fissato, la lunghezza di un codice di Rice può crescere linearmente con $x$. Sono però estremamente utili quando gli interi sono concentrati attorno a un valore caratteristico e si vuole una decodifica veloce.
+
+Un codice di Rice dipende da un intero $k\geq 0$. Dato $x\geq 1$, si definiscono:
+\begin{equation}\label{eq:rice_parameters}
+    q=\left\lfloor\frac{x-1}{2^k}\right\rfloor,
+    \qquad
+    r=x-2^kq-1.
+\end{equation}
+Il resto $r$ appartiene all'intervallo:
+\[
+    0\leq r<2^k,
+\]
+quindi può essere rappresentato con esattamente $k$ bit. Il codice di Rice è formato da:
+\[
+    R_k(x)=U(q+1)\ \operatorname{bin}_k(r),
+\]
+dove $U(q+1)$ è il codice unario di $q+1$ e $\operatorname{bin}_k(r)$ è la rappresentazione binaria di $r$ su $k$ bit. La lunghezza totale è:
+\begin{equation}\label{eq:rice_length}
+    |R_k(x)|=q+k+1.
+\end{equation}
+
+\paragraph{Esempio 4: codice di Rice $R_4(83)$.}
+Qui $k=4$, quindi $2^k=16$. Calcoliamo:
+\[
+    q=\left\lfloor\frac{83-1}{16}\right\rfloor
+    =
+    \left\lfloor\frac{82}{16}\right\rfloor
+    =
+    5,
+\]
+e:
+\[
+    r=83-16\cdot 5-1=2.
+\]
+Il quoziente viene codificato come $U(q+1)=U(6)$:
+\[
+    U(6)=\texttt{000001}.
+\]
+Il resto $r=2$ su $4$ bit è:
+\[
+    \operatorname{bin}_4(2)=\texttt{0010}.
+\]
+Perciò:
+\[
+    R_4(83)=\texttt{000001}\,\texttt{0010}
+    =
+    \texttt{0000010010}.
+\]
+La decodifica legge prima l'unario \texttt{000001}, che restituisce $q+1=6$, quindi $q=5$; poi legge i successivi $4$ bit, cioè \texttt{0010}, ottenendo $r=2$. Infine ricostruisce:
+\[
+    x=2^kq+r+1=16\cdot 5+2+1=83.
+\]
+
+Il parametro $k$ controlla il compromesso tra parte unaria e parte binaria. Se $2^k$ è vicino alla scala tipica dei valori da codificare, il quoziente $q$ resta piccolo e la parte unaria si decodifica rapidamente. Per questo, nelle applicazioni, $k$ viene scelto in modo che $2^k$ sia vicino alla media dei valori della sequenza. I codici di Rice sono un caso particolare dei codici di Golomb e sono ottimali per distribuzioni geometriche:
+\[
+    p(x)=(1-p)^{x-1}p.
+\]
+Nel caso geometrico, le slide riportano la scelta approssimata:
+\[
+    2^k=\ln\left(\frac{2}{p}\right)\simeq 0.69\,\operatorname{mean}(S),
+\]
+che produce un codice a prefisso ottimale per quella famiglia di distribuzioni.
+
+\subsubsection{Confronto tra i codici}
+I codici visti nella sezione rispondono a esigenze diverse:
+\begin{itemize}
+    \item \textbf{unario}: semplicissimo e istantaneo, ottimo solo quando quasi tutti i valori sono molto piccoli;
+    \item \textbf{gamma}: universale, facile da costruire, ma paga una codifica unaria della lunghezza;
+    \item \textbf{delta}: universale e più efficiente del gamma per interi grandi, perché codifica la lunghezza con un gamma;
+    \item \textbf{Fibonacci}: universale e sincronizzante, grazie al terminatore \texttt{11};
+    \item \textbf{Rice}: parametrico e molto veloce, adatto quando si conosce la scala dei valori o quando i dati seguono circa una distribuzione geometrica.
+\end{itemize}
+
+La scelta dipende quindi da ciò che si sa della sorgente. Se non si conoscono le probabilità e si vuole una regola generale per interi non limitati, gamma, delta e Fibonacci sono scelte naturali. Se invece si conosce una scala tipica dei valori, Rice può essere più conveniente, soprattutto dal punto di vista pratico della velocità di decodifica.
+
+\paragraph{Esercizio operativo.}
+Un buon modo per fissare le differenze tra questi codici è scrivere una funzione di codifica e decodifica per ciascuno di essi e confrontare le lunghezze prodotte sui primi $n$ interi positivi. Il confronto mostra bene il comportamento asintotico: il gamma raddoppia circa la lunghezza binaria, il delta aggiunge un costo più piccolo per la lunghezza, Fibonacci resta logaritmico ma con base $\varphi$, mentre Rice dipende fortemente dalla scelta del parametro $k$.
+
 
 
 
