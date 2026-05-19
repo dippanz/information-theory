@@ -2599,6 +2599,39 @@ L'aggettivo \emph{universale} va quindi letto in questo senso: non si pretende d
 
 Se la distribuzione è nota sia all'encoder sia al decoder, un codice di Huffman può essere più conveniente. Se invece la distribuzione non è nota con precisione, oppure è nota solo al mittente ma non al ricevente, Huffman richiederebbe anche il costo di comunicare l'albero o le lunghezze delle parole di codice. I codici universali per interi evitano proprio questo costo: \uline{encoder e decoder condividono una regola fissa}.
 
+\subsubsection{Lunghezze ideali e distribuzioni compatibili}
+Prima di vedere i codici concreti conviene chiarire il criterio usato. L'idea è la stessa vista con il teorema di Shannon: se un intero $x$ ha probabilità $p(x)$, allora la sua lunghezza ideale dovrebbe essere:
+\begin{equation}\label{eq:ideal_integer_code_length}
+    l^*(x)=\log_2\frac{1}{p(x)}.
+\end{equation}
+Questa formula dice che valori più probabili devono avere parole più corte, mentre valori meno probabili possono permettersi parole più lunghe.
+
+\textbf{Parliamo di lunghezze ideali}. Nella pratica le lunghezze di un codice binario devono essere intere e devono anche soddisfare il vincolo di prefisso. Quindi la formula \eqref{eq:ideal_integer_code_length} non produce automaticamente un codice reale, ma descrive il profilo di lunghezze che un codice ottimo dovrebbe cercare di imitare.
+
+Questa formula può essere usata anche al contrario. Se un certo codice assegna lunghezza $l(x)$ all'intero $x$, possiamo chiederci:
+\begin{quote}
+    Per quale distribuzione di probabilità questa scelta di lunghezze sarebbe naturale?
+\end{quote}
+Per rispondere si impone:
+\[
+    l(x)=\log_2\frac{1}{p(x)}
+\]
+e si risolve rispetto a $p(x)$.
+
+\paragraph{Caso della codifica fissa.}
+Se tutti gli interi in $\{1,2,\ldots,m\}$ sono rappresentati con la stessa lunghezza, il codice sta implicitamente trattando tutti i valori come ugualmente probabili. Infatti, se:
+\[
+    p(x)=\frac{1}{m},
+    \qquad x=1,2,\ldots,m,
+\]
+allora:
+\[
+    \log_2\frac{1}{p(x)}
+    =
+    \log_2 m,
+\]
+che è uguale per ogni $x$. Per questo la codifica fissa è sensata quando i valori sono distribuiti in modo circa uniforme dentro un intervallo noto. Se invece molti valori sono piccoli e pochi sono grandi, la lunghezza fissa spreca spazio sui valori piccoli.
+
 \subsubsection{Codice unario}
 Il codice unario è il più semplice codice istantaneo per interi positivi. L'intero $x$ viene rappresentato da $x-1$ zeri seguiti da un uno:
 \begin{equation}\label{eq:unary_code}
@@ -2617,18 +2650,33 @@ La decodifica è immediata: si contano gli zeri fino al primo $1$. La lunghezza 
 \]
 Il codice è quindi a prefisso, ma \textbf{non è universale}, perché la sua lunghezza cresce linearmente in $x$ invece che come $\log x$.
 
-\paragraph{Codici ottimali rispetto a una distribuzione.}
-Un codice è ottimale, rispetto a una distribuzione $p$, quando le lunghezze soddisfano approssimativamente:
+\paragraph{Per quale distribuzione è adatto.}
+Applichiamo adesso il ragionamento precedente al codice unario. Poiché il codice unario assegna all'intero $x$ una parola di lunghezza $|U(x)|=x$, cerchiamo la distribuzione per cui questa lunghezza coincide con la lunghezza ideale:
 \[
-    l(x)\simeq \log_2\frac{1}{p(x)}.
+    |U(x)|=x=\log_2\frac{1}{p(x)}.
 \]
-Se $l(x)=x$, allora:
+risolvendo:
 \[
-    x=\log_2\frac{1}{p(x)}
+    2^x=\frac{1}{p(x)}
     \quad\Longleftrightarrow\quad
     p(x)=2^{-x}.
 \]
-Dunque il codice unario è adatto quando la probabilità decresce molto rapidamente: i primi interi sono estremamente probabili e gli interi grandi diventano subito trascurabili. Con lo stesso ragionamento, la codifica fissa di \eqref{eq:fixed_length_integer_code} è naturale quando gli interi sono circa uniformi nell'intervallo $\{1,2,\ldots,m\}$.
+Questa è una distribuzione valida sugli interi positivi, perché:
+\[
+    \sum_{x=1}^{+\infty}2^{-x}=1.
+\]
+Dunque il codice unario è adatto quando le probabilità decrescono molto rapidamente:
+\[
+    p(1)=\frac{1}{2},
+    \quad
+    p(2)=\frac{1}{4},
+    \quad
+    p(3)=\frac{1}{8},
+    \quad
+    p(4)=\frac{1}{16},
+    \ldots
+\]
+In questa situazione quasi tutto il peso probabilistico è concentrato sui primi interi, quindi pagare $x$ bit per rappresentare $x$ non è troppo grave. Appena però gli interi grandi diventano abbastanza frequenti, l'unario diventa inefficiente: per rappresentare $1000$ usa $1000$ bit, mentre la rappresentazione binaria naturale ne usa solo $\left\lfloor\log_2 1000\right\rfloor+1=10$.
 
 \subsubsection{Codici di Elias: gamma e delta}
 I due codici universali più classici presentati nelle slide sono i codici di Elias, introdotti da Peter Elias nel 1975: il \textbf{codice gamma} e il \textbf{codice delta}. Entrambi partono da una stessa idea: la rappresentazione binaria di $x$ è compatta, ma non dice dove finisce; allora si codifica anche la sua lunghezza in modo autodelimitante.
