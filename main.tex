@@ -2535,7 +2535,7 @@ Finora abbiamo studiato codici per simboli di una sorgente discreta, assumendo d
 senza sapere in anticipo quanto grandi potranno essere gli interi e senza voler trasmettere una tabella di probabilità. L'obiettivo è costruire rappresentazioni binarie:
 \begin{itemize}
     \item \textbf{a lunghezza variabile}, così da usare poche cifre per interi piccoli;
-    \item \textbf{autodelimitanti}, cioè decodificabili senza separatori esterni;
+    \item \textbf{autolimitanti}, cioè decodificabili senza separatori esterni;
     \item \textbf{a prefisso}, così che la decodifica sia istantanea.
 \end{itemize}
 
@@ -2653,7 +2653,7 @@ Il codice è quindi a prefisso, ma \textbf{non è universale}, perché la sua lu
 \paragraph{Per quale distribuzione è adatto.}
 Applichiamo adesso il ragionamento precedente al codice unario. Poiché il codice unario assegna all'intero $x$ una parola di lunghezza $|U(x)|=x$, cerchiamo la distribuzione per cui questa lunghezza coincide con la lunghezza ideale:
 \[
-    |U(x)|=x=\log_2\frac{1}{p(x)}.
+    |U(x)|=x=\log_2\frac{1}{p(x)}
 \]
 risolvendo:
 \[
@@ -2679,7 +2679,7 @@ Dunque il codice unario è adatto quando le probabilità decrescono molto rapida
 In questa situazione quasi tutto il peso probabilistico è concentrato sui primi interi, quindi pagare $x$ bit per rappresentare $x$ non è troppo grave. Appena però gli interi grandi diventano abbastanza frequenti, l'unario diventa inefficiente: per rappresentare $1000$ usa $1000$ bit, mentre la rappresentazione binaria naturale ne usa solo $\left\lfloor\log_2 1000\right\rfloor+1=10$.
 
 \subsubsection{Codici di Elias: gamma e delta}
-I due codici universali più classici presentati nelle slide sono i codici di Elias, introdotti da Peter Elias nel 1975: il \textbf{codice gamma} e il \textbf{codice delta}. Entrambi partono da una stessa idea: la rappresentazione binaria di $x$ è compatta, ma non dice dove finisce; allora si codifica anche la sua lunghezza in modo autodelimitante.
+I due codici universali più classici sono i codici di Elias, introdotti da Peter Elias nel 1975: il \textbf{codice gamma} e il \textbf{codice delta}. Entrambi partono da una stessa idea: la rappresentazione binaria di $x$ è compatta, ma non dice dove finisce; allora si codifica anche la sua lunghezza in modo autolimitante.
 
 \paragraph{Codice gamma.}
 Sia $B(x)$ la rappresentazione binaria naturale di $x$ e sia:
@@ -2707,7 +2707,7 @@ Perciò il codice gamma usa circa $2\log_2 x+1$ bit, quindi è universale.
 \begin{table}[htpb]
     \centering
     \small
-    \begin{tabular}{|c|c|c|}
+    \begin{tabular}{|l|l|l|}
         \hline
         \textbf{$x$} & \textbf{$B(x)$} & \textbf{$\gamma(x)$} \\ \hline
         $1$          & \texttt{1}      & \texttt{1}           \\ \hline
@@ -2846,14 +2846,46 @@ il codice delta è adatto a distribuzioni circa del tipo:
     p(x)\simeq \frac{1}{2x(\log x)^2}.
 \]
 
-\begin{theorem}[I codici gamma e delta sono a prefisso]
+\begin{theorem}[Proprietà di prefisso dei codici gamma e delta]
     I codici $\gamma$ e $\delta$ di Elias sono codici a prefisso, quindi sono istantaneamente decodificabili.
 \end{theorem}
 
 \begin{proof}
-    Nel codice gamma, la sequenza iniziale di zeri determina in modo univoco quanti bit devono essere letti per completare $B(x)$. Dopo aver letto quei bit, la parola è terminata e nessun bit successivo può farne ancora parte. Dunque una parola gamma completa non può essere prefisso di un'altra parola gamma.
+    Questa dimostrazione non introduce un risultato difficile da imparare a memoria: serve soprattutto a rendere esplicito il motivo per cui la decodifica dei codici di Elias non ha bisogno di separatori esterni.
 
-    Nel codice delta, la prima parte è una parola gamma che determina in modo univoco il valore $N+1$, cioè la lunghezza della rappresentazione binaria di $x$. Una volta noto $N$, il decoder sa esattamente quanti bit successivi leggere. Anche qui la fine della parola è determinata internamente dalla parola stessa, quindi il codice è a prefisso.
+    Consideriamo prima il codice gamma. Per definizione:
+    \[
+        \gamma(x)=0^N B(x),
+        \qquad
+        N=\left\lfloor\log_2 x\right\rfloor.
+    \]
+    La rappresentazione binaria $B(x)$ ha sempre lunghezza $N+1$ e inizia sempre con $1$. Quando il decoder legge una parola gamma, non conosce ancora $x$, ma può contare gli zeri iniziali. Se incontra $N$ zeri prima del primo $1$, allora sa immediatamente che la parte binaria completa deve essere lunga $N+1$ bit, contando anche quel primo $1$.
+
+    Per esempio, se il flusso inizia con:
+    \[
+        \texttt{0001001}\ldots
+    \]
+    il decoder vede tre zeri iniziali, quindi deduce $N=3$. A questo punto non deve indovinare dove termina la parola: deve leggere esattamente $N+1=4$ bit a partire dal primo $1$, cioè:
+    \[
+        \texttt{1001}.
+    \]
+    La parola gamma completa è quindi:
+    \[
+        \texttt{000}\,\texttt{1001}.
+    \]
+    Tutti i bit successivi appartengono alla parola di codice seguente, non a quella corrente. Questo mostra il punto essenziale: una parola gamma contiene al suo interno l'informazione necessaria per sapere dove finisce.
+
+    Da qui segue la proprietà di prefisso. Se una parola gamma completa potesse essere prefisso di un'altra parola gamma più lunga, il decoder, dopo aver letto la prima parola completa, dovrebbe rimanere incerto se fermarsi oppure continuare. Ma questo non accade: il numero di zeri iniziali determina esattamente quanti bit leggere dopo il primo $1$. Quindi, appena quei bit sono stati letti, la parola è chiusa in modo univoco. Nessuna parola gamma completa può essere prefisso di un'altra.
+
+    Il codice delta usa lo stesso principio, ma in due livelli. Per definizione:
+    \[
+        \delta(x)=\gamma(N+1)\operatorname{tail}(B(x)),
+        \qquad
+        N=\left\lfloor\log_2 x\right\rfloor.
+    \]
+    La prima parte è una parola gamma, quindi, per quanto appena visto, il decoder può riconoscerne la fine in modo univoco. Decodificando questa prima parte ottiene $N+1$, cioè la lunghezza della rappresentazione binaria completa di $x$. A quel punto sa che mancano esattamente $N$ bit, perché il bit più significativo di $B(x)$ è sempre $1$ ed è stato omesso nella seconda parte del delta.
+
+    Anche nel delta, dunque, il decoder sa dove fermarsi: prima legge una parola gamma completa, poi legge un numero fissato di bit successivi. La fine della parola di codice è determinata dalla parola stessa, quindi anche il codice delta è a prefisso.
 \end{proof}
 
 \subsubsection{Codice di Fibonacci}
