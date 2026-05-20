@@ -2916,14 +2916,33 @@ Formalmente, se:
     N=\sum_{i=0}^{k-1} d_i F_{i+2},
     \qquad d_i\in\{0,1\},
 \end{equation}
-e la cifra più a destra usata è $d_{k-1}=1$, il codice di Fibonacci è:
+e l'ultima cifra usata nella rappresentazione è $d_{k-1}=1$, il codice di Fibonacci è:
 \begin{equation}\label{eq:fibonacci_code}
     \operatorname{Fib}(N)=d_0d_1\cdots d_{k-1}1.
 \end{equation}
-L'ultimo $1$ è un bit aggiuntivo di terminazione.
+L'ultimo $1$ non rappresenta un numero di Fibonacci: è un bit aggiuntivo di terminazione.
+Nella rappresentazione di Zeckendorf non compaiono mai due $1$ consecutivi. Aggiungendo un $1$ finale, ogni parola di codice termina invece con la sotto stringa \texttt{11}. Poiché \texttt{11} non può comparire all'interno della rappresentazione, il decoder riconosce la fine della parola appena vede due $1$ consecutivi. Per questo il codice è a prefisso.
 
-\paragraph{Perché è a prefisso.}
-Nella rappresentazione di Zeckendorf non compaiono mai due $1$ consecutivi. Aggiungendo un $1$ finale, ogni parola di codice termina invece con la sottostringa \texttt{11}. Poiché \texttt{11} non può comparire all'interno della rappresentazione, il decoder riconosce la fine della parola appena vede due $1$ consecutivi. Per questo il codice è a prefisso.
+\paragraph{Algoritmo di codifica.}
+Il passaggio da fissare è la scelta iniziale: alla prima iterazione si prende il massimo numero di Fibonacci $F_j$ tale che $F_j\leq N$. In altre parole, se $N$ non è esso stesso un numero di Fibonacci, si prende il termine della sequenza immediatamente precedente a $N$. Dopo la sottrazione, la stessa regola si applica al resto corrente.
+
+\begin{algorithm}[htpb]
+    \caption{Codifica di Fibonacci di un intero positivo}
+    \label{alg:fibonacci_encoding}
+    \begin{algorithmic}[1]
+        \Require intero positivo $N$
+        \Ensure parola di codice $\operatorname{Fib}(N)$
+        \State $r \gets N$
+        \State inizializza tutti i bit $d_i$ a $0$
+        \While{$r>0$}
+            \State trova il massimo indice $j\geq 2$ tale che $F_j\leq r$
+            \State $d_{j-2}\gets 1$
+            \State $r\gets r-F_j$
+        \EndWhile
+        \State sia $k$ tale che $d_{k-1}$ sia l'ultimo bit uguale a $1$
+        \State \Return $d_0d_1\cdots d_{k-1}1$
+    \end{algorithmic}
+\end{algorithm}
 
 \begin{table}[htpb]
     \centering
@@ -2946,7 +2965,15 @@ Nella rappresentazione di Zeckendorf non compaiono mai due $1$ consecutivi. Aggi
 \end{table}
 
 \paragraph{Esempio 3: codifica di Fibonacci di $73$.}
-Dalla decomposizione di Zeckendorf:
+Seguendo l'algoritmo, il primo termine scelto non è un Fibonacci qualsiasi: è il massimo termine della sequenza che non supera $73$, cioè $F_{10}=55$. A ogni passo si ripete la stessa scelta sul resto corrente:
+\[
+    \begin{aligned}
+        73 &\xrightarrow{\;F_{10}=55\;} 18,\\
+        18 &\xrightarrow{\;F_7=13\;} 5,\\
+        5  &\xrightarrow{\;F_5=5\;} 0.
+    \end{aligned}
+\]
+Dunque la decomposizione di Zeckendorf è:
 \[
     73=55+13+5
     =
@@ -2958,9 +2985,9 @@ Le posizioni del codice corrispondono, da sinistra a destra, ai coefficienti di:
 \]
 Quindi mettiamo $1$ nelle posizioni associate a $F_5$, $F_7$ e $F_{10}$:
 \[
-    d_0d_1\cdots d_8=\texttt{000101001}.
+    d_0d_1\cdots d_8=\texttt{000101001},
 \]
-Aggiungendo il bit finale di terminazione:
+come è stato detto in precedenza, si parte da $i=2$ quindi $d_0=F_2$ e così via. Aggiungendo il bit finale di terminazione:
 \[
     \operatorname{Fib}(73)=\texttt{0001010011}.
 \]
@@ -2992,7 +3019,7 @@ bit, dove:
 \[
     \varphi=\frac{1+\sqrt{5}}{2}\simeq 1.61803
 \]
-è il rapporto aureo. Inoltre è un codice \textbf{sincronizzante}: la sottostringa \texttt{11} permette di riconoscere il confine della parola di codice. Questo è utile in presenza di errori, perché dopo una corruzione locale il decoder può ritrovare un punto di allineamento leggendo fino al successivo terminatore.
+è il rapporto aureo. Inoltre è un codice \textbf{sincronizzante}: la sotto stringa \texttt{11} permette di riconoscere il confine della parola di codice. Questo è utile in presenza di errori, perché dopo una corruzione locale il decoder può ritrovare un punto di allineamento leggendo fino al successivo terminatore.
 
 \begin{theorem}[Universalità dei codici gamma, delta e Fibonacci]
     I codici gamma, delta e Fibonacci rappresentano ogni intero positivo $x$ usando $O(\log x)$ bit.

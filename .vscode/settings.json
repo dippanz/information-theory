@@ -33,7 +33,8 @@
             "pseudocodice",
             "riscalato",
             "Shannon",
-            "stream"
+            "stream",
+            "Zeckendorf"
         ]
     },
     "ltex.hiddenFalsePositives": {
