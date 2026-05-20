@@ -3048,7 +3048,7 @@ bit, dove:
 \end{proof}
 
 \subsubsection{Codici di Rice}
-Le slide introducono infine i \textbf{codici di Rice}. Sono codici per interi molto usati in compressione audio e immagine, ma vanno distinti dai codici universali in senso stretto: per un parametro fissato, la lunghezza di un codice di Rice può crescere linearmente con $x$. Sono però estremamente utili quando gli interi sono concentrati attorno a un valore caratteristico e si vuole una decodifica veloce.
+I \textbf{codici di Rice} sono codici per interi molto usati in compressione audio e immagine, ma vanno distinti dai codici universali in senso stretto: per un parametro fissato, la lunghezza di un codice di Rice può crescere linearmente con $x$. Sono però estremamente utili quando gli interi sono concentrati attorno a un valore caratteristico e si vuole una decodifica veloce.
 
 Un codice di Rice dipende da un intero $k\geq 0$. Dato $x\geq 1$, si definiscono:
 \begin{equation}\label{eq:rice_parameters}
@@ -3125,6 +3125,8 @@ La scelta dipende quindi da ciò che si sa della sorgente. Se non si conoscono l
 
 \paragraph{Esercizio operativo.}
 Un buon modo per fissare le differenze tra questi codici è scrivere una funzione di codifica e decodifica per ciascuno di essi e confrontare le lunghezze prodotte sui primi $n$ interi positivi. Il confronto mostra bene il comportamento asintotico: il gamma raddoppia circa la lunghezza binaria, il delta aggiunge un costo più piccolo per la lunghezza, Fibonacci resta logaritmico ma con base $\varphi$, mentre Rice dipende fortemente dalla scelta del parametro $k$.
+
+** provare ad implementarli **
 
 
 
