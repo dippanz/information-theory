@@ -1,4 +1,5 @@
 \documentclass{article}
+\usepackage[T1]{fontenc}
 \usepackage{graphicx} % Required for inserting images
 \usepackage[
     font=small,
@@ -14,6 +15,7 @@
 \usepackage{algorithm}
 \usepackage{algpseudocode}
 \usepackage[a4paper,left=3cm,right=3cm,top=2.5cm,bottom=2.5cm]{geometry}
+\usepackage[english,italian]{babel}
 \usepackage[hidelinks]{hyperref}
 \usepackage[normalem]{ulem}
 
@@ -32,15 +34,16 @@
 \newcommand{\lbox}[1]{\makebox[1em][l]{#1}} % usato per creare una lbox la quale si puo allineare a sinistra
 \renewcommand{\ULdepth}{1.2pt}     % distanza della linea dal testo per uline
 \renewcommand{\ULthickness}{0.4pt} % spessore della linea per uline
+\babeltags{en=english}
 
 \graphicspath{{images/}}
 \setlength{\skip\footins}{25pt}
 \numberwithin{equation}{section}
 \setcounter{secnumdepth}{3} % Numera fino alle subsubsection.
 \setcounter{tocdepth}{3} % Mostra nell'indice fino alle subsubsection.
-\title{Information theory}
+\title{\texten{Information theory}}
 \author{Emanuele Di Prima}
-\date{March 2026}
+\date{Marzo 2026}
 
 \begin{document}
 \maketitle
@@ -49,10 +52,10 @@
 \section{Introduzione}
 Il ruolo fondamentale della teoria dell'informazione e compressione dati fornisce i concetti fondamentali, le tecniche e gli strumenti per rappresentare, processare e trasmettere in modo sicuro ed efficiente le informazioni. Fondamentalmente:
 \begin{itemize}
-    \item \textbf{Information theory:} stabilisce i principi per rappresentare e quantificare l'\emph{informazione} contenuta nei dati emessi da una \uline{sorgente}.
-    \item \textbf{Data compression:} descrive le tecniche per ridurre la dimensione dei dati (i bits) per migliorare la loro trasmissione e salvataggio.
+    \item \textbf{\texten{Information theory}:} stabilisce i principi per rappresentare e quantificare l'\emph{informazione} contenuta nei dati emessi da una \uline{sorgente}.
+    \item \textbf{\texten{Data compression}:} descrive le tecniche per ridurre la dimensione dei dati (i bits) per migliorare la loro trasmissione e salvataggio.
 \end{itemize}
-Tutto questo è possibile solo perché la rappresentazione della realtà porta con se molta ridondanza, per cui identificandola si può eliminare ottimizzandone la rappresentazione. Questi concetti della teoria dell'informazione sono alla base della crittografia; anche per il ML (Machine Learning) comprimendo i bit dei dataset i modelli occupano meno spazio e sono computazionalmente più efficienti.
+Tutto questo è possibile solo perché la rappresentazione della realtà porta con se molta ridondanza, per cui identificandola si può eliminare ottimizzandone la rappresentazione. Questi concetti della teoria dell'informazione sono alla base della crittografia; anche per il ML (\texten{Machine Learning}) comprimendo i bit dei dataset i modelli occupano meno spazio e sono computazionalmente più efficienti.
 
 \subsection{Cos'è l'informazione?}
 Nell'informatica, lo scambio di informazioni si riferisce al trasferimento di dati tra un trasmittente e un ricevente (non sono necessariamente persone fisiche) e la \textbf{misura} del contenuto informativo di un messaggio viene rappresentato da quanto questo riesce a ridurre l'incertezza che si aveva prima di riceverlo. In altre parole, si presuppone che prima di ricevere un \textbf{messaggio} fossimo incerti su un determinato argomento e dopo averlo ricevuto siamo venuti a conoscenza di informazioni aggiuntive che hanno ridotto questa incertezza.
@@ -84,11 +87,11 @@ Il messaggio dell'estrazione della pallina dall'urna è quello che ha il maggior
 \subsection{Sistema di comunicazione}
 Secondo Shannon, un qualsiasi sistema di comunicazione consiste in 5 fasi:
 \begin{itemize}
-    \item \textbf{Sender:} è la sorgente del messaggio che deve essere comunicato.
-    \item \textbf{Trasmitter:} usato per codificare ed inviare il messaggio attraverso il canale di comunicazione.
+    \item \textbf{\texten{Sender}:} è la sorgente del messaggio che deve essere comunicato.
+    \item \textbf{\texten{Transmitter}:} usato per codificare ed inviare il messaggio attraverso il canale di comunicazione.
     \item \textbf{Canale di comunicazione:} il mezzo usato per trasmettere il messaggio.
-    \item \textbf{Receiver:} ciò che riceve e decodifica il messaggio.
-    \item \textbf{Destination:} il soggetto che doveva ricevere il messaggio.
+    \item \textbf{\texten{Receiver}:} ciò che riceve e decodifica il messaggio.
+    \item \textbf{\texten{Destination}:} il soggetto che doveva ricevere il messaggio.
 \end{itemize}
 Shannon, inoltre, ha introdotto due ipotesi:
 \begin{itemize}
@@ -2781,7 +2784,7 @@ Poiché $N\simeq\log_2 x$, per $x$ grande si ottiene:
     \simeq
     1+\log_2 x+2\log_2\log_2 x.
 \]
-Il codice delta è quindi ancora universale, ma per interi grandi è più corto del gamma.
+Il codice delta è quindi ancora universale, ma per interi grandi è più corto rispetto al codice gamma.
 
 \paragraph{Esempio 2: codifica delta di $14$.}
 Per $x=14$ si ha:
@@ -3128,6 +3131,853 @@ Un buon modo per fissare le differenze tra questi codici è scrivere una funzion
 
 ** provare ad implementarli **
 
+
+\section{Trasformazioni per la compressione e indicizzazione}
+Gli algoritmi studiati finora producono direttamente parole di codice: Shannon, Shannon-Fano, Huffman, codifica aritmetica e codici universali trasformano simboli o interi in bit. La \textbf{\texten{Burrows-Wheeler Transform}} ha una natura diversa. Non è, da sola, un codice di compressione: è una \textbf{trasformazione reversibile} che riordina i caratteri di un testo in modo da rendere più evidente la ridondanza locale. Per questo motivo viene usata come fase di pre-processing prima di tecniche come \texten{Move-to-Front}, \texten{Run-Length Encoding}, Huffman o codifica aritmetica.
+
+La BWT sta ancora dentro il tema della compressione dati, ma collega gli algoritmi di codifica con strutture dati per testi, come \textbf{\texten{suffix array}}, \textbf{\texten{suffix tree}} e indici compressi. In particolare, il legame con l'\textbf{\texten{FM-index}} spiega perché la BWT sia importante anche per il \texten{pattern matching} su testo compresso e per applicazioni in bioinformatica, dove strumenti come BWA e Bowtie2 usano idee basate sulla BWT per allineare sequenze a un genoma di riferimento.
+
+\subsection{\texorpdfstring{\texten{Burrows-Wheeler Transform}}{Burrows-Wheeler Transform}}
+La \texten{Burrows-Wheeler Transform} fu introdotta da M. Burrows e D. Wheeler nel 1994 nel lavoro \emph{\texten{"A block sorting lossless data compression algorithm"}}. L'idea centrale è semplice: invece di comprimere direttamente il testo, si ordinano lessicograficamente le sue rotazioni cicliche e si conserva l'ultima colonna della matrice ordinata. Questa operazione non riduce ancora la dimensione del testo, ma tende a raggruppare caratteri che hanno contesti simili.
+
+\begin{definizione}
+    Sia $w=w[0]w[1]\cdots w[n-1]$ una parola di lunghezza $n$. Si costruisce la matrice $M$ le cui righe sono tutte le rotazioni cicliche di $w$:
+    \[
+        w[i]w[i+1]\cdots w[n-1]w[0]\cdots w[i-1],
+        \qquad
+        0\leq i<n.
+    \]
+    Ordinando lessicograficamente le righe di $M$, si indicano con $F$ la prima colonna e con $L$ l'ultima colonna. La \textbf{\texten{Burrows-Wheeler Transform}} di $w$ è la coppia:
+    \[
+        \operatorname{BWT}(w)=(L,I),
+    \]
+    dove $I$ è l'indice della riga ordinata che contiene la parola originale $w$.
+\end{definizione}
+
+L'indice $I$ è necessario quando si lavora con rotazioni cicliche della parola senza simbolo di terminazione. In molte implementazioni pratiche si aggiunge invece un simbolo speciale di fine stringa, indicato con \texttt{\$}, minore di tutti gli altri simboli e presente una sola volta. In quel caso l'informazione di fine stringa rende univoco il punto di partenza.
+
+\begin{algorithm}[htpb]
+    \caption{\texten{Burrows-Wheeler Transform} tramite rotazioni cicliche}
+    \begin{algorithmic}[1]
+        \Require parola $w$ di lunghezza $n$
+        \Ensure coppia $(L,I)$
+        \State costruisci l'insieme delle $n$ rotazioni cicliche di $w$
+        \State ordina lessicograficamente le rotazioni ottenute
+        \State $L\gets$ concatenazione degli ultimi caratteri delle rotazioni ordinate
+        \State $I\gets$ posizione della rotazione uguale alla parola originale $w$
+        \State \Return $(L,I)$
+    \end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Esempio: \texttt{abraca}}
+Consideriamo:
+\[
+    w=\texttt{abraca}.
+\]
+Le rotazioni cicliche ordinate lessicograficamente sono:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Indice} & \textbf{Rotazione ordinata} & \textbf{Prima colonna $F$} & \textbf{Ultima colonna $L$} \\ \hline
+        $0$             & \texttt{aabrac}             & \texttt{a}                 & \texttt{c}                  \\ \hline
+        $1$             & \texttt{abraca}             & \texttt{a}                 & \texttt{a}                  \\ \hline
+        $2$             & \texttt{acaabr}             & \texttt{a}                 & \texttt{r}                  \\ \hline
+        $3$             & \texttt{bracaa}             & \texttt{b}                 & \texttt{a}                  \\ \hline
+        $4$             & \texttt{caabra}             & \texttt{c}                 & \texttt{a}                  \\ \hline
+        $5$             & \texttt{racaab}             & \texttt{r}                 & \texttt{b}                  \\ \hline
+    \end{tabular}
+\end{center}
+La riga contenente la parola originale \texttt{abraca} ha indice $I=1$, mentre l'ultima colonna è:
+\[
+    L=\texttt{caraab}.
+\]
+Quindi:
+\[
+    \operatorname{BWT}(\texttt{abraca})=(\texttt{caraab},1).
+\]
+
+Un secondo esempio riportato potrebbe essere:
+\[
+    v=\texttt{mathematics}.
+\]
+In questo caso:
+\[
+    \operatorname{BWT}(v)=(\texttt{mmihttsecaa},6).
+\]
+
+\subsubsection{Proprietà fondamentali}
+La trasformazione è reversibile grazie a tre proprietà delle colonne $F$ e $L$:
+\begin{itemize}
+    \item per ogni riga $i\neq I$, il carattere $L[i]$ è seguito in $w$ dal carattere $F[i]$;
+    \item il primo carattere della parola originale è $F[I]$;
+    \item per ogni carattere $x$, la $j$-esima occorrenza di $x$ in $F$ corrisponde alla $j$-esima occorrenza di $x$ in $L$.
+\end{itemize}
+
+L'ultima proprietà è la più importante: anche se $F$ e $L$ sono colonne diverse, le occorrenze uguali vengono abbinate preservando il loro ordine relativo. Questo permette di costruire una permutazione che collega le due colonne.
+
+Nel caso di \texttt{abraca}, sappiamo che:
+\[
+    L=\texttt{caraab},
+    \qquad
+    F=\texttt{aaabcr},
+    \qquad
+    I=1.
+\]
+Associando ogni occorrenza in $F$ alla stessa occorrenza in $L$, si ottiene la permutazione:
+\[
+    \tau=
+    \begin{pmatrix}
+        0 & 1 & 2 & 3 & 4 & 5\\
+        1 & 3 & 4 & 5 & 0 & 2
+    \end{pmatrix}.
+\]
+La parola si ricostruisce da sinistra verso destra con:
+\begin{equation}\label{eq:bwt_fl_reconstruction}
+    w[i]=F[\tau^i[I]],
+    \qquad
+    0\leq i<n,
+\end{equation}
+dove $\tau^0[x]=x$ e $\tau^{i+1}[x]=\tau[\tau^i[x]]$. Infatti:
+\[
+    F[1]F[3]F[5]F[2]F[4]F[0]
+    =
+    \texttt{abraca}.
+\]
+Come si può notare $\tau$ rappresenta una mappa tra gli elementi di $L$ e quelli di $F$, utile a ricostruire la parola originale. 
+
+\paragraph{LF-mapping.}
+Si può anche ricostruire la parola da destra verso sinistra. In questo caso si usa la permutazione inversa, chiamata \textbf{LF-mapping}, che manda una posizione della colonna $L$ alla posizione corrispondente nella colonna $F$. Se $C(x)$ indica il numero di caratteri strettamente minori di $x$ e $\operatorname{rank}_x(L,j)$ il numero di occorrenze di $x$ in $L[0..j]$, allora:
+\begin{equation}\label{eq:lf_mapping_formula}
+    \operatorname{LF}(j)
+    =
+    C(L[j])+\operatorname{rank}_{L[j]}(L,j)-1.
+\end{equation}
+Questa formula è una versione operativa della proprietà sulle occorrenze: la posizione finale in $F$ dipende da quanti simboli più piccoli vengono prima e da quale occorrenza del simbolo corrente si sta considerando.
+
+Dato $L=\operatorname{BWT}(v)$ e l'indice $I$, la ricostruzione da destra verso sinistra è:
+\begin{equation}\label{eq:bwt_lf_reconstruction}
+    v[n-1-i]=L[\operatorname{LF}^i[I]],
+    \qquad
+    0\leq i<n.
+\end{equation}
+Per esempio, per $v=\texttt{mathematics}$ le slide riportano:
+\[
+    L=\texttt{mmihttsecaa},
+    \qquad
+    I=6,
+\]
+e:
+\[
+    \operatorname{LF}=
+    \left(
+    \begin{array}{ccccccccccc}
+        0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10\\
+        6 & 7 & 5 & 4 & 9 & 10 & 8 & 3 & 2 & 0 & 1
+    \end{array}
+    \right).
+\]
+Partendo da $I=6$ e leggendo $L[\operatorname{LF}^i[I]]$ si ottengono i caratteri nell'ordine inverso: prima \texttt{s}, poi \texttt{c}, poi \texttt{i}, e così via, fino a ricostruire \texttt{mathematics}.
+
+\subsubsection{Perché la BWT aiuta la compressione?}
+La BWT tende a produrre una stringa $L$ \textbf{localmente omogenea}: caratteri che compaiono in contesti simili vengono messi vicini. In un testo naturale, se molte occorrenze sono precedute o seguite da contesti simili, l'ordinamento delle rotazioni avvicina i caratteri che precedono quei contesti.
+
+Un'intuizione tipica è data da parole inglesi come \texttt{the}, \texttt{The}, \texttt{she}, \texttt{those}, \texttt{that}: ordinando le rotazioni, molte righe con prefissi simili finiscono vicine, e nella colonna $L$ compaiono gruppi di lettere uguali o quasi uguali. Il risultato non è ancora compresso, ma è più adatto a un compressore di ordine zero.
+
+\paragraph{Controesempio utile.}
+La BWT non garantisce da sola una riduzione della dimensione. Per esempio:
+\[
+    \operatorname{BWT}(\texttt{abcdef})=(\texttt{fabcde},0).
+\]
+Il risultato contiene gli stessi caratteri, quasi senza raggruppamenti utili. Questo mostra che la BWT è una trasformazione, non un compressore. La compressione nasce quando la nuova disposizione viene data in input a tecniche capaci di sfruttare run, frequenze sbilanciate o piccoli alfabeti locali.
+
+\subsection{Schema di compressione basato su BWT}
+Lo schema classico proposto da Burrows e Wheeler applica tre fasi:
+\[
+    \text{BWT}
+    \quad\longrightarrow\quad
+    \text{Move-to-Front}
+    \quad\longrightarrow\quad
+    \text{compressore di ordine zero}.
+\]
+Il compressore finale può essere Huffman oppure la codifica aritmetica. In molti sistemi pratici si aggiunge anche una fase di \texten{Run-Length Encoding}, perché dopo la BWT e la MTF compaiono spesso lunghe sequenze di zeri.
+
+\subsubsection{\texorpdfstring{\texten{Move-to-Front Encoding}}{Move-to-Front Encoding}}
+Il \textbf{\texten{Move-to-Front Encoding}} è una tecnica di ranking dei simboli. Mantiene una lista ordinata dei simboli dell'alfabeto; ogni carattere viene sostituito dalla sua posizione corrente nella lista, poi spostato in testa. Se un carattere ricompare presto, avrà posizione piccola, spesso $0$.
+
+\begin{algorithm}[htpb]
+    \caption{\texten{Move-to-Front Encoding}}
+    \begin{algorithmic}[1]
+        \Require stringa $L$ e lista $X$ dei simboli dell'alfabeto in ordine lessicografico
+        \Ensure vettore di interi $R$
+        \For{$i=0$ \textbf{to} $|L|-1$}
+            \State trova la posizione $p$ di $L[i]$ in $X$
+            \State $R[i]\gets p$
+            \State sposta $L[i]$ in testa alla lista $X$
+        \EndFor
+        \State \Return $R$
+    \end{algorithmic}
+\end{algorithm}
+
+\paragraph{Esempio.}
+Per:
+\[
+    L=\texttt{caraab},
+    \qquad
+    X=(\texttt{a},\texttt{b},\texttt{c},\texttt{r}),
+\]
+si ottiene:
+\[
+    R=(2,1,3,1,0,3).
+\]
+La tabella mostra i passi principali:
+\begin{center}
+    \begin{tabular}{|c|c|c|c|}
+        \hline
+        \textbf{Carattere} & \textbf{Lista prima} & \textbf{Posizione emessa} & \textbf{Lista dopo} \\ \hline
+        \texttt{c}         & \texttt{a b c r}     & $2$                       & \texttt{c a b r}    \\ \hline
+        \texttt{a}         & \texttt{c a b r}     & $1$                       & \texttt{a c b r}    \\ \hline
+        \texttt{r}         & \texttt{a c b r}     & $3$                       & \texttt{r a c b}    \\ \hline
+        \texttt{a}         & \texttt{r a c b}     & $1$                       & \texttt{a r c b}    \\ \hline
+        \texttt{a}         & \texttt{a r c b}     & $0$                       & \texttt{a r c b}    \\ \hline
+        \texttt{b}         & \texttt{a r c b}     & $3$                       & \texttt{b a r c}    \\ \hline
+    \end{tabular}
+\end{center}
+
+La decodifica è simmetrica: dato $R[i]$, si prende il carattere in posizione $R[i]$ della lista, lo si scrive in $L[i]$ e lo si sposta in testa.
+
+\begin{algorithm}[htpb]
+    \caption{\texten{Move-to-Front Decoding}}
+    \begin{algorithmic}[1]
+        \Require vettore $R$ e lista $X$ dei simboli dell'alfabeto in ordine lessicografico
+        \Ensure stringa $L$
+        \For{$i=0$ \textbf{to} $|R|-1$}
+            \State $c\gets X[R[i]]$
+            \State $L[i]\gets c$
+            \State sposta $c$ in testa alla lista $X$
+        \EndFor
+        \State \Return $L$
+    \end{algorithmic}
+\end{algorithm}
+
+La MTF è utile perché trasforma i cluster locali prodotti dalla BWT in molti numeri piccoli, soprattutto zeri. Per esempio, una stringa come:
+\[
+    \texttt{abaaaabbbbbcccccaaaaa}
+\]
+può produrre molti valori $0$ e $1$ dopo la MTF. A quel punto Huffman, codifica aritmetica o RLE possono rappresentare la sequenza in modo molto più efficiente.
+
+\paragraph{La MTF è sempre necessaria?}
+Le slide sottolineano una questione importante: la MTF è molto utile nella pipeline classica, ma non è teoricamente indispensabile. Giancarlo e Scaturro hanno mostrato nel 2003 che si possono ottenere buoni limiti anche senza MTF; Ferragina et al. hanno poi proposto nel 2005 una tecnica basata su partizioni, anche se non efficiente nella prima implementazione. Dal punto di vista didattico, però, la catena BWT+MTF+compressore di ordine zero resta la più semplice da interpretare.
+
+\subsubsection{\texorpdfstring{\texten{Run-Length Encoding}}{Run-Length Encoding}}
+Il \textbf{\texten{Run-Length Encoding}} è una tecnica efficace quando l'input contiene lunghe sequenze dello stesso simbolo. Una \texten{run}:
+\[
+    ddddd
+\]
+può essere rappresentata codificando il simbolo $d$ e la lunghezza $5$, per esempio come coppia $(d,\texttt{101})$. Alcune versioni codificano la lunghezza in binario usando un alfabeto distinto da quello dei dati; altre scartano il bit più significativo della lunghezza per risparmiare un bit quando la lunghezza è già nota essere positiva.
+
+Nel contesto BWT, il RLE è naturale perché l'obiettivo della trasformazione è proprio creare poche run lunghe. Una pipeline frequente è quindi:
+\[
+    \text{BWT}
+    \quad\longrightarrow\quad
+    \text{MTF}
+    \quad\longrightarrow\quad
+    \text{RLE}
+    \quad\longrightarrow\quad
+    \text{Huffman/aritmetica}.
+\]
+
+\subsection{Entropia empirica e analisi della BWT}
+Per valutare un compressore basato su BWT non basta dire che ``produce run''. Serve una misura quantitativa. Le slide introducono l'\textbf{entropia empirica}, che misura la compressibilità del testo a partire dalle frequenze osservate nel testo stesso, senza assumere un modello probabilistico della sorgente.
+
+\subsubsection{Entropia empirica di ordine zero}
+Sia $s$ una stringa di lunghezza $n$ su un alfabeto di $h$ simboli. Se $n_i$ è il numero di occorrenze dell'$i$-esimo simbolo, l'entropia empirica di ordine zero è:
+\begin{equation}\label{eq:zero_order_empirical_entropy}
+    H_0(s)
+    =
+    -\sum_{i=1}^{h}
+    \frac{n_i}{n}
+    \log_2\left(\frac{n_i}{n}\right),
+\end{equation}
+con la convenzione $0\log 0=0$.
+
+Il valore $nH_0(s)$ rappresenta la lunghezza ideale, in bit, di un compressore che assegna a ogni simbolo un numero di bit pari a:
+\[
+    -\log_2\left(\frac{n_i}{n}\right).
+\]
+Quindi $H_0$ guarda solo le frequenze globali dei simboli, ignorando l'ordine e i contesti.
+
+\paragraph{Esempi.}
+Se tutti i simboli hanno la stessa frequenza, cioè:
+\[
+    n_1=n_2=\cdots=n_h,
+\]
+allora:
+\[
+    H_0(s)=\log_2 h.
+\]
+Se invece un simbolo domina fortemente tutti gli altri, per esempio:
+\[
+    n_1\gg n_2,n_3,\ldots,n_h,
+\]
+allora:
+\[
+    H_0(s)\simeq 0.
+\]
+
+Per:
+\[
+    s=\texttt{mississippi},
+\]
+le frequenze sono $1,4,4,2$ sui simboli $\texttt{m},\texttt{i},\texttt{s},\texttt{p}$, quindi:
+\[
+    H_0(s)
+    =
+    -\frac{1}{11}\log_2\frac{1}{11}
+    -\frac{4}{11}\log_2\frac{4}{11}
+    -\frac{4}{11}\log_2\frac{4}{11}
+    -\frac{2}{11}\log_2\frac{2}{11}
+    \simeq 1.82.
+\]
+
+Un compressore di ordine zero, come Huffman o la codifica aritmetica, produce una lunghezza vicina a $|s|H_0(s)$:
+\begin{align}
+    |\operatorname{Huff}(s)|
+    &\leq |s|H_0(s)+|s|,
+    \label{eq:huffman_zero_order_bound}\\
+    |\operatorname{Arit}(s)|
+    &\leq |s|H_0(s)+\mu |s|,
+    \label{eq:arithmetic_zero_order_bound}
+\end{align}
+dove $\mu$ è una piccola costante dovuta alle implementazioni a precisione finita della codifica aritmetica.
+
+\subsubsection{Entropia empirica di ordine k}
+L'ordine zero non cattura la dipendenza dal contesto. In un testo naturale, la distribuzione del prossimo simbolo cambia se il contesto precedente è \texttt{th}, \texttt{qu}, \texttt{zz}, oppure un altro fattore. Per questo si definisce l'entropia empirica di ordine $k$.
+
+Sia $A$ l'alfabeto e sia $w\in A^k$ un contesto di lunghezza $k$. Indichiamo con $w_s$ la stringa formata dai simboli che seguono le occorrenze di $w$ in $s$. Allora:
+\begin{equation}\label{eq:k_order_empirical_entropy}
+    H_k(s)
+    =
+    \frac{1}{|s|}
+    \sum_{w\in A^k}
+    |w_s|H_0(w_s).
+\end{equation}
+La stessa idea può essere definita considerando i simboli che precedono il contesto, invece di quelli che lo seguono. Il valore $|s|H_k(s)$ è un limite ideale per un compressore che usa memoria di lunghezza $k$.
+
+In generale:
+\begin{equation}\label{eq:empirical_entropy_monotonicity}
+    H_{k+1}(s)\leq H_k(s),
+\end{equation}
+perché un contesto più lungo può solo aumentare le informazioni disponibili al modello. Esiste anche una variante detta \textbf{entropia empirica modificata}, indicata con $H_k^*(s)$, che usa statistiche più accurate, includendo per esempio anche le occorrenze dei fattori di lunghezza minore o uguale a $k$.
+
+\paragraph{Esempio: \texttt{mississippi} con $k=1$.}
+Consideriamo i caratteri che seguono ogni simbolo:
+\[
+    \begin{array}{rcl}
+        \texttt{m}_s &=& \texttt{i},\\
+        \texttt{i}_s &=& \texttt{ssp},\\
+        \texttt{s}_s &=& \texttt{sisi},\\
+        \texttt{p}_s &=& \texttt{pi}.
+    \end{array}
+\]
+Le entropie di ordine zero dei quattro gruppi sono:
+\[
+    H_0(\texttt{i})=0,
+    \qquad
+    H_0(\texttt{ssp})\simeq 0.92,
+    \qquad
+    H_0(\texttt{sisi})=1,
+    \qquad
+    H_0(\texttt{pi})=1.
+\]
+Quindi:
+\[
+    H_1(s)
+    =
+    \frac{1}{11}(0+3\cdot 0.92+4\cdot 1+2\cdot 1)
+    \simeq 0.79.
+\]
+Il confronto:
+\[
+    H_1(\texttt{mississippi})\simeq 0.79
+    \qquad
+    \text{contro}
+    \qquad
+    H_0(\texttt{mississippi})\simeq 1.82
+\]
+mostra perché il contesto può cambiare molto la valutazione della compressibilità.
+
+\subsubsection{Teoremi di Manzini per compressori BWT-based}
+Il risultato teorico importante, dovuto a Manzini, collega la BWT all'entropia empirica di ordine $k$. L'idea intuitiva è che la BWT raggruppa nella colonna $L$ simboli che condividono contesti simili; se si riuscisse a partizionare perfettamente $L$ secondo questi contesti, un compressore di ordine zero su ogni blocco si comporterebbe come un compressore di ordine $k$ sul testo originale.
+
+\begin{theorem}[Manzini]
+    Sia $u=\operatorname{BWT}(s^R)$, dove $s^R$ è il testo $s$ letto al contrario. Per ogni intero positivo $k$, esiste una fattorizzazione:
+    \[
+        u=u_1u_2\cdots u_m
+    \]
+    tale che:
+    \begin{equation}\label{eq:manzini_partition}
+        H_k(s)
+        =
+        \frac{1}{|u|}
+        \sum_{i=1}^{m}
+        |u_i|H_0(u_i).
+    \end{equation}
+\end{theorem}
+
+Se fossimo in grado di trovare esattamente questa partizione e avessimo un compressore $A$ tale che:
+\[
+    |A(u_i)|\leq |u_i|H_0(u_i)
+    \qquad
+    \text{per ogni } i,
+\]
+allora:
+\[
+    |A(\operatorname{BWT}(s))|\leq |s|H_k(s).
+\]
+In pratica, un compressore basato su BWT cerca di approssimare sia questa partizione sia il comportamento ideale del compressore $A$.
+
+Le slide riportano due limiti utili. Sia $\operatorname{Order}_0$ un compressore di ordine zero tale che, per una costante $\mu$:
+\[
+    |\operatorname{Order}_0(s)|
+    \leq
+    |s|H_0(s)+\mu |s|.
+\]
+Se:
+\[
+    \operatorname{bwt}_0(s)
+    =
+    \operatorname{Order}_0(\operatorname{MTF}(\operatorname{BWT}(s))),
+\]
+allora per ogni $k$:
+\begin{equation}\label{eq:manzini_bwt0_bound}
+    |\operatorname{bwt}_0(s)|
+    \leq
+    8|s|H_k(s)
+    +
+    \left(\mu+\frac{2}{25}\right)|s|
+    +
+    h^k(2h\log h+9),
+\end{equation}
+dove $h$ è la dimensione dell'alfabeto.
+
+Se invece si usa anche il \texten{Run-Length Encoding}:
+\[
+    \operatorname{bwt}_{RL}(s)
+    =
+    \operatorname{Order}_0(\operatorname{RLE}(\operatorname{MTF}(\operatorname{BWT}(s)))),
+\]
+allora:
+\begin{equation}\label{eq:manzini_bwtrl_bound}
+    |\operatorname{bwt}_{RL}(s)|
+    \leq
+    (5+3\mu)|s|H_k^*(s)+g_k,
+\end{equation}
+dove $g_k$ dipende solo da $k$ e dalla dimensione dell'alfabeto $h$.
+
+Questi risultati non dicono soltanto che la BWT ``funziona bene in pratica'': mostrano che una pipeline BWT-based può essere analizzata rispetto a misure empiriche del testo, quindi senza assumere una sorgente probabilistica prefissata.
+
+\subsection{Calcolo efficiente della BWT}
+La definizione tramite rotazioni è chiara ma inefficiente. Per una parola lunga $n$, costruire e ordinare esplicitamente $n$ rotazioni di lunghezza $n$ può richiedere molto più di tempo lineare e molta memoria. Il collo di bottiglia è proprio l'ordinamento delle rotazioni.
+
+La strategia standard consiste nell'aggiungere al testo un simbolo speciale di fine stringa:
+\[
+    T=s\texttt{\$},
+\]
+minore di tutti gli altri simboli e presente una sola volta. In questo modo l'ordinamento delle rotazioni cicliche di $T$ può essere ricondotto all'ordinamento dei suffissi di $T$.
+
+\subsubsection{\texorpdfstring{\texten{Suffix tree} e \texten{suffix array}}{Suffix tree e suffix array}}
+Dato un testo:
+\[
+    T=T[0]T[1]\cdots T[n-1],
+\]
+il suffisso che parte dalla posizione $i$ è:
+\[
+    T[i,n)=T[i]T[i+1]\cdots T[n-1].
+\]
+Indichiamo con:
+\[
+    \operatorname{Suff}(T)=\{T[i,n)\mid 0\leq i<n\}
+\]
+l'insieme dei suffissi di $T$.
+
+Due strutture dati classiche per memorizzare o ordinare i suffissi sono:
+\begin{itemize}
+    \item \textbf{\texten{suffix tree}}: struttura compatta simile a un \texten{trie} compresso; ogni cammino dalla radice a una foglia rappresenta un suffisso;
+    \item \textbf{\texten{suffix array}}: array ordinato dei punti di partenza dei suffissi.
+\end{itemize}
+
+Entrambe hanno dimensione lineare in $n$, ma il \texten{suffix array} è spesso più conveniente in memoria. Le slide riportano l'ordine di grandezza pratico: un \texten{suffix array} occupa circa $4n$ \texten{byte} se gli interi occupano 4 \texten{byte}, mentre un \texten{suffix tree} può occupare circa $16n$ \texten{byte}. Su testi enormi, come genomi da molti \texten{gigabyte}, questa differenza diventa decisiva.
+
+\begin{definizione}
+    Il \textbf{\texten{suffix array}} di un testo $T[0,n)$ è un array $SA$ di interi tale che $SA[r]=i$ se il suffisso $T[i,n)$ è il suffisso di rango $r$ nell'ordinamento lessicografico dei suffissi di $T$.
+\end{definizione}
+
+\paragraph{Esempio.}
+Per:
+\[
+    T=\texttt{banana\$},
+\]
+il \texten{suffix array} contiene le posizioni iniziali dei suffissi ordinati. Per esempio, il suffisso \texttt{\$} viene prima di tutti, poi vengono i suffissi che iniziano con \texttt{a}, poi quelli che iniziano con \texttt{b} e \texttt{n}. L'array non memorizza i suffissi, ma solo le loro posizioni iniziali.
+
+\subsubsection{\texorpdfstring{BWT da \texten{suffix array}}{BWT da suffix array}}
+Una volta costruito il \texten{suffix array} di $T=s\texttt{\$}$, la BWT si ottiene in modo diretto. Se $SA[r]=i$, allora la riga di rango $r$ corrisponde al suffisso che parte da $i$; il carattere della colonna $L$ è il carattere che precede quel suffisso nel testo, cioè:
+\begin{equation}\label{eq:bwt_from_suffix_array}
+    L[r]=
+    \begin{cases}
+        T[i-1], & \text{se } i>0,\\
+        T[n-1], & \text{se } i=0.
+    \end{cases}
+\end{equation}
+Il secondo caso gestisce la rotazione ciclica: se il suffisso parte dall'inizio del testo, il carattere precedente è il simbolo finale.
+
+\paragraph{Esempio: \texttt{abaaba\$}.}
+Per:
+\[
+    T=\texttt{abaaba\$},
+\]
+il \texten{suffix array} è:
+\[
+    SA=(6,5,2,3,0,4,1).
+\]
+Applicando \eqref{eq:bwt_from_suffix_array}:
+\[
+    \operatorname{BWT}(T)=\texttt{abba\$aa}.
+\]
+Questo è il valore riportato nelle slide. Il vantaggio è che non abbiamo dovuto ordinare esplicitamente tutte le rotazioni: è sufficiente ordinare i suffissi.
+
+\subsection{\texorpdfstring{Algoritmo DC3 per costruire il \texten{suffix array}}{Algoritmo DC3 per costruire il suffix array}}
+Il tempo di calcolo della BWT dipende dal tempo necessario a costruire il \texten{suffix array}. I primi algoritmi lineari per la costruzione del \texten{suffix array} sono apparsi nel 2003, circa dieci anni dopo l'introduzione della BWT. Le slide citano due famiglie importanti:
+\begin{itemize}
+    \item \textbf{DC3}, basato su \texten{difference cover sampling};
+    \item \textbf{SA-IS}, basato su \texten{induced sorting}.
+\end{itemize}
+Qui ci concentriamo su DC3, introdotto da Karkkainen e Sanders e poi sviluppato con Burkhardt.
+
+\subsubsection{Schema ricorsivo generale}
+Gli algoritmi come DC3 e SA-IS usano una strategia di campionamento. Supponiamo che l'alfabeto sia rappresentato da interi positivi e che:
+\[
+    T[n]=0
+\]
+sia un simbolo di fine stringa minore di tutti gli altri.
+
+Lo schema generale è:
+\begin{enumerate}
+    \item scegliere un sottoinsieme di posizioni $C\subseteq [0,n]$;
+    \item ordinare i suffissi che partono da posizioni in $C$;
+    \item usare l'ordine dei suffissi campionati per ordinare tutti gli altri suffissi;
+    \item fondere le liste ordinate in un unico \texten{suffix array}.
+\end{enumerate}
+
+Il punto cruciale è che $C$ deve essere abbastanza piccolo da permettere una chiamata ricorsiva su un input più corto, ma abbastanza informativo da permettere confronti in tempo costante durante la fusione. Se:
+\[
+    |C|\leq \alpha n
+    \qquad
+    \text{con } \alpha<1,
+\]
+e tutte le fasi non ricorsive costano $O(n)$, la complessità soddisfa:
+\begin{equation}\label{eq:recursive_sa_recurrence}
+    T(n)=T(\alpha n)+O(n),
+\end{equation}
+e quindi:
+\[
+    T(n)=O(n).
+\]
+
+\subsubsection{I tre passi di DC3}
+DC3 usa le classi di resto modulo $3$. Le posizioni vengono divise in:
+\[
+    P_{1,2}=\{i\mid i\bmod 3=1 \text{ oppure } i\bmod 3=2\},
+    \qquad
+    P_0=\{i\mid i\bmod 3=0\}.
+\]
+Il campione $P_{1,2}$ contiene circa $\frac{2}{3}n$ posizioni; il resto $P_0$ contiene circa $\frac{1}{3}n$ posizioni.
+
+\begin{algorithm}[htpb]
+    \caption{Schema dell'algoritmo DC3}
+    \begin{algorithmic}[1]
+        \Require testo $T[0,n)$ con simbolo finale minimo
+        \Ensure \texten{suffix array} $SA$ di $T$
+        \State $P_{1,2}\gets \{i\mid i\bmod 3\in\{1,2\}\}$
+        \State costruisci una stringa ridotta $T^{1,2}$ che codifica i suffissi che partono in $P_{1,2}$
+        \State costruisci ricorsivamente il \texten{suffix array} di $T^{1,2}$
+        \State ricava $SA^{1,2}$, cioè l'ordine dei suffissi che partono in $P_{1,2}$
+        \State costruisci $SA^0$, cioè l'ordine dei suffissi che partono in $P_0$, usando coppie $\langle T[i],\operatorname{pos}(i+1)\rangle$
+        \State fondi $SA^{1,2}$ e $SA^0$ con confronti in tempo costante
+        \State \Return $SA$
+    \end{algorithmic}
+\end{algorithm}
+
+\paragraph{Passo 1: ordinare i suffissi in $P_{1,2}$.}
+Si costruisce una stringa ridotta $T^{1,2}$ lunga circa $\frac{2}{3}n$. L'idea è raggruppare il testo in triplette partendo dalle posizioni congruenti a $1$ e $2$ modulo $3$, poi sostituire ogni tripletta con il suo rango lessicografico.
+
+Per esempio, con:
+\[
+    T=\texttt{mississippi\$},
+\]
+le posizioni sono:
+\[
+    P_{1,2}=\{1,2,4,5,7,8,10,11\},
+    \qquad
+    P_0=\{0,3,6,9\}.
+\]
+Si considerano:
+\[
+    T[1,\cdot]
+    =
+    [\texttt{i s s}]
+    [\texttt{i s s}]
+    [\texttt{i p p}]
+    [\texttt{i \$ \$}],
+\]
+e:
+\[
+    T[2,\cdot]
+    =
+    [\texttt{s s i}]
+    [\texttt{s s i}]
+    [\texttt{p p i}]
+    [\texttt{\$ \$ \$}].
+\]
+Concatenando le triplette:
+\[
+    R=
+    [\texttt{i s s}]
+    [\texttt{i s s}]
+    [\texttt{i p p}]
+    [\texttt{i \$ \$}]
+    [\texttt{s s i}]
+    [\texttt{s s i}]
+    [\texttt{p p i}]
+    [\texttt{\$ \$ \$}].
+\]
+Ordinando le triplette con \texten{radix sort} e assegnando a ogni tripletta distinta il suo rango:
+\[
+    [\texttt{\$ \$ \$}]<[\texttt{i \$ \$}]<[\texttt{i p p}]<[\texttt{i s s}]<[\texttt{p p i}]<[\texttt{s s i}],
+\]
+si ottiene la stringa di ranghi:
+\[
+    T^{1,2}=(3,3,2,1,5,5,4,0).
+\]
+Se tutti i simboli di $T^{1,2}$ fossero distinti, i suffissi di $T^{1,2}$ sarebbero ordinabili guardando solo il primo simbolo. Poiché in questo esempio ci sono ripetizioni, si costruisce ricorsivamente il \texten{suffix array} di $T^{1,2}$. Le slide riportano:
+\[
+    SA(T^{1,2})=(7,3,2,1,0,6,5,4).
+\]
+Convertendo le posizioni di $T^{1,2}$ nelle posizioni corrispondenti del testo originale:
+\[
+    SA^{1,2}=(11,10,7,4,1,8,5,2).
+\]
+
+\paragraph{Passo 2: ordinare i suffissi in $P_0$.}
+Se $i\in P_0$, allora $i+1\in P_{1,2}$. Quindi il suffisso:
+\[
+    T[i,n)
+\]
+può essere rappresentato dalla coppia:
+\[
+    \langle T[i],\operatorname{pos}(i+1)\rangle,
+\]
+dove $\operatorname{pos}(i+1)$ è il rango del suffisso $T[i+1,n)$ dentro $SA^{1,2}$. Poniamo anche $\operatorname{pos}(n+1)=0$.
+
+Nel caso:
+\[
+    T=\texttt{mississippi\$},
+    \qquad
+    SA^{1,2}=(11,10,7,4,1,8,5,2),
+\]
+si ottengono:
+\[
+    \begin{array}{rcl}
+        0 &\mapsto& \langle \texttt{m},4\rangle,\\
+        3 &\mapsto& \langle \texttt{s},3\rangle,\\
+        6 &\mapsto& \langle \texttt{s},2\rangle,\\
+        9 &\mapsto& \langle \texttt{p},1\rangle.
+    \end{array}
+\]
+Ordinando queste coppie con \texten{radix sort}:
+\[
+    SA^0=(0,9,6,3).
+\]
+
+\paragraph{Passo 3: fusione.}
+Resta da fondere $SA^{1,2}$ e $SA^0$. Il problema è che un suffisso in $SA^0$ e un suffisso in $SA^{1,2}$ appartengono a due liste diverse, quindi non conosciamo ancora il loro ordine relativo. DC3 evita confronti carattere per carattere usando i ranghi già calcolati.
+
+Sia $i\in P_0$ e sia $j\in P_{1,2}$. Ci sono due casi:
+\begin{itemize}
+    \item se $j\bmod 3=1$, allora si confrontano le coppie:
+          \[
+              \langle T[i],\operatorname{pos}(i+1)\rangle
+              \quad
+              \text{e}
+              \quad
+              \langle T[j],\operatorname{pos}(j+1)\rangle;
+          \]
+    \item se $j\bmod 3=2$, allora si confrontano le triplette:
+          \[
+              \langle T[i],T[i+1],\operatorname{pos}(i+2)\rangle
+              \quad
+              \text{e}
+              \quad
+              \langle T[j],T[j+1],\operatorname{pos}(j+2)\rangle.
+          \]
+\end{itemize}
+In entrambi i casi il confronto costa $O(1)$, perché dopo uno o due caratteri si arriva a suffissi il cui rango è già noto in $SA^{1,2}$.
+
+Per l'esempio:
+\[
+    T=\texttt{mississippi\$},
+\]
+partendo da:
+\[
+    SA^{1,2}=(11,10,7,4,1,8,5,2),
+    \qquad
+    SA^0=(0,9,6,3),
+\]
+la fusione produce:
+\[
+    SA=(11,10,7,4,1,0,9,8,6,3,5,2).
+\]
+
+\subsubsection{Esercizio guidato: \texttt{yabbadabbado\$}}
+Le slide propongono di applicare DC3 a:
+\[
+    T=\texttt{yabbadabbado\$}.
+\]
+Il \texten{suffix array} finale atteso è:
+\[
+    SA=(12,1,6,4,9,3,8,2,7,5,10,11,0).
+\]
+
+Nel primo passo si prendono le posizioni congruenti a $1$ e $2$ modulo $3$:
+\[
+    \{1,4,7,10,2,5,8,11\}.
+\]
+Le triplette sono:
+\[
+    [\texttt{abb}]
+    [\texttt{ada}]
+    [\texttt{bba}]
+    [\texttt{do\$}]
+    [\texttt{bba}]
+    [\texttt{dab}]
+    [\texttt{bad}]
+    [\texttt{o\$\$}].
+\]
+Ordinandole e sostituendole con i rispettivi ranghi, si ottiene:
+\[
+    u'=(1,2,4,6,4,5,3,7),
+\]
+a cui si aggiunge un simbolo di fine stringa. Le slide riportano:
+\[
+    SA(u')=(0,1,6,4,2,5,3,7).
+\]
+Da qui si ricava:
+\[
+    SA^{1,2}=(1,4,8,2,7,5,10,11).
+\]
+Per le posizioni in $P_0$ si ottiene:
+\[
+    SA^0=(12,6,9,3,0),
+\]
+perché:
+\[
+    (\texttt{\$},0)<(\texttt{a},5)<(\texttt{a},7)<(\texttt{b},2)<(\texttt{y},1).
+\]
+La fusione delle due liste dà il \texten{suffix array} finale indicato sopra.
+
+\subsubsection{Complessità e Master Theorem}
+La complessità di DC3 è modellata dalla ricorrenza:
+\begin{equation}\label{eq:dc3_recurrence}
+    T(n)=T\left(\frac{2}{3}n\right)+O(n).
+\end{equation}
+La chiamata ricorsiva lavora infatti sulla stringa ridotta associata a $P_{1,2}$, lunga circa $\frac{2}{3}n$, mentre le altre fasi costano tempo lineare grazie a \texten{radix sort} e alla fusione con confronti in tempo costante. La soluzione della ricorrenza è:
+\[
+    T(n)=O(n).
+\]
+
+Le slide richiamano anche la forma classica del Master Theorem. Se:
+\[
+    T(n)=aT(n/b)+f(n),
+    \qquad
+    T(1)=c,
+\]
+con $a\geq 1$, $b>1$ e $f(n)\in \Theta(n^d)$, allora:
+\[
+    T(n)=
+    \begin{cases}
+        \Theta(n^d), & \text{se } a<b^d,\\
+        \Theta(n^d\log n), & \text{se } a=b^d,\\
+        \Theta(n^{\log_b a}), & \text{se } a>b^d.
+    \end{cases}
+\]
+Per esempio:
+\[
+    T(n)=T(n/2)+\frac{1}{2}n^2+n
+\]
+ha $a=1$, $b=2$, $d=2$ e $1<2^2$, quindi:
+\[
+    T(n)\in\Theta(n^2).
+\]
+Nel caso DC3, invece, la ricorrenza non ha due sottoproblemi: c'è una sola chiamata ricorsiva su una frazione stretta dell'input, più lavoro lineare. La somma dei costi sui livelli della ricorsione è:
+\[
+    n+\frac{2}{3}n+\left(\frac{2}{3}\right)^2n+\cdots=O(n).
+\]
+
+\subsubsection{Difference cover}
+Il campionamento di DC3 è un caso particolare di \textbf{difference cover}. Un difference cover $D_q$ modulo $q$ è un sottoinsieme di $[0,q)$ tale che ogni valore modulo $q$ può essere espresso come differenza di due elementi di $D_q$:
+\begin{equation}\label{eq:difference_cover_definition}
+    [0,q)
+    =
+    \{i-j \bmod q \mid i,j\in D_q\}.
+\end{equation}
+
+Per esempio:
+\[
+    D_7=\{1,2,4\}
+\]
+è un difference cover modulo $7$, perché:
+\[
+    \begin{array}{rclcrcl}
+        1-1 &\equiv& 0 &\pmod 7, & 1-4 &\equiv& 4 \pmod 7,\\
+        2-1 &\equiv& 1 &\pmod 7, & 2-4 &\equiv& 5 \pmod 7,\\
+        4-2 &\equiv& 2 &\pmod 7, & 1-2 &\equiv& 6 \pmod 7,\\
+        4-1 &\equiv& 3 &\pmod 7. &
+    \end{array}
+\]
+DC3 usa il più semplice difference cover non banale:
+\[
+    D_3=\{1,2\}.
+\]
+La generalizzazione dell'algoritmo seleziona posizioni congruenti agli elementi di un difference cover modulo $q$, forma $q$-uple invece di triplette, costruisce una stringa ridotta $R$, la ordina ricorsivamente e poi fonde i suffissi. La complessità diventa $O(qn)$; questa generalizzazione è utile soprattutto per implementazioni più attente allo spazio.
+
+\subsection{Proprietà combinatorie della BWT}
+La BWT ha anche proprietà combinatorie indipendenti dall'uso come compressore. Due parole $x$ e $y$ su un alfabeto finito $\Sigma$ si dicono \textbf{coniugate} se una è una rotazione ciclica dell'altra.
+
+Se non si considera l'indice $I$ nella BWT, allora valgono le seguenti proprietà:
+\begin{itemize}
+    \item due testi $x$ e $y$ sono coniugati se e solo se:
+          \[
+              \operatorname{BWT}(x)=\operatorname{BWT}(y);
+          \]
+    \item dati due testi $u$ e $v$, $u$ è coniugato di $v^d$ se e solo se, ponendo:
+          \[
+              \operatorname{BWT}(v)=a_0a_1\cdots a_{n-1},
+          \]
+          si ha:
+          \[
+              \operatorname{BWT}(u)=a_0^d a_1^d\cdots a_{n-1}^d.
+          \]
+\end{itemize}
+
+Queste proprietà chiariscono anche un punto pratico: i testi più favorevoli a una compressione BWT-based sono quelli la cui trasformata contiene poche run di lettere uguali. In altre parole, la BWT è particolarmente utile quando l'ordinamento dei contesti produce \textbf{clustering}.
+
+\paragraph{Perfect clustering nel caso binario.}
+Nel caso di alfabeti binari, è stato dimostrato che la BWT produce un clustering perfetto, cioè una stringa del tipo:
+\[
+    1^p0^q,
+\]
+con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una parola Sturmiana standard. Le parole di Fibonacci sono un caso particolare di parole Sturmiane standard. Le slide richiamano questo collegamento perché le parole Sturmiane codificano linee digitali, cioè traiettorie discrete che approssimano rette nel piano.
+
+Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Zamboni tramite la codifica di particolari traiettorie nel piano. Per gli scopi della compressione, la morale è più semplice: la BWT è efficace quando trasforma la struttura contestuale del testo in poche run visibili nella colonna $L$.
 
 
 
