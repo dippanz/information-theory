@@ -3276,7 +3276,56 @@ e:
     \end{array}
     \right).
 \]
-Partendo da $I=6$ e leggendo $L[\operatorname{LF}^i[I]]$ si ottengono i caratteri nell'ordine inverso: prima \texttt{s}, poi \texttt{c}, poi \texttt{i}, e così via, fino a ricostruire \texttt{mathematics}.
+Per vedere come si applica la formula, osserviamo che:
+\[
+    F=\texttt{aacehimmstt}.
+\]
+Quindi $C(x)$ indica l'inizio del blocco dei caratteri $x$ dentro $F$:
+\[
+    C(\texttt{a})=0,\quad
+    C(\texttt{c})=2,\quad
+    C(\texttt{e})=3,\quad
+    C(\texttt{h})=4,\quad
+    C(\texttt{i})=5,\quad
+    C(\texttt{m})=6,\quad
+    C(\texttt{s})=8,\quad
+    C(\texttt{t})=9.
+\]
+Il termine $\operatorname{rank}_x(L,j)$ dice invece quale occorrenza di $x$ si sta guardando in $L[0..j]$. Per esempio:
+\[
+    L[6]=\texttt{s},
+    \qquad
+    \operatorname{rank}_{\texttt{s}}(L,6)=1,
+\]
+perciò:
+\[
+    \operatorname{LF}(6)
+    =
+    C(\texttt{s})+\operatorname{rank}_{\texttt{s}}(L,6)-1
+    =
+    8+1-1
+    =
+    8.
+\]
+Analogamente, poiché $L[10]=\texttt{a}$ è la seconda \texttt{a} incontrata in $L$, si ha:
+\[
+    \operatorname{LF}(10)
+    =
+    C(\texttt{a})+\operatorname{rank}_{\texttt{a}}(L,10)-1
+    =
+    0+2-1
+    =
+    1.
+\]
+Partendo da $I=6$, gli indici visitati sono:
+\[
+    6\to 8\to 2\to 5\to 10\to 1\to 7\to 3\to 4\to 9\to 0.
+\]
+Leggendo i caratteri di $L$ in queste posizioni si ottiene:
+\[
+    \texttt{s c i t a m e h t a m},
+\]
+cioè la parola \texttt{mathematics} ricostruita da destra verso sinistra.
 
 \subsubsection{Perché la BWT aiuta la compressione?}
 La BWT tende a produrre una stringa $L$ \textbf{localmente omogenea}: caratteri che compaiono in contesti simili vengono messi vicini. In un testo naturale, se molte occorrenze sono precedute o seguite da contesti simili, l'ordinamento delle rotazioni avvicina i caratteri che precedono quei contesti.
