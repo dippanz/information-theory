@@ -2483,11 +2483,11 @@ All'inizio le probabilità sono tutte $1/3$. Dopo ogni simbolo, il conteggio del
     \small
     \begin{tabular}{|c|c|c|c|c|}
         \hline
-        \textbf{Passo} & \textbf{Simbolo} & \textbf{Occ. prima $(a,b,c)$} & \textbf{Prob. usate $(a,b,c)$} & \textbf{Intervallo scelto}      \\ \hline
-        $1$            & $b$              & $(1,1,1)$                     & $\left(1/3,1/3,1/3\right)$     & $\left[1/3,2/3\right)$          \\ \hline
-        $2$            & $c$              & $(1,2,1)$                     & $\left(1/4,2/4,1/4\right)$     & $\left[7/12,2/3\right)$         \\ \hline
-        $3$            & $c$              & $(1,2,2)$                     & $\left(1/5,2/5,2/5\right)$     & $\left[19/30,2/3\right)$        \\ \hline
-        $4$            & $b$              & $(1,2,3)$                     & $\left(1/6,2/6,3/6\right)$     & $\left[23/36,13/20\right)$      \\ \hline
+        \textbf{Passo} & \textbf{Simbolo} & \textbf{Occ. prima $(a,b,c)$} & \textbf{Prob. usate $(a,b,c)$} & \textbf{Intervallo scelto} \\ \hline
+        $1$            & $b$              & $(1,1,1)$                     & $\left(1/3,1/3,1/3\right)$     & $\left[1/3,2/3\right)$     \\ \hline
+        $2$            & $c$              & $(1,2,1)$                     & $\left(1/4,2/4,1/4\right)$     & $\left[7/12,2/3\right)$    \\ \hline
+        $3$            & $c$              & $(1,2,2)$                     & $\left(1/5,2/5,2/5\right)$     & $\left[19/30,2/3\right)$   \\ \hline
+        $4$            & $b$              & $(1,2,3)$                     & $\left(1/6,2/6,3/6\right)$     & $\left[23/36,13/20\right)$ \\ \hline
     \end{tabular}
 \end{center}
 
@@ -2546,7 +2546,7 @@ La richiesta sugli interi positivi non è davvero restrittiva. Se si vogliono ra
 \begin{equation}\label{eq:integer_positive_mapping}
     z\mapsto
     \begin{cases}
-        2z+1, & z\geq 0,\\
+        2z+1, & z\geq 0, \\
         -2z,  & z<0.
     \end{cases}
 \end{equation}
@@ -2638,7 +2638,7 @@ che è uguale per ogni $x$. Per questo la codifica fissa è sensata quando i val
 \subsubsection{Codice unario}
 Il codice unario è il più semplice codice istantaneo per interi positivi. L'intero $x$ viene rappresentato da $x-1$ zeri seguiti da un uno:
 \begin{equation}\label{eq:unary_code}
-    U(x)=0^{x-1}1.
+    U(x)=^{x-1}1.
 \end{equation}
 I primi valori sono:
 \[
@@ -2938,9 +2938,9 @@ Il passaggio da fissare è la scelta iniziale: alla prima iterazione si prende i
         \State $r \gets N$
         \State inizializza tutti i bit $d_i$ a $0$
         \While{$r>0$}
-            \State trova il massimo indice $j\geq 2$ tale che $F_j\leq r$
-            \State $d_{j-2}\gets 1$
-            \State $r\gets r-F_j$
+        \State trova il massimo indice $j\geq 2$ tale che $F_j\leq r$
+        \State $d_{j-2}\gets 1$
+        \State $r\gets r-F_j$
         \EndWhile
         \State sia $k$ tale che $d_{k-1}$ sia l'ultimo bit uguale a $1$
         \State \Return $d_0d_1\cdots d_{k-1}1$
@@ -2971,9 +2971,9 @@ Il passaggio da fissare è la scelta iniziale: alla prima iterazione si prende i
 Seguendo l'algoritmo, il primo termine scelto non è un Fibonacci qualsiasi: è il massimo termine della sequenza che non supera $73$, cioè $F_{10}=55$. A ogni passo si ripete la stessa scelta sul resto corrente:
 \[
     \begin{aligned}
-        73 &\xrightarrow{\;F_{10}=55\;} 18,\\
-        18 &\xrightarrow{\;F_7=13\;} 5,\\
-        5  &\xrightarrow{\;F_5=5\;} 0.
+        73 & \xrightarrow{\;F_{10}=55\;} 18, \\
+        18 & \xrightarrow{\;F_7=13\;} 5,     \\
+        5  & \xrightarrow{\;F_5=5\;} 0.
     \end{aligned}
 \]
 Dunque la decomposizione di Zeckendorf è:
@@ -3227,7 +3227,7 @@ Associando ogni occorrenza in $F$ alla stessa occorrenza in $L$, si ottiene la p
 \[
     \tau=
     \begin{pmatrix}
-        0 & 1 & 2 & 3 & 4 & 5\\
+        0 & 1 & 2 & 3 & 4 & 5 \\
         1 & 3 & 4 & 5 & 0 & 2
     \end{pmatrix}.
 \]
@@ -3243,7 +3243,7 @@ dove $\tau^0[x]=x$ e $\tau^{i+1}[x]=\tau[\tau^i[x]]$. Infatti:
     =
     \texttt{abraca}.
 \]
-Come si può notare $\tau$ rappresenta una mappa tra gli elementi di $L$ e quelli di $F$, utile a ricostruire la parola originale. 
+Come si può notare $\tau$ rappresenta una mappa tra gli elementi di $L$ e quelli di $F$, utile a ricostruire la parola originale.
 
 \paragraph{LF-mapping.}
 Si può anche ricostruire la parola da destra verso sinistra. In questo caso si usa la permutazione inversa, chiamata \textbf{LF-mapping}, che manda una posizione della colonna $L$ alla posizione corrispondente nella colonna $F$. Se $C(x)$ indica il numero di caratteri strettamente minori di $x$ e $\operatorname{rank}_x(L,j)$ il numero di occorrenze di $x$ in $L[0..j]$, allora:
@@ -3271,7 +3271,7 @@ e:
     \operatorname{LF}=
     \left(
     \begin{array}{ccccccccccc}
-        0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10\\
+        0 & 1 & 2 & 3 & 4 & 5  & 6 & 7 & 8 & 9 & 10 \\
         6 & 7 & 5 & 4 & 9 & 10 & 8 & 3 & 2 & 0 & 1
     \end{array}
     \right).
@@ -3359,9 +3359,9 @@ Il \textbf{\texten{Move-to-Front Encoding}} è una tecnica di ranking dei simbol
         \Require stringa $L$ e lista $X$ dei simboli dell'alfabeto in ordine lessicografico
         \Ensure vettore di interi $R$
         \For{$i=0$ \textbf{to} $|L|-1$}
-            \State trova la posizione $p$ di $L[i]$ in $X$
-            \State $R[i]\gets p$
-            \State sposta $L[i]$ in testa alla lista $X$
+        \State trova la posizione $p$ di $L[i]$ in $X$
+        \State $R[i]\gets p$
+        \State sposta $L[i]$ in testa alla lista $X$
         \EndFor
         \State \Return $R$
     \end{algorithmic}
@@ -3400,9 +3400,9 @@ La decodifica è simmetrica: dato $R[i]$, si prende il carattere in posizione $R
         \Require vettore $R$ e lista $X$ dei simboli dell'alfabeto in ordine lessicografico
         \Ensure stringa $L$
         \For{$i=0$ \textbf{to} $|R|-1$}
-            \State $c\gets X[R[i]]$
-            \State $L[i]\gets c$
-            \State sposta $c$ in testa alla lista $X$
+        \State $c\gets X[R[i]]$
+        \State $L[i]\gets c$
+        \State sposta $c$ in testa alla lista $X$
         \EndFor
         \State \Return $L$
     \end{algorithmic}
@@ -3436,7 +3436,7 @@ Nel contesto BWT, il RLE è naturale perché l'obiettivo della trasformazione è
 \]
 
 \subsection{Entropia empirica e analisi della BWT}
-Per valutare un compressore basato su BWT non basta dire che ``produce run''. Serve una misura quantitativa. Le slide introducono l'\textbf{entropia empirica}, che misura la compressibilità del testo a partire dalle frequenze osservate nel testo stesso, senza assumere un modello probabilistico della sorgente.
+Per valutare un compressore basato su BWT non basta dire che ``produce run''. Serve una misura quantitativa. Entra in gioco l'\textbf{entropia empirica}, che misura la compressibilità del testo a partire dalle frequenze osservate nel testo stesso, senza assumere un modello probabilistico della sorgente.
 
 \subsubsection{Entropia empirica di ordine zero}
 Sia $s$ una stringa di lunghezza $n$ su un alfabeto di $h$ simboli. Se $n_i$ è il numero di occorrenze dell'$i$-esimo simbolo, l'entropia empirica di ordine zero è:
@@ -3460,9 +3460,10 @@ Se tutti i simboli hanno la stessa frequenza, cioè:
 \[
     n_1=n_2=\cdots=n_h,
 \]
-allora:
+significa che ogni simbolo è equiprobabile, cioè $n_i = \frac{n}{h}$ allora:
 \[
-    H_0(s)=\log_2 h.
+    H_0(s) =-\sum_{i=1}^{h}\frac{1}{h}\log_2\left(\frac{1}{h}\right)
+    =\log_2 h.
 \]
 Se invece un simbolo domina fortemente tutti gli altri, per esempio:
 \[
@@ -3473,7 +3474,7 @@ allora:
     H_0(s)\simeq 0.
 \]
 
-Per:
+Consideramo la seguente parola:
 \[
     s=\texttt{mississippi},
 \]
@@ -3491,18 +3492,18 @@ le frequenze sono $1,4,4,2$ sui simboli $\texttt{m},\texttt{i},\texttt{s},\textt
 Un compressore di ordine zero, come Huffman o la codifica aritmetica, produce una lunghezza vicina a $|s|H_0(s)$:
 \begin{align}
     |\operatorname{Huff}(s)|
-    &\leq |s|H_0(s)+|s|,
-    \label{eq:huffman_zero_order_bound}\\
+     & \leq |s|H_0(s)+|s|,
+    \label{eq:huffman_zero_order_bound} \\
     |\operatorname{Arit}(s)|
-    &\leq |s|H_0(s)+\mu |s|,
+     & \leq |s|H_0(s)+\mu |s|,
     \label{eq:arithmetic_zero_order_bound}
 \end{align}
-dove $\mu$ è una piccola costante dovuta alle implementazioni a precisione finita della codifica aritmetica.
+dove $\mu$ è una piccola costante dovuta alle implementazioni a precisione finita della codifica aritmetica ($\mu\approx0.01$).
 
 \subsubsection{Entropia empirica di ordine k}
-L'ordine zero non cattura la dipendenza dal contesto. In un testo naturale, la distribuzione del prossimo simbolo cambia se il contesto precedente è \texttt{th}, \texttt{qu}, \texttt{zz}, oppure un altro fattore. Per questo si definisce l'entropia empirica di ordine $k$.
+L'ordine zero considera solo le frequenze globali dei simboli e quindi può essere insufficiente per valutare le prestazioni di un compressore. In un testo naturale, infatti, non conta soltanto quante volte compare una lettera, ma anche \textbf{in quale contesto} compare: dopo \texttt{th}, dopo \texttt{qu}, oppure dopo un altro fattore, la distribuzione del simbolo successivo può essere molto diversa.
 
-Sia $A$ l'alfabeto e sia $w\in A^k$ un contesto di lunghezza $k$. Indichiamo con $w_s$ la stringa formata dai simboli che seguono le occorrenze di $w$ in $s$. Allora:
+L'entropia empirica di ordine $k$ misura proprio questo effetto. Si fissano tutti i possibili contesti $w$ di lunghezza $k$ e, per ciascuno di essi, si raccolgono i simboli che seguono le sue occorrenze nel testo. Formalmente, sia $A$ l'alfabeto e sia $w\in A^k$. Indichiamo con $w_s$ la stringa ausiliaria formata da tutti e soli i simboli che seguono un'occorrenza di $w$ in $s$.\footnote{La stringa $w_s$ non è necessariamente una sottostringa contigua di $s$: è una raccolta ordinata dei caratteri osservati dopo il contesto $w$. Per esempio, se ogni volta che compare $w$ il carattere successivo è quasi sempre lo stesso, allora $H_0(w_s)$ sarà piccolo.} Allora:
 \begin{equation}\label{eq:k_order_empirical_entropy}
     H_k(s)
     =
@@ -3510,7 +3511,7 @@ Sia $A$ l'alfabeto e sia $w\in A^k$ un contesto di lunghezza $k$. Indichiamo con
     \sum_{w\in A^k}
     |w_s|H_0(w_s).
 \end{equation}
-La stessa idea può essere definita considerando i simboli che precedono il contesto, invece di quelli che lo seguono. Il valore $|s|H_k(s)$ è un limite ideale per un compressore che usa memoria di lunghezza $k$.
+La formula dice quindi di calcolare un'entropia di ordine zero separata per ogni contesto $w$, e poi fare una media pesata: i contesti che compaiono molte volte pesano di più, quelli che non compaiono non contribuiscono. La stessa idea può essere definita considerando i simboli che precedono il contesto, invece di quelli che lo seguono. Il valore $|s|H_k(s)$ rappresenta un \uline{limite ideale} per un compressore che usa una memoria di lunghezza $k$.
 
 In generale:
 \begin{equation}\label{eq:empirical_entropy_monotonicity}
@@ -3522,10 +3523,10 @@ perché un contesto più lungo può solo aumentare le informazioni disponibili a
 Consideriamo i caratteri che seguono ogni simbolo:
 \[
     \begin{array}{rcl}
-        \texttt{m}_s &=& \texttt{i},\\
-        \texttt{i}_s &=& \texttt{ssp},\\
-        \texttt{s}_s &=& \texttt{sisi},\\
-        \texttt{p}_s &=& \texttt{pi}.
+        \texttt{m}_s & = & \texttt{i},    \\
+        \texttt{i}_s & = & \texttt{ssp},  \\
+        \texttt{s}_s & = & \texttt{sisi}, \\
+        \texttt{p}_s & = & \texttt{pi}.
     \end{array}
 \]
 Le entropie di ordine zero dei quattro gruppi sono:
@@ -3673,7 +3674,7 @@ Una volta costruito il \texten{suffix array} di $T=s\texttt{\$}$, la BWT si otti
 \begin{equation}\label{eq:bwt_from_suffix_array}
     L[r]=
     \begin{cases}
-        T[i-1], & \text{se } i>0,\\
+        T[i-1], & \text{se } i>0, \\
         T[n-1], & \text{se } i=0.
     \end{cases}
 \end{equation}
@@ -3790,14 +3791,14 @@ e:
 Concatenando le triplette:
 \[
     R=
-    [\texttt{i s s}]
-    [\texttt{i s s}]
-    [\texttt{i p p}]
-    [\texttt{i \$ \$}]
-    [\texttt{s s i}]
-    [\texttt{s s i}]
-    [\texttt{p p i}]
-    [\texttt{\$ \$ \$}].
+        [\texttt{i s s}]
+        [\texttt{i s s}]
+        [\texttt{i p p}]
+        [\texttt{i \$ \$}]
+        [\texttt{s s i}]
+        [\texttt{s s i}]
+        [\texttt{p p i}]
+        [\texttt{\$ \$ \$}].
 \]
 Ordinando le triplette con \texten{radix sort} e assegnando a ogni tripletta distinta il suo rango:
 \[
@@ -3836,10 +3837,10 @@ Nel caso:
 si ottengono:
 \[
     \begin{array}{rcl}
-        0 &\mapsto& \langle \texttt{m},4\rangle,\\
-        3 &\mapsto& \langle \texttt{s},3\rangle,\\
-        6 &\mapsto& \langle \texttt{s},2\rangle,\\
-        9 &\mapsto& \langle \texttt{p},1\rangle.
+        0 & \mapsto & \langle \texttt{m},4\rangle, \\
+        3 & \mapsto & \langle \texttt{s},3\rangle, \\
+        6 & \mapsto & \langle \texttt{s},2\rangle, \\
+        9 & \mapsto & \langle \texttt{p},1\rangle.
     \end{array}
 \]
 Ordinando queste coppie con \texten{radix sort}:
@@ -3953,8 +3954,8 @@ con $a\geq 1$, $b>1$ e $f(n)\in \Theta(n^d)$, allora:
 \[
     T(n)=
     \begin{cases}
-        \Theta(n^d), & \text{se } a<b^d,\\
-        \Theta(n^d\log n), & \text{se } a=b^d,\\
+        \Theta(n^d),          & \text{se } a<b^d, \\
+        \Theta(n^d\log n),    & \text{se } a=b^d, \\
         \Theta(n^{\log_b a}), & \text{se } a>b^d.
     \end{cases}
 \]
@@ -3986,10 +3987,10 @@ Per esempio:
 è un difference cover modulo $7$, perché:
 \[
     \begin{array}{rclcrcl}
-        1-1 &\equiv& 0 &\pmod 7, & 1-4 &\equiv& 4 \pmod 7,\\
-        2-1 &\equiv& 1 &\pmod 7, & 2-4 &\equiv& 5 \pmod 7,\\
-        4-2 &\equiv& 2 &\pmod 7, & 1-2 &\equiv& 6 \pmod 7,\\
-        4-1 &\equiv& 3 &\pmod 7. &
+        1-1 & \equiv & 0 & \pmod 7, & 1-4 & \equiv & 4 \pmod 7, \\
+        2-1 & \equiv & 1 & \pmod 7, & 2-4 & \equiv & 5 \pmod 7, \\
+        4-2 & \equiv & 2 & \pmod 7, & 1-2 & \equiv & 6 \pmod 7, \\
+        4-1 & \equiv & 3 & \pmod 7. &
     \end{array}
 \]
 DC3 usa il più semplice difference cover non banale:
