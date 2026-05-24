@@ -3557,7 +3557,9 @@ Il confronto:
 mostra perché il contesto può cambiare molto la valutazione della compressibilità.
 
 \subsubsection{Teoremi di Manzini per compressori BWT-based}
-Il risultato teorico importante, dovuto a Manzini, collega la BWT all'entropia empirica di ordine $k$. L'idea intuitiva è che la BWT raggruppa nella colonna $L$ simboli che condividono contesti simili; se si riuscisse a partizionare perfettamente $L$ secondo questi contesti, un compressore di ordine zero su ogni blocco si comporterebbe come un compressore di ordine $k$ sul testo originale.
+Il risultato teorico importante, dovuto a Manzini, collega la BWT all'entropia empirica di ordine $k$. Il punto non è che la BWT comprima già il testo, ma che lo riordina secondo i contesti. Se più occorrenze del testo hanno lo stesso contesto, nell'ordinamento delle rotazioni finiscono nello stesso intervallo; di conseguenza, nella stringa trasformata compaiono blocchi formati da simboli che, nel testo originale, erano osservati dopo contesti uguali.
+
+Questo è esattamente il tipo di raggruppamento che compare nella definizione di $H_k(s)$: per calcolare l'entropia empirica di ordine $k$, infatti, si separano i simboli in base al contesto di lunghezza $k$ che li precede, si calcola un'entropia di ordine zero per ogni gruppo, e poi si fa una media pesata. La BWT rende questa separazione visibile come una fattorizzazione della stringa trasformata.
 
 \begin{theorem}[Manzini]
     Sia $u=\operatorname{BWT}(s^R)$, dove $s^R$ è il testo $s$ letto al contrario. Per ogni intero positivo $k$, esiste una fattorizzazione:
@@ -3574,7 +3576,15 @@ Il risultato teorico importante, dovuto a Manzini, collega la BWT all'entropia e
     \end{equation}
 \end{theorem}
 
-Se fossimo in grado di trovare esattamente questa partizione e avessimo un compressore $A$ tale che:
+Il rovesciamento $s^R$ serve solo ad allineare la convenzione usata nella definizione di $H_k(s)$: si può ragionare sui simboli che seguono un contesto oppure, dopo aver letto il testo al contrario, sui simboli che lo precedono.
+
+La formula non va letta come un algoritmo che il compressore esegue esplicitamente. Dice piuttosto che, dopo la BWT, esiste una partizione ideale della stringa trasformata in cui ogni blocco $u_i$ raccoglie simboli con lo stesso tipo di contesto. Per questo motivo la quantità:
+\[
+    \sum_{i=1}^{m}|u_i|H_0(u_i)
+\]
+è la stessa informazione che, prima della trasformazione, era misurata da $|s|H_k(s)$. In altre parole, la BWT riduce idealmente il problema di comprimere con un modello di ordine $k$ al problema di comprimere diversi blocchi con modelli di ordine zero.
+
+Se fossimo in grado di trovare esattamente questa partizione e avessimo un compressore $A$ capace di comprimere ogni blocco quasi fino alla sua entropia di ordine zero, cioè:
 \[
     |A(u_i)|\leq |u_i|H_0(u_i)
     \qquad
@@ -3582,16 +3592,19 @@ Se fossimo in grado di trovare esattamente questa partizione e avessimo un compr
 \]
 allora:
 \[
-    |A(\operatorname{BWT}(s))|\leq |s|H_k(s).
+    |A(u)|\leq |s|H_k(s).
 \]
-In pratica, un compressore basato su BWT cerca di approssimare sia questa partizione sia il comportamento ideale del compressore $A$.
+Il membro sinistro è la lunghezza, in bit, dell'output compresso; il membro destro è il limite ideale suggerito dall'entropia empirica di ordine $k$. Quindi il messaggio teorico è: una compressione BWT-based può sfruttare regolarità di ordine alto anche se, dopo la trasformazione, usa strumenti molto semplici come MTF, RLE e un compressore di ordine zero. In pratica, il compressore non conosce la partizione perfetta e non raggiunge il bound ideale; cerca però di approssimare entrambi gli effetti.
 
-Le slide riportano due limiti utili. Sia $\operatorname{Order}_0$ un compressore di ordine zero tale che, per una costante $\mu$:
+\paragraph{Limiti pratici.}
+Manzini analizza poi pipeline concrete. Sia $\operatorname{Order}_0$ un compressore di ordine zero tale che, per una costante $\mu$:
 \[
     |\operatorname{Order}_0(s)|
     \leq
     |s|H_0(s)+\mu |s|.
 \]
+Questa ipotesi significa che il compressore finale produce una lunghezza vicina a quella ideale di ordine zero, con un piccolo sovraccosto lineare.
+
 Se:
 \[
     \operatorname{bwt}_0(s)
@@ -3608,7 +3621,7 @@ allora per ogni $k$:
     +
     h^k(2h\log h+9),
 \end{equation}
-dove $h$ è la dimensione dell'alfabeto.
+dove $h$ è la dimensione dell'alfabeto. La notazione $\operatorname{bwt}_0(s)$ indica quindi l'intera pipeline formata da BWT, MTF e compressore di ordine zero, non la sola trasformata. Il bound dice che la lunghezza compressa è controllata da $|s|H_k(s)$, a meno di un fattore costante e di termini aggiuntivi. Il parametro $k$ non è un parametro dell'algoritmo: è un parametro dell'analisi. Il risultato vale per ogni $k$, quindi mostra che la stessa pipeline riesce a sfruttare, entro certi limiti, regolarità presenti a diversi ordini di contesto.
 
 Se invece si usa anche il \texten{Run-Length Encoding}:
 \[
@@ -3622,9 +3635,10 @@ allora:
     \leq
     (5+3\mu)|s|H_k^*(s)+g_k,
 \end{equation}
-dove $g_k$ dipende solo da $k$ e dalla dimensione dell'alfabeto $h$.
+dove $g_k$ dipende solo da $k$ e dalla dimensione dell'alfabeto $h$. Questo secondo risultato è più adatto alla pipeline classica, perché dopo BWT e MTF compaiono spesso molte occorrenze di $0$, anche in lunghe run. Il RLE comprime proprio queste run e permette di ottenere un limite espresso tramite l'entropia empirica modificata $H_k^*(s)$, che tiene conto anche del costo minimo necessario a descrivere blocchi molto regolari, per esempio stringhe formate da molte ripetizioni dello stesso simbolo.
 
-Questi risultati non dicono soltanto che la BWT ``funziona bene in pratica'': mostrano che una pipeline BWT-based può essere analizzata rispetto a misure empiriche del testo, quindi senza assumere una sorgente probabilistica prefissata.
+\paragraph{Nota:}
+Questi risultati non dicono soltanto che la BWT ``funziona bene in pratica'': mostrano che una pipeline BWT-based può essere analizzata rispetto a misure empiriche del testo, quindi senza assumere una sorgente probabilistica prefissata. Il confronto non è con una sorgente ideale scelta a priori, ma con la regolarità effettivamente presente nella singola stringa da comprimere.
 
 \subsection{Calcolo efficiente della BWT}
 La definizione tramite rotazioni è chiara ma inefficiente. Per una parola lunga $n$, costruire e ordinare esplicitamente $n$ rotazioni di lunghezza $n$ può richiedere molto più di tempo lineare e molta memoria. Il collo di bottiglia è proprio l'ordinamento delle rotazioni.
@@ -3652,11 +3666,13 @@ l'insieme dei suffissi di $T$.
 
 Due strutture dati classiche per memorizzare o ordinare i suffissi sono:
 \begin{itemize}
-    \item \textbf{\texten{suffix tree}}: struttura compatta simile a un \texten{trie} compresso; ogni cammino dalla radice a una foglia rappresenta un suffisso;
+    \item \textbf{\texten{suffix tree}}: struttura compatta simile a un albero compresso; ogni cammino dalla radice a una foglia rappresenta un suffisso;
     \item \textbf{\texten{suffix array}}: array ordinato dei punti di partenza dei suffissi.
 \end{itemize}
 
-Entrambe hanno dimensione lineare in $n$, ma il \texten{suffix array} è spesso più conveniente in memoria. Le slide riportano l'ordine di grandezza pratico: un \texten{suffix array} occupa circa $4n$ \texten{byte} se gli interi occupano 4 \texten{byte}, mentre un \texten{suffix tree} può occupare circa $16n$ \texten{byte}. Su testi enormi, come genomi da molti \texten{gigabyte}, questa differenza diventa decisiva.
+Entrambe hanno dimensione lineare in $n$, ma il \texten{suffix array} è spesso più conveniente in memoria. 
+
+\paragraph{L'ordine di grandezza pratico:} Un \texten{suffix array} occupa circa $4n$ \texten{byte} se gli interi occupano 4 \texten{byte}, mentre un \texten{suffix tree} può occupare circa $16n$ \texten{byte}. Su testi enormi, come genomi da molti \texten{gigabyte}, questa differenza diventa decisiva.
 
 \begin{definizione}
     Il \textbf{\texten{suffix array}} di un testo $T[0,n)$ è un array $SA$ di interi tale che $SA[r]=i$ se il suffisso $T[i,n)$ è il suffisso di rango $r$ nell'ordinamento lessicografico dei suffissi di $T$.
