@@ -3641,13 +3641,15 @@ dove $g_k$ dipende solo da $k$ e dalla dimensione dell'alfabeto $h$. Questo seco
 Questi risultati non dicono soltanto che la BWT ``funziona bene in pratica'': mostrano che una pipeline BWT-based può essere analizzata rispetto a misure empiriche del testo, quindi senza assumere una sorgente probabilistica prefissata. Il confronto non è con una sorgente ideale scelta a priori, ma con la regolarità effettivamente presente nella singola stringa da comprimere.
 
 \subsection{Calcolo efficiente della BWT}
-La definizione tramite rotazioni è chiara ma inefficiente. Per una parola lunga $n$, costruire e ordinare esplicitamente $n$ rotazioni di lunghezza $n$ può richiedere molto più di tempo lineare e molta memoria. Il collo di bottiglia è proprio l'ordinamento delle rotazioni.
+La definizione tramite rotazioni è chiara ma inefficiente. Per una parola lunga $n$, costruire e ordinare esplicitamente $n$ rotazioni di lunghezza $n$ significa confrontare molte stringhe lunghe: il collo di bottiglia della BWT è proprio l'ordinamento delle rotazioni cicliche.
 
 La strategia standard consiste nell'aggiungere al testo un simbolo speciale di fine stringa:
 \[
     T=s\texttt{\$},
 \]
-minore di tutti gli altri simboli e presente una sola volta. In questo modo l'ordinamento delle rotazioni cicliche di $T$ può essere ricondotto all'ordinamento dei suffissi di $T$.
+minore di tutti gli altri simboli e presente una sola volta. In questo modo l'ordinamento delle rotazioni cicliche di $T$ può essere ricondotto all'ordinamento dei suffissi di $T$. Infatti, la rotazione che inizia in posizione $i$ comincia con il suffisso $T[i,n)$ e, solo dopo il simbolo \texttt{\$}, continua con il prefisso iniziale del testo. Poiché \texttt{\$} è unico e più piccolo di ogni altro simbolo, confrontare due rotazioni equivale a confrontare i due suffissi da cui iniziano.
+
+In questa versione si calcola quindi la BWT di $T=s\texttt{\$}$, non direttamente quella della parola senza terminatore. Il simbolo \texttt{\$} sostituisce il ruolo dell'indice $I$: identifica in modo non ambiguo la fine del testo e rende la trasformazione invertibile senza dover memorizzare separatamente la riga originale.
 
 \subsubsection{\texorpdfstring{\texten{Suffix tree} e \texten{suffix array}}{Suffix tree e suffix array}}
 Dato un testo:
@@ -3664,37 +3666,83 @@ Indichiamo con:
 \]
 l'insieme dei suffissi di $T$.
 
-Due strutture dati classiche per memorizzare o ordinare i suffissi sono:
+Due strutture dati classiche per rappresentare questi suffissi sono:
 \begin{itemize}
-    \item \textbf{\texten{suffix tree}}: struttura compatta simile a un albero compresso; ogni cammino dalla radice a una foglia rappresenta un suffisso;
-    \item \textbf{\texten{suffix array}}: array ordinato dei punti di partenza dei suffissi.
+    \item \textbf{\texten{suffix tree}}: struttura compatta simile a un trie compresso\footnote{Un \texten{trie} \`e un albero radicato usato per rappresentare insiemi di stringhe: gli archi sono etichettati con simboli e i cammini dalla radice leggono prefissi comuni. Non si usa semplicemente la parola \emph{albero} perch\'e questa descrive solo la forma gerarchica della struttura, mentre \texten{trie} indica la propriet\`a specifica di condividere i prefissi lungo gli stessi cammini. Un \texten{suffix tree} pu\`o essere visto come un trie dei suffissi, di solito compresso.}; ogni cammino dalla radice a una foglia rappresenta un suffisso;
+    \item \textbf{\texten{suffix array}}: array che memorizza le posizioni iniziali dei suffissi in ordine lessicografico.
 \end{itemize}
 
-Entrambe hanno dimensione lineare in $n$, ma il \texten{suffix array} è spesso più conveniente in memoria. 
+Il \texten{suffix tree} permette di cercare un pattern di lunghezza $m$ in tempo $O(m)$, perché basta seguire nell'albero le etichette degli archi corrispondenti ai caratteri del pattern. Inoltre può essere costruito in tempo lineare. Il suo costo in memoria, però, è alto: la struttura contiene nodi, archi, etichette e puntatori. Il \texten{suffix array}, introdotto da Manber e Myers, conserva invece soltanto l'ordine lessicografico dei suffissi tramite un array di interi.
 
-\paragraph{L'ordine di grandezza pratico:} Un \texten{suffix array} occupa circa $4n$ \texten{byte} se gli interi occupano 4 \texten{byte}, mentre un \texten{suffix tree} può occupare circa $16n$ \texten{byte}. Su testi enormi, come genomi da molti \texten{gigabyte}, questa differenza diventa decisiva.
+Entrambe le strutture hanno dimensione lineare in $n$, ma il \texten{suffix array} è spesso più conveniente in memoria.
+
+\paragraph{L'ordine di grandezza pratico.}
+Un \texten{suffix array} occupa circa $4n$ \texten{byte} se gli interi occupano 4 \texten{byte}, mentre un \texten{suffix tree} può occupare circa $16n$ \texten{byte}. Su testi enormi, come genomi da molti \texten{gigabyte}, questa differenza diventa decisiva: un testo di $10$ \texten{GB} può richiedere centinaia di \texten{GB} se rappresentato tramite \texten{suffix tree}.
 
 \begin{definizione}
     Il \textbf{\texten{suffix array}} di un testo $T[0,n)$ è un array $SA$ di interi tale che $SA[r]=i$ se il suffisso $T[i,n)$ è il suffisso di rango $r$ nell'ordinamento lessicografico dei suffissi di $T$.
 \end{definizione}
 
-\paragraph{Esempio.}
+\paragraph{Esempio: \texttt{banana\$}.}
 Per:
 \[
     T=\texttt{banana\$},
 \]
-il \texten{suffix array} contiene le posizioni iniziali dei suffissi ordinati. Per esempio, il suffisso \texttt{\$} viene prima di tutti, poi vengono i suffissi che iniziano con \texttt{a}, poi quelli che iniziano con \texttt{b} e \texttt{n}. L'array non memorizza i suffissi, ma solo le loro posizioni iniziali.
+prima si elencano tutti i suffissi, cioè tutte le stringhe ottenute tagliando $T$ a partire da una certa posizione:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c}
+        \textbf{rango $r$} & \textbf{$SA[r]$} & \textbf{suffisso $T[SA[r],n)$} \\ \hline
+        $0$ & $6$ & \texttt{\$}       \\
+        $1$ & $5$ & \texttt{a\$}      \\
+        $2$ & $3$ & \texttt{ana\$}    \\
+        $3$ & $1$ & \texttt{anana\$}  \\
+        $4$ & $0$ & \texttt{banana\$} \\
+        $5$ & $4$ & \texttt{na\$}     \\
+        $6$ & $2$ & \texttt{nana\$}
+    \end{tabular}
+    \caption{\texten{Suffix array} di \texttt{banana\$}}
+    \label{tab:suffix_array_banana}
+\end{table}
+
+La seconda colonna è il \texten{suffix array}:
+\[
+    SA=(6,5,3,1,0,4,2).
+\]
+Si noti che l'array non memorizza i suffissi, ma solo le loro posizioni iniziali. I suffissi veri e propri compaiono nella tabella solo per rendere visibile l'ordinamento. Per esempio, i suffissi che iniziano con \texttt{a} occupano ranghi consecutivi:
+\[
+    SA[1]=5,\qquad SA[2]=3,\qquad SA[3]=1,
+\]
+perché:
+\[
+    \texttt{a\$}<\texttt{ana\$}<\texttt{anana\$}.
+\]
+Questa proprietà è importante anche per il \texten{pattern matching}: tutti i suffissi che hanno lo stesso prefisso formano un intervallo contiguo nel \texten{suffix array}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.82\textwidth]{images/suffix-array/banana-suffix-tree.pdf}
+    \caption{\texten{Suffix tree} compatto di \texttt{banana\$}}
+    \label{fig:banana_suffix_tree}
+\end{figure}
+
+\autoref{fig:banana_suffix_tree} mostra lo stesso esempio come albero dei suffissi. Ogni foglia contiene la posizione iniziale del suffisso corrispondente; leggendo le foglie da sinistra a destra si ritrova:
+\[
+    6,5,3,1,0,4,2,
+\]
+cioè il \texten{suffix array}. Il sottoalbero evidenziato sotto l'arco \texttt{a} contiene proprio le foglie $5,3,1$, che corrispondono ai suffissi \texttt{a\$}, \texttt{ana\$} e \texttt{anana\$}. Questa è la versione ad albero dell'intervallo $SA[1,3]$ citato nelle slide.
 
 \subsubsection{\texorpdfstring{BWT da \texten{suffix array}}{BWT da suffix array}}
-Una volta costruito il \texten{suffix array} di $T=s\texttt{\$}$, la BWT si ottiene in modo diretto. Se $SA[r]=i$, allora la riga di rango $r$ corrisponde al suffisso che parte da $i$; il carattere della colonna $L$ è il carattere che precede quel suffisso nel testo, cioè:
+Una volta costruito il \texten{suffix array} di $T=s\texttt{\$}$, la BWT si ottiene in modo diretto. Se $SA[r]=i$, allora la riga di rango $r$ corrisponde alla rotazione che inizia in $i$, oppure, equivalentemente, al suffisso che parte da $i$. Il carattere della colonna $L$ è il carattere che precede quel suffisso nel testo:
 \begin{equation}\label{eq:bwt_from_suffix_array}
     L[r]=
     \begin{cases}
-        T[i-1], & \text{se } i>0, \\
-        T[n-1], & \text{se } i=0.
+        T[SA[r]-1]=T[i-1], & \text{se } i>0, \\
+        \texttt{\$}, & \text{se } i=0.
     \end{cases}
 \end{equation}
-Il secondo caso gestisce la rotazione ciclica: se il suffisso parte dall'inizio del testo, il carattere precedente è il simbolo finale.
+Il secondo caso gestisce la rotazione ciclica: se il suffisso parte dall'inizio del testo, il carattere precedente è il simbolo finale \texttt{\$}, cioè $T[n-1]$.
 
 \paragraph{Esempio: \texttt{abaaba\$}.}
 Per:
@@ -3705,21 +3753,44 @@ il \texten{suffix array} è:
 \[
     SA=(6,5,2,3,0,4,1).
 \]
-Applicando \eqref{eq:bwt_from_suffix_array}:
+Per costruire la BWT non serve scrivere tutta la matrice delle rotazioni: basta prendere, per ogni suffisso ordinato, il carattere immediatamente precedente nel testo.
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{c|c|c|c}
+        \textbf{rango $r$} & \textbf{$SA[r]$} & \textbf{suffisso} & \textbf{$L[r]$} \\ \hline
+        $0$ & $6$ & \texttt{\$}       & \texttt{a}  \\
+        $1$ & $5$ & \texttt{a\$}      & \texttt{b}  \\
+        $2$ & $2$ & \texttt{aaba\$}   & \texttt{b}  \\
+        $3$ & $3$ & \texttt{aba\$}    & \texttt{a}  \\
+        $4$ & $0$ & \texttt{abaaba\$} & \texttt{\$} \\
+        $5$ & $4$ & \texttt{ba\$}     & \texttt{a}  \\
+        $6$ & $1$ & \texttt{baaba\$}  & \texttt{a}
+    \end{tabular}
+    \caption{Calcolo della BWT di \texttt{abaaba\$} dal \texten{suffix array}}
+    \label{tab:bwt_from_suffix_array_abaaba}
+\end{table}
+
+Leggendo l'ultima colonna della tabella:
 \[
     \operatorname{BWT}(T)=\texttt{abba\$aa}.
 \]
-Questo è il valore riportato nelle slide. Il vantaggio è che non abbiamo dovuto ordinare esplicitamente tutte le rotazioni: è sufficiente ordinare i suffissi.
+Il vantaggio è che non abbiamo dovuto ordinare esplicitamente tutte le rotazioni: è sufficiente costruire il \texten{suffix array} e poi leggere un carattere per ogni posizione dell'array.
 
 \subsection{\texorpdfstring{Algoritmo DC3 per costruire il \texten{suffix array}}{Algoritmo DC3 per costruire il suffix array}}
-Il tempo di calcolo della BWT dipende dal tempo necessario a costruire il \texten{suffix array}. I primi algoritmi lineari per la costruzione del \texten{suffix array} sono apparsi nel 2003, circa dieci anni dopo l'introduzione della BWT. Le slide citano due famiglie importanti:
+Il tempo di calcolo della BWT dipende dal tempo necessario a costruire il \texten{suffix array}. Se il \texten{suffix array} si costruisce in tempo lineare, allora anche la fase BWT, una volta noto l'array, richiede solo tempo lineare. I primi algoritmi lineari per la costruzione del \texten{suffix array} sono apparsi nel 2003, circa dieci anni dopo l'introduzione della BWT.
+
+Le slide collocano DC3 dentro il quadro più generale della \textbf{\texten{suffix array construction}}. In particolare citano:
 \begin{itemize}
     \item \textbf{DC3}, basato su \texten{difference cover sampling};
-    \item \textbf{SA-IS}, basato su \texten{induced sorting}.
+    \item \textbf{SA-IS}, basato su \texten{induced sorting};
+    \item approcci non ricorsivi più recenti, come quello di Baier.
 \end{itemize}
-Qui ci concentriamo su DC3, introdotto da Karkkainen e Sanders e poi sviluppato con Burkhardt.
+Qui ci concentriamo su DC3, introdotto da Karkkainen e Sanders e poi sviluppato con Burkhardt, perché è l'algoritmo trattato più in dettaglio nelle slide.
 
 \subsubsection{Schema ricorsivo generale}
+La parte chiamata nelle slide \emph{\texten{recursive suffix array construction}} non riguarda la ricostruzione della BWT, ma la costruzione ricorsiva del \texten{suffix array}. L'idea è ordinare prima una parte dei suffissi, codificare quell'ordine in una stringa più corta e poi usare tale informazione per ordinare tutti i suffissi del testo.
+
 Gli algoritmi come DC3 e SA-IS usano una strategia di campionamento. Supponiamo che l'alfabeto sia rappresentato da interi positivi e che:
 \[
     T[n]=0
@@ -3772,6 +3843,15 @@ Il campione $P_{1,2}$ contiene circa $\frac{2}{3}n$ posizioni; il resto $P_0$ co
         \State \Return $SA$
     \end{algorithmic}
 \end{algorithm}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.72\textwidth]{images/suffix-array/dc3-overview.pdf}
+    \caption{Schema ricorsivo dei tre passi principali di DC3}
+    \label{fig:dc3_overview}
+\end{figure}
+
+\autoref{fig:dc3_overview} riassume il flusso logico. La parte blu è quella ricorsiva: dai suffissi campionati si costruisce una stringa ridotta e se ne calcola il \texten{suffix array}. La parte arancione ordina i suffissi non campionati usando i ranghi già noti. La parte verde fonde le due liste ordinate.
 
 \paragraph{Passo 1: ordinare i suffissi in $P_{1,2}$.}
 Si costruisce una stringa ridotta $T^{1,2}$ lunga circa $\frac{2}{3}n$. L'idea è raggruppare il testo in triplette partendo dalle posizioni congruenti a $1$ e $2$ modulo $3$, poi sostituire ogni tripletta con il suo rango lessicografico.
@@ -3828,7 +3908,14 @@ Se tutti i simboli di $T^{1,2}$ fossero distinti, i suffissi di $T^{1,2}$ sarebb
 \[
     SA(T^{1,2})=(7,3,2,1,0,6,5,4).
 \]
-Convertendo le posizioni di $T^{1,2}$ nelle posizioni corrispondenti del testo originale:
+Per convertire questo risultato in posizioni del testo originale si usa il modo in cui $T^{1,2}$ è stato costruito. Le prime quattro posizioni corrispondono ai suffissi che partono da $1,4,7,10$, mentre le ultime quattro corrispondono ai suffissi che partono da $2,5,8,11$:
+\[
+    \begin{array}{c|cccccccc}
+        \text{posizione in }T^{1,2} & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\ \hline
+        \text{posizione in }T       & 1 & 4 & 7 & 10 & 2 & 5 & 8 & 11
+    \end{array}
+\]
+Applicando questa conversione a $SA(T^{1,2})$:
 \[
     SA^{1,2}=(11,10,7,4,1,8,5,2).
 \]
@@ -3850,15 +3937,18 @@ Nel caso:
     \qquad
     SA^{1,2}=(11,10,7,4,1,8,5,2),
 \]
-si ottengono:
-\[
-    \begin{array}{rcl}
-        0 & \mapsto & \langle \texttt{m},4\rangle, \\
-        3 & \mapsto & \langle \texttt{s},3\rangle, \\
-        6 & \mapsto & \langle \texttt{s},2\rangle, \\
-        9 & \mapsto & \langle \texttt{p},1\rangle.
-    \end{array}
-\]
+si ottengono le seguenti coppie:
+
+\begin{center}
+    \begin{tabular}{c|c|c}
+        \textbf{posizione $i$} & \textbf{suffisso $T[i,n)$} & \textbf{coppia} \\ \hline
+        $0$ & \texttt{mississippi\$} & $\langle \texttt{m},4\rangle$ \\
+        $3$ & \texttt{sissippi\$}    & $\langle \texttt{s},3\rangle$ \\
+        $6$ & \texttt{sippi\$}       & $\langle \texttt{s},2\rangle$ \\
+        $9$ & \texttt{pi\$}          & $\langle \texttt{p},1\rangle$
+    \end{tabular}
+\end{center}
+
 Ordinando queste coppie con \texten{radix sort}:
 \[
     SA^0=(0,9,6,3).
@@ -3867,7 +3957,7 @@ Ordinando queste coppie con \texten{radix sort}:
 \paragraph{Passo 3: fusione.}
 Resta da fondere $SA^{1,2}$ e $SA^0$. Il problema è che un suffisso in $SA^0$ e un suffisso in $SA^{1,2}$ appartengono a due liste diverse, quindi non conosciamo ancora il loro ordine relativo. DC3 evita confronti carattere per carattere usando i ranghi già calcolati.
 
-Sia $i\in P_0$ e sia $j\in P_{1,2}$. Ci sono due casi:
+La scelta delle classi $1$ e $2$ modulo $3$ serve proprio a questo: se un suffisso parte in $P_0$, dopo aver saltato uno o due caratteri si arriva sempre a una posizione campionata, quindi a un suffisso di rango già noto. Sia $i\in P_0$ e sia $j\in P_{1,2}$. Ci sono due casi:
 \begin{itemize}
     \item se $j\bmod 3=1$, allora si confrontano le coppie:
           \[
@@ -4012,6 +4102,14 @@ Per esempio:
 DC3 usa il più semplice difference cover non banale:
 \[
     D_3=\{1,2\}.
+\]
+Infatti, modulo $3$, le differenze tra elementi di $D_3$ producono tutte le classi:
+\[
+    \begin{aligned}
+        1-1 & \equiv 0 \pmod 3, \\
+        2-1 & \equiv 1 \pmod 3, \\
+        1-2 & \equiv 2 \pmod 3.
+    \end{aligned}
 \]
 La generalizzazione dell'algoritmo seleziona posizioni congruenti agli elementi di un difference cover modulo $q$, forma $q$-uple invece di triplette, costruisce una stringa ridotta $R$, la ordina ricorsivamente e poi fonde i suffissi. La complessità diventa $O(qn)$; questa generalizzazione è utile soprattutto per implementazioni più attente allo spazio.
 
