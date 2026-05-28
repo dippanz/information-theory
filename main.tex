@@ -3912,14 +3912,23 @@ e:
     =
     [\texttt{s s i}]
     [\texttt{s s i}]
-        [\texttt{p p i}]
-        [\texttt{\$ \$ \$}].
+    [\texttt{p p i}]
+    [\texttt{\$ \$ \$}].
 \]
-Ordinando le triplette distinte con \texten{radix sort} e assegnando a ciascuna il suo rango lessicografico:
+Ora si applica il \textbf{\texten{lexicographic naming}} delle triplette. Il rango non è ancora il rango del suffisso intero: è solo un nuovo nome numerico assegnato alla tripletta in base alla sua posizione nell'ordine lessicografico. Si ordinano quindi le triplette distinte:
 \[
     [\texttt{\$ \$ \$}]<[\texttt{i \$ \$}]<[\texttt{i p p}]<[\texttt{i s s}]<[\texttt{p p i}]<[\texttt{s s i}],
 \]
-si ottiene la seguente sostituzione:
+e si assegna rango $0$ alla più piccola, rango $1$ alla successiva, e così via:
+
+\[
+    \begin{array}{c|cccccc}
+        \text{tripletta} & \texttt{\$ \$ \$} & \texttt{i \$ \$} & \texttt{i p p} & \texttt{i s s} & \texttt{p p i} & \texttt{s s i} \\ \hline
+        \text{rango}     & 0                  & 1                 & 2               & 3               & 4               & 5
+    \end{array}
+\]
+
+Le occorrenze uguali ricevono lo stesso rango. Tornando allora all'ordine in cui le triplette erano state concatenate, si ottiene la seguente sostituzione:
 
 \begin{center}
     \begin{tabular}{c|cccccccc}
@@ -3933,7 +3942,23 @@ La stringa ridotta è quindi:
 \[
     T^{1,2}=(3,3,2,1,5,5,4,0).
 \]
-Se tutti i simboli di $T^{1,2}$ fossero distinti, i suffissi campionati sarebbero già ordinabili guardando il primo rango. Qui invece compaiono ripetizioni, per esempio i ranghi $3$ e $5$, quindi bisogna ordinare i suffissi di $T^{1,2}$ ricorsivamente. Le slide riportano:
+Se tutti i simboli di $T^{1,2}$ fossero distinti, i suffissi campionati sarebbero già ordinabili guardando il primo rango. Qui invece compaiono ripetizioni, per esempio i ranghi $3$ e $5$, quindi bisogna ordinare i suffissi di $T^{1,2}$ ricorsivamente. Per costruire il \texten{suffix array}, trattiamo $T^{1,2}$ come una normale stringa di interi e ordiniamo lessicograficamente i suoi suffissi. Nella tabella seguente il rango è la posizione del suffisso nell'ordine lessicografico finale:
+
+\begin{center}
+    \begin{tabular}{c|c|l}
+        \textbf{rango} & \textbf{posizione in $T^{1,2}$} & \textbf{suffisso} \\ \hline
+        $0$ & $7$ & $0$ \\
+        $1$ & $3$ & $1,5,5,4,0$ \\
+        $2$ & $2$ & $2,1,5,5,4,0$ \\
+        $3$ & $1$ & $3,2,1,5,5,4,0$ \\
+        $4$ & $0$ & $3,3,2,1,5,5,4,0$ \\
+        $5$ & $6$ & $4,0$ \\
+        $6$ & $5$ & $5,4,0$ \\
+        $7$ & $4$ & $5,5,4,0$
+    \end{tabular}
+\end{center}
+
+Le posizioni lette nella seconda colonna formano quindi il \texten{suffix array}. Quindi otteniamo:
 \[
     SA(T^{1,2})=(7,3,2,1,0,6,5,4).
 \]
