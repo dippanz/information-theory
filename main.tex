@@ -3778,18 +3778,18 @@ Leggendo l'ultima colonna della tabella:
 Il vantaggio è che non abbiamo dovuto ordinare esplicitamente tutte le rotazioni: è sufficiente costruire il \texten{suffix array} e poi leggere un carattere per ogni posizione dell'array.
 
 \subsection{\texorpdfstring{Algoritmo DC3 per costruire il \texten{suffix array}}{Algoritmo DC3 per costruire il suffix array}}
-Il tempo di calcolo della BWT dipende dal tempo necessario a costruire il \texten{suffix array}. Se il \texten{suffix array} si costruisce in tempo lineare, allora anche la fase BWT, una volta noto l'array, richiede solo tempo lineare. I primi algoritmi lineari per la costruzione del \texten{suffix array} sono apparsi nel 2003, circa dieci anni dopo l'introduzione della BWT.
+Il tempo di calcolo della BWT dipende dal tempo necessario a costruire il \texten{suffix array}. Se il \texten{suffix array} si costruisce in tempo lineare, allora anche la fase BWT, una volta noto l'array, richiede solo tempo lineare.
 
-Le slide collocano DC3 dentro il quadro più generale della \textbf{\texten{suffix array construction}}. In particolare citano:
+Per la costruzione di SA esistono e sono stati creati diversi algoritmi, tra cui:
 \begin{itemize}
     \item \textbf{DC3}, basato su \texten{difference cover sampling};
     \item \textbf{SA-IS}, basato su \texten{induced sorting};
-    \item approcci non ricorsivi più recenti, come quello di Baier.
+    \item approcci non ricorsivi più recenti, come quello di Baier;
 \end{itemize}
-Qui ci concentriamo su DC3, introdotto da Karkkainen e Sanders e poi sviluppato con Burkhardt, perché è l'algoritmo trattato più in dettaglio nelle slide.
+qui ci concentriamo su DC3.
 
 \subsubsection{Schema ricorsivo generale}
-La parte chiamata nelle slide \emph{\texten{recursive suffix array construction}} non riguarda la ricostruzione della BWT, ma la costruzione ricorsiva del \texten{suffix array}. L'idea è ordinare prima una parte dei suffissi, codificare quell'ordine in una stringa più corta e poi usare tale informazione per ordinare tutti i suffissi del testo.
+L'idea è ordinare prima una parte dei suffissi, codificare quell'ordine in una stringa più corta e poi usare tale informazione per ordinare tutti i suffissi del testo.
 
 Gli algoritmi come DC3 e SA-IS usano una strategia di campionamento. Supponiamo che l'alfabeto sia rappresentato da interi positivi e che:
 \[
@@ -3821,25 +3821,34 @@ e quindi:
 \]
 
 \subsubsection{I tre passi di DC3}
-DC3 usa le classi di resto modulo $3$. Le posizioni vengono divise in:
+DC3 costruisce il \texten{suffix array} senza ordinare direttamente tutti i suffissi del testo. L'idea è dividere le posizioni in due gruppi: prima si ordinano circa due terzi dei suffissi, poi si usa l'ordine ottenuto per ordinare il terzo rimasto e per fondere tutto.
+
+La divisione è fatta usando le classi di resto modulo $3$:
 \[
     P_{1,2}=\{i\mid i\bmod 3=1 \text{ oppure } i\bmod 3=2\},
     \qquad
     P_0=\{i\mid i\bmod 3=0\}.
 \]
-Il campione $P_{1,2}$ contiene circa $\frac{2}{3}n$ posizioni; il resto $P_0$ contiene circa $\frac{1}{3}n$ posizioni.
+Il campione $P_{1,2}$ contiene circa $\frac{2}{3}$ delle $n$ posizioni; il resto $P_0$ ne contiene circa $\frac{1}{3}$. Quando servono caratteri oltre la fine del testo, si usa il simbolo finale minimo come \texten{padding}: serve solo a completare le ultime triplette, non ad aggiungere nuovi suffissi da ordinare.
 
 \begin{algorithm}[htpb]
     \caption{Schema dell'algoritmo DC3}
     \begin{algorithmic}[1]
         \Require testo $T[0,n)$ con simbolo finale minimo
         \Ensure \texten{suffix array} $SA$ di $T$
-        \State $P_{1,2}\gets \{i\mid i\bmod 3\in\{1,2\}\}$
-        \State costruisci una stringa ridotta $T^{1,2}$ che codifica i suffissi che partono in $P_{1,2}$
-        \State costruisci ricorsivamente il \texten{suffix array} di $T^{1,2}$
-        \State ricava $SA^{1,2}$, cioè l'ordine dei suffissi che partono in $P_{1,2}$
-        \State costruisci $SA^0$, cioè l'ordine dei suffissi che partono in $P_0$, usando coppie $\langle T[i],\operatorname{pos}(i+1)\rangle$
-        \State fondi $SA^{1,2}$ e $SA^0$ con confronti in tempo costante
+        \Statex \textbf{Passo 1: suffissi campionati}
+        \State dividi le posizioni in $P_{1,2}$ e $P_0$
+        \State costruisci le triplette che iniziano nelle posizioni di $P_{1,2}$
+        \State ordina le triplette e assegna un rango a ogni tripletta distinta
+        \State concatena i ranghi ottenendo la stringa ridotta $T^{1,2}$
+        \State calcola il \texten{suffix array} $SA'$ di $T^{1,2}$, ricorsivamente se i ranghi non sono tutti distinti
+        \State traduci le posizioni di $SA'$ nelle corrispondenti posizioni del testo, ottenendo $SA^{1,2}$
+        \State costruisci l'array inverso $\operatorname{pos}$ dei ranghi dei suffissi in $SA^{1,2}$
+        \Statex \textbf{Passo 2: suffissi non campionati}
+        \State per ogni $i\in P_0$, rappresenta $T[i,n)$ con $\langle T[i],\operatorname{pos}(i+1)\rangle$
+        \State ordina queste coppie con \texten{radix sort}, ottenendo $SA^0$
+        \Statex \textbf{Passo 3: fusione}
+        \State fondi $SA^{1,2}$ e $SA^0$ usando confronti in tempo costante basati sui ranghi già calcolati
         \State \Return $SA$
     \end{algorithmic}
 \end{algorithm}
@@ -3851,10 +3860,32 @@ Il campione $P_{1,2}$ contiene circa $\frac{2}{3}n$ posizioni; il resto $P_0$ co
     \label{fig:dc3_overview}
 \end{figure}
 
-\autoref{fig:dc3_overview} riassume il flusso logico. La parte blu è quella ricorsiva: dai suffissi campionati si costruisce una stringa ridotta e se ne calcola il \texten{suffix array}. La parte arancione ordina i suffissi non campionati usando i ranghi già noti. La parte verde fonde le due liste ordinate.
+La \autoref{fig:dc3_overview} riassume il flusso logico. La parte blu è quella ricorsiva: dai suffissi campionati si costruisce una stringa ridotta e se ne calcola il \texten{suffix array}. La parte arancione ordina i suffissi non campionati usando i ranghi già noti. La parte verde fonde le due liste ordinate. Il punto importante è che, dopo il primo passo, non conosciamo solo una lista ordinata: conosciamo anche il rango dei suffissi campionati, e questi ranghi diventano abbreviazioni usabili nei passi successivi.
 
 \paragraph{Passo 1: ordinare i suffissi in $P_{1,2}$.}
-Si costruisce una stringa ridotta $T^{1,2}$ lunga circa $\frac{2}{3}n$. L'idea è raggruppare il testo in triplette partendo dalle posizioni congruenti a $1$ e $2$ modulo $3$, poi sostituire ogni tripletta con il suo rango lessicografico.
+Si vogliono ordinare solo i suffissi che partono nelle posizioni di $P_{1,2}$. Per farlo, DC3 costruisce una stringa ridotta $T^{1,2}$ lunga circa $\frac{2}{3}n$: ogni simbolo di questa nuova stringa è il rango lessicografico di una tripletta di caratteri del testo originale.
+
+Le triplette si ottengono guardando due sequenze:
+\[
+    T[1,\cdot]
+    =
+    [T[1],T[2],T[3]]
+    [T[4],T[5],T[6]]
+    [T[7],T[8],T[9]]
+    \cdots
+\]
+e:
+\[
+    T[2,\cdot]
+    =
+    [T[2],T[3],T[4]]
+    [T[5],T[6],T[7]]
+    [T[8],T[9],T[10]]
+    \cdots
+\]
+La prima sequenza descrive le posizioni dove il primo indice della tripletta è congruente a $1$ modulo $3$, la seconda quelle congruenti a $2$ modulo $3$. Concatenando i ranghi delle triplette di $T[1,\cdot]$ e poi quelli delle triplette di $T[2,\cdot]$ si ottiene $T^{1,2}$.
+
+Perché questo è utile? Un suffisso che parte in $P_{1,2}$ può essere letto come una sequenza di triplette: confrontare due di questi suffissi equivale quindi a confrontare due suffissi della stringa di ranghi $T^{1,2}$. Se due triplette sono diverse, il loro rango decide subito; se sono uguali, si passa alla tripletta successiva, cioè al simbolo successivo di $T^{1,2}$.
 
 Per esempio, con:
 \[
@@ -3881,34 +3912,32 @@ e:
     =
     [\texttt{s s i}]
     [\texttt{s s i}]
-    [\texttt{p p i}]
-    [\texttt{\$ \$ \$}].
-\]
-Concatenando le triplette:
-\[
-    R=
-        [\texttt{i s s}]
-        [\texttt{i s s}]
-        [\texttt{i p p}]
-        [\texttt{i \$ \$}]
-        [\texttt{s s i}]
-        [\texttt{s s i}]
         [\texttt{p p i}]
         [\texttt{\$ \$ \$}].
 \]
-Ordinando le triplette con \texten{radix sort} e assegnando a ogni tripletta distinta il suo rango:
+Ordinando le triplette distinte con \texten{radix sort} e assegnando a ciascuna il suo rango lessicografico:
 \[
     [\texttt{\$ \$ \$}]<[\texttt{i \$ \$}]<[\texttt{i p p}]<[\texttt{i s s}]<[\texttt{p p i}]<[\texttt{s s i}],
 \]
-si ottiene la stringa di ranghi:
+si ottiene la seguente sostituzione:
+
+\begin{center}
+    \begin{tabular}{c|cccccccc}
+        \textbf{posizione in $T$} & $1$ & $4$ & $7$ & $10$ & $2$ & $5$ & $8$ & $11$ \\ \hline
+        \textbf{tripletta}        & \texttt{iss} & \texttt{iss} & \texttt{ipp} & \texttt{i\$\$} & \texttt{ssi} & \texttt{ssi} & \texttt{ppi} & \texttt{\$\$\$} \\
+        \textbf{rango}            & $3$ & $3$ & $2$ & $1$ & $5$ & $5$ & $4$ & $0$
+    \end{tabular}
+\end{center}
+
+La stringa ridotta è quindi:
 \[
     T^{1,2}=(3,3,2,1,5,5,4,0).
 \]
-Se tutti i simboli di $T^{1,2}$ fossero distinti, i suffissi di $T^{1,2}$ sarebbero ordinabili guardando solo il primo simbolo. Poiché in questo esempio ci sono ripetizioni, si costruisce ricorsivamente il \texten{suffix array} di $T^{1,2}$. Le slide riportano:
+Se tutti i simboli di $T^{1,2}$ fossero distinti, i suffissi campionati sarebbero già ordinabili guardando il primo rango. Qui invece compaiono ripetizioni, per esempio i ranghi $3$ e $5$, quindi bisogna ordinare i suffissi di $T^{1,2}$ ricorsivamente. Le slide riportano:
 \[
     SA(T^{1,2})=(7,3,2,1,0,6,5,4).
 \]
-Per convertire questo risultato in posizioni del testo originale si usa il modo in cui $T^{1,2}$ è stato costruito. Le prime quattro posizioni corrispondono ai suffissi che partono da $1,4,7,10$, mentre le ultime quattro corrispondono ai suffissi che partono da $2,5,8,11$:
+Questo array però è espresso in posizioni della stringa ridotta. Per tornare al testo originale si usa il modo in cui $T^{1,2}$ è stato costruito: le prime quattro posizioni corrispondono ai suffissi che partono da $1,4,7,10$, mentre le ultime quattro corrispondono ai suffissi che partono da $2,5,8,11$:
 \[
     \begin{array}{c|cccccccc}
         \text{posizione in }T^{1,2} & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\ \hline
@@ -3921,15 +3950,17 @@ Applicando questa conversione a $SA(T^{1,2})$:
 \]
 
 \paragraph{Passo 2: ordinare i suffissi in $P_0$.}
-Se $i\in P_0$, allora $i+1\in P_{1,2}$. Quindi il suffisso:
+Ora mancano i suffissi che partono nelle posizioni di $P_0$. Se $i\in P_0$, allora $i+1\in P_{1,2}$, quindi il suffisso $T[i+1,n)$ è già stato ordinato nel passo precedente. Per questo si può decomporre:
 \[
-    T[i,n)
+    T[i,n)=T[i]\;T[i+1,n)
 \]
-può essere rappresentato dalla coppia:
+e rappresentare $T[i,n)$ con la coppia:
 \[
     \langle T[i],\operatorname{pos}(i+1)\rangle,
 \]
-dove $\operatorname{pos}(i+1)$ è il rango del suffisso $T[i+1,n)$ dentro $SA^{1,2}$. Poniamo anche $\operatorname{pos}(n+1)=0$.
+dove $\operatorname{pos}(i+1)$ è il rango del suffisso $T[i+1,n)$ dentro $SA^{1,2}$. L'array $\operatorname{pos}$ è quindi l'inverso di $SA^{1,2}$: se un suffisso compare in posizione $r$ dentro $SA^{1,2}$, il suo rango è $r$. Per le posizioni oltre la fine del testo si usa rango $0$, coerentemente con il \texten{padding}.
+
+Questa coppia non contiene tutto il suffisso, ma contiene esattamente l'informazione necessaria per confrontare due suffissi che partono in $P_0$. Se due suffissi $T[i,n)$ e $T[h,n)$ hanno primo carattere diverso, decide il confronto tra $T[i]$ e $T[h]$; se invece hanno lo stesso primo carattere, resta da confrontare $T[i+1,n)$ con $T[h+1,n)$. Poiché $i+1$ e $h+1$ appartengono a $P_{1,2}$, il loro ordine è già noto attraverso $\operatorname{pos}$. Per questo ordinare le coppie $\langle T[i],\operatorname{pos}(i+1)\rangle$ equivale a ordinare i suffissi di $P_0$, ma costa solo tempo lineare con \texten{radix sort}.
 
 Nel caso:
 \[
@@ -3937,7 +3968,14 @@ Nel caso:
     \qquad
     SA^{1,2}=(11,10,7,4,1,8,5,2),
 \]
-si ottengono le seguenti coppie:
+si costruisce prima:
+\[
+    \begin{array}{c|cccccccc}
+        k                    & 11 & 10 & 7 & 4 & 1 & 8 & 5 & 2 \\ \hline
+        \operatorname{pos}(k) & 0  & 1  & 2 & 3 & 4 & 5 & 6 & 7
+    \end{array}
+\]
+e poi, per $P_0=\{0,3,6,9\}$, le seguenti coppie:
 
 \begin{center}
     \begin{tabular}{c|c|c}
@@ -3955,7 +3993,7 @@ Ordinando queste coppie con \texten{radix sort}:
 \]
 
 \paragraph{Passo 3: fusione.}
-Resta da fondere $SA^{1,2}$ e $SA^0$. Il problema è che un suffisso in $SA^0$ e un suffisso in $SA^{1,2}$ appartengono a due liste diverse, quindi non conosciamo ancora il loro ordine relativo. DC3 evita confronti carattere per carattere usando i ranghi già calcolati.
+Resta da fondere $SA^{1,2}$ e $SA^0$. Questa è una fusione tra due liste già ordinate, come nel \texten{merge sort}; l'unica difficoltà è decidere quale dei due suffissi in testa alle liste venga prima in ordine lessicografico. DC3 evita confronti carattere per carattere usando ancora i ranghi già calcolati.
 
 La scelta delle classi $1$ e $2$ modulo $3$ serve proprio a questo: se un suffisso parte in $P_0$, dopo aver saltato uno o due caratteri si arriva sempre a una posizione campionata, quindi a un suffisso di rango già noto. Sia $i\in P_0$ e sia $j\in P_{1,2}$. Ci sono due casi:
 \begin{itemize}
@@ -3977,6 +4015,32 @@ La scelta delle classi $1$ e $2$ modulo $3$ serve proprio a questo: se un suffis
           \]
 \end{itemize}
 In entrambi i casi il confronto costa $O(1)$, perché dopo uno o due caratteri si arriva a suffissi il cui rango è già noto in $SA^{1,2}$.
+
+Per esempio, confrontare il suffisso in posizione $0$ con quello in posizione $1$ richiede solo:
+\[
+    \langle \texttt{m},\operatorname{pos}(1)\rangle
+    =
+    \langle \texttt{m},4\rangle
+    \quad
+    \text{contro}
+    \quad
+    \langle \texttt{i},\operatorname{pos}(2)\rangle
+    =
+    \langle \texttt{i},7\rangle,
+\]
+quindi il suffisso che parte da $1$ viene prima. Confrontare invece la posizione $0$ con la posizione $8$, che è congruente a $2$ modulo $3$, usa due caratteri e poi un rango:
+\[
+    \langle \texttt{m},\texttt{i},\operatorname{pos}(2)\rangle
+    =
+    \langle \texttt{m},\texttt{i},7\rangle
+    \quad
+    \text{contro}
+    \quad
+    \langle \texttt{p},\texttt{p},\operatorname{pos}(10)\rangle
+    =
+    \langle \texttt{p},\texttt{p},1\rangle.
+\]
+In questo caso viene prima il suffisso che parte da $0$. Questi confronti locali sono ciò che permette di fondere le due liste in tempo lineare.
 
 Per l'esempio:
 \[
