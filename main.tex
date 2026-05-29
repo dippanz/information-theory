@@ -4357,11 +4357,23 @@ Il puntatore $i$ identifica l'inizio del \texten{look-ahead buffer}, cioè la pr
 \begin{figure}[htpb]
     \centering
     \includegraphics[width=0.94\textwidth]{lz77/lz77-window-example.pdf}
-    \caption{Finestra scorrevole di LZ77 con un esempio integrato. Il prefisso \texttt{aba} del \texten{look-ahead buffer} compare già nel \texten{search buffer}; l'encoder può quindi emettere offset $o=i-j=5$, lunghezza $\ell=3$ e simbolo successivo $s=\texttt{a}$.}
+    \caption{Finestra scorrevole di LZ77 con un esempio integrato. Le celle evidenziate indicano il prefisso del \texten{look-ahead buffer} che compare già nel \texten{search buffer}.}
     \label{fig:lz77_sliding_window_example}
 \end{figure}
 
-Alla posizione corrente l'encoder cerca nel \texten{search buffer} la sottostringa più lunga che coincide con un prefisso del \texten{look-ahead buffer}, come in \autoref{fig:lz77_sliding_window_example}. Se trova un match, lo rappresenta tramite una tripla:
+Nell'esempio di \autoref{fig:lz77_sliding_window_example}, il prefisso
+$\alpha=\texttt{aba}$ del \texten{look-ahead buffer} compare già nel
+\texten{search buffer}. L'occorrenza precedente inizia in $j$, mentre il
+prefisso da codificare inizia in $i$; quindi l'offset è $o=i-j=5$. La
+lunghezza del match è $\ell=|\alpha|=3$ e il simbolo successivo al match
+è $s=\texttt{a}$. In altre parole, l'encoder copia \texttt{aba} dal
+\texten{search buffer} e poi scrive il simbolo successivo \texttt{a},
+emettendo la tripla:
+\[
+    \langle 5,3,\texttt{a}\rangle.
+\]
+
+In generale, alla posizione corrente l'encoder cerca nel \texten{search buffer} la sottostringa più lunga che coincide con un prefisso del \texten{look-ahead buffer}. Se trova un match, lo rappresenta tramite una tripla:
 \[
     \langle o,\ell,s\rangle,
 \]
