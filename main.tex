@@ -4384,7 +4384,14 @@ dove:
 \end{itemize}
 Se non c'è nessun match utile, si emette una tripla del tipo $\langle 0,0,s\rangle$, cioè un carattere letterale.
 
-\begin{algorithm}[htpb]
+\subsubsection{Algoritmi di codifica e decodifica}
+Conviene separare lo schema generale dagli esempi concreti. La
+\textbf{codifica} è la parte più costosa: a ogni posizione deve cercare
+nel \texten{search buffer} il prefisso più lungo possibile del
+\texten{look-ahead buffer}. Dopo avere emesso la tripla, l'encoder avanza
+oltre la frase appena rappresentata.
+
+\begin{algorithm}[H]
     \caption{Schema di codifica LZ77}
     \begin{algorithmic}[1]
         \Require testo $S[1..N]$, ampiezza massima della finestra $W$
@@ -4397,6 +4404,27 @@ Se non c'è nessun match utile, si emette una tripla del tipo $\langle 0,0,s\ran
         \EndWhile
     \end{algorithmic}
     \label{alg:lz77_encoding}
+\end{algorithm}
+
+La \textbf{decodifica}, invece, non deve cercare nessun match: riceve già
+offset e lunghezza. Per ogni tripla copia $\ell$ caratteri dalla posizione
+corrente meno $o$, poi aggiunge il simbolo $s$. Per questo il decoder è
+molto più semplice e veloce dell'encoder.
+
+\begin{algorithm}[H]
+    \caption{Schema di decodifica LZ77}
+    \begin{algorithmic}[1]
+        \Require sequenza di triple LZ77
+        \State $p\gets 1$
+        \ForAll{triple $\langle o,\ell,s\rangle$}
+            \For{$k=0$ \textbf{to} $\ell-1$}
+                \State $S[p+k]\gets S[p-o+k]$
+            \EndFor
+            \State $S[p+\ell]\gets s$
+            \State $p\gets p+\ell+1$
+        \EndFor
+    \end{algorithmic}
+    \label{alg:lz77_decoding}
 \end{algorithm}
 
 \subsubsection{Esempio di codifica}
@@ -4456,11 +4484,47 @@ Le frasi prodotte dalle cinque triple sono, rispettivamente,
 \texttt{a}, \texttt{b}, \texttt{aa}, \texttt{bab} e \texttt{aabb}; la
 loro concatenazione ricostruisce esattamente \texttt{abaababaabb}.
 
-Un secondo esempio, più esteso, riportato nelle slide codifica:
+Un secondo esempio più esteso permette di vedere lo stesso meccanismo su
+frasi più lunghe. Consideriamo la stringa\footnote{Ci potrebbe essere una errore nella sequenza di triple
+seguente che ricostruisce \texttt{babbababbaabbaabaabaaa}. Con la variante
+\texttt{babbababbbaabbaabaabaaa}, cioè con una \texttt{b} in più dopo il
+prefisso \texttt{babbaba}, queste triple non tornerebbero.}:
 \[
-    \texttt{babbababbbaabbaabaabaaa}
+    \texttt{babbababbaabbaabaabaaa}.
 \]
-come:
+Il procedimento è:
+
+\begin{center}
+\scriptsize
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|c|c|p{0.20\textwidth}|p{0.39\textwidth}|p{0.17\textwidth}|}
+    \hline
+    \textbf{Passo} & \textbf{$p$} & \textbf{Testo già prodotto} & \textbf{Scelta dell'encoder} & \textbf{Tripla} \\ \hline
+    1 & 1 & \emph{vuoto} &
+    nessun match: si emette il letterale \texttt{b} &
+    $\langle 0,0,\texttt{b}\rangle$ \\ \hline
+    2 & 2 & \texttt{b} &
+    nessun match utile per \texttt{a}: si emette il letterale \texttt{a} &
+    $\langle 0,0,\texttt{a}\rangle$ \\ \hline
+    3 & 3 & \texttt{ba} &
+    il prefisso \texttt{b} compare a distanza $2$; si copia \texttt{b} e poi si scrive \texttt{b}, producendo \texttt{bb} &
+    $\langle 2,1,\texttt{b}\rangle$ \\ \hline
+    4 & 5 & \texttt{babb} &
+    il prefisso \texttt{ab} compare a distanza $3$; si copia \texttt{ab} e poi si scrive \texttt{a}, producendo \texttt{aba} &
+    $\langle 3,2,\texttt{a}\rangle$ \\ \hline
+    5 & 8 & \texttt{babbaba} &
+    il prefisso \texttt{bba} compare a distanza $5$; si copia \texttt{bba} e poi si scrive \texttt{a}, producendo \texttt{bbaa} &
+    $\langle 5,3,\texttt{a}\rangle$ \\ \hline
+    6 & 12 & \texttt{babbababbaa} &
+    il prefisso \texttt{bbaa} compare a distanza $4$; si copia \texttt{bbaa} e poi si scrive \texttt{b}, producendo \texttt{bbaab} &
+    $\langle 4,4,\texttt{b}\rangle$ \\ \hline
+    7 & 17 & \texttt{babbabab}\allowbreak\texttt{baabbaab} &
+    a distanza $3$ si copia progressivamente \texttt{aabaa} e poi si scrive \texttt{a}, producendo \texttt{aabaaa} &
+    $\langle 3,5,\texttt{a}\rangle$ \\ \hline
+\end{tabular}
+\end{center}
+
+Mettendo in fila le triple, si ottiene:
 \[
     \langle 0,0,\texttt{b}\rangle\quad
     \langle 0,0,\texttt{a}\rangle\quad
@@ -4470,28 +4534,70 @@ come:
     \langle 4,4,\texttt{b}\rangle\quad
     \langle 3,5,\texttt{a}\rangle.
 \]
-Questo secondo esempio mostra bene il comportamento progressivo della finestra: più testo è stato emesso, più aumentano le possibilità di trovare match lunghi.
+Le frasi prodotte sono:
+\[
+    \texttt{b}\quad
+    \texttt{a}\quad
+    \texttt{bb}\quad
+    \texttt{aba}\quad
+    \texttt{bbaa}\quad
+    \texttt{bbaab}\quad
+    \texttt{aabaaa}.
+\]
+La loro concatenazione restituisce:
+\[
+    \texttt{babbababbaabbaabaabaaa}.
+\]
+Questo secondo esempio mostra bene il comportamento progressivo della finestra:
+più testo è stato emesso, più aumentano le possibilità di trovare match lunghi.
+In particolare, l'ultimo passo anticipa un dettaglio importante della
+decodifica: poiché $\ell=5$ è maggiore dell'offset $o=3$, la copia non è
+un blocco già interamente disponibile. I primi caratteri vengono letti dal
+testo già prodotto e gli ultimi caratteri vengono letti da ciò che si sta
+copiando in quello stesso momento.
 
 \subsubsection{Decodifica e copie auto-referenziali}
-La decodifica è più semplice della codifica. Per ogni tripla $\langle o,\ell,s\rangle$, il decoder copia $\ell$ caratteri a partire dalla posizione corrente meno $o$, poi aggiunge $s$.
+La parte delicata della decodifica non è la ricerca del match, ma il modo
+in cui viene eseguita la copia. È importante che la copia venga fatta
+\textbf{simbolo per simbolo}, non come copia in blocco già completamente
+disponibile. Infatti LZ77 permette copie auto-referenziali: il riferimento
+può puntare a una zona che si sta ancora producendo.
 
-\begin{algorithm}[htpb]
-    \caption{Schema di decodifica LZ77}
-    \begin{algorithmic}[1]
-        \Require sequenza di triple LZ77
-        \State $p\gets 1$
-        \ForAll{triple $\langle o,\ell,s\rangle$}
-            \For{$k=0$ \textbf{to} $\ell-1$}
-                \State $S[p+k]\gets S[p-o+k]$
-            \EndFor
-            \State $S[p+\ell]\gets s$
-            \State $p\gets p+\ell+1$
-        \EndFor
-    \end{algorithmic}
-    \label{alg:lz77_decoding}
-\end{algorithm}
+Più precisamente, se la posizione corrente è $p$, una tripla
+$\langle o,\ell,s\rangle$ copia, per $k=0,1,\ldots,\ell-1$, il simbolo in
+posizione $p-o+k$. Quando $k<o$, il decoder legge simboli che erano già
+presenti prima della tripla; quando invece $k\geq o$, il decoder può
+leggere simboli appena scritti dalla stessa copia. Per questo, se
+$\ell>o$, il riferimento si comporta come una ripetizione periodica di
+periodo $o$.
 
-È importante che la copia venga fatta \textbf{simbolo per simbolo}, non come copia in blocco già completamente disponibile. Infatti LZ77 permette copie auto-referenziali: il riferimento può puntare a una zona che si sta ancora producendo. Per esempio:
+Per esempio, nell'ultimo passo dell'esempio precedente si aveva
+$\langle 3,5,\texttt{a}\rangle$. Prima della tripla, gli ultimi tre simboli
+disponibili erano:
+\[
+    \texttt{aab}.
+\]
+Con offset $3$ e lunghezza $5$, il decoder copia prima questi tre simboli:
+\[
+    \texttt{aab}.
+\]
+Poi deve ancora copiare due simboli, ma a quel punto può leggere ciò che ha
+appena prodotto: riparte quindi dalle prime due lettere della stessa copia,
+cioè \texttt{aa}. Alla fine aggiunge il simbolo esplicito
+$s=\texttt{a}$, ottenendo la frase:
+\[
+    \underbrace{\texttt{aab}}_{\text{già disponibile}}
+    \underbrace{\texttt{aa}}_{\text{copiato durante la produzione}}
+    \texttt{a}
+    =
+    \texttt{aabaaa}.
+\]
+Quindi la tua lettura è corretta: copia \texttt{a}, \texttt{a},
+\texttt{b}, poi ricomincia dai simboli appena prodotti, copia ancora
+\texttt{a}, \texttt{a}, e infine aggiunge la \texttt{a} della terza
+componente della tripla.
+
+Un caso ancora più evidente si ottiene con offset $1$. Per esempio:
 \[
     \langle 0,0,\texttt{a}\rangle
     \langle 0,0,\texttt{c}\rangle
@@ -4503,7 +4609,37 @@ produce prima:
 \[
     \texttt{a},\quad \texttt{c},\quad \texttt{aa},\quad \texttt{acb},
 \]
-e poi l'ultima tripla copia dieci volte a distanza $1$. Appena viene prodotto un nuovo \texttt{b}, quel simbolo diventa immediatamente disponibile per produrre il successivo. Per questo il risultato finale può contenere una lunga run di \texttt{b} anche se nel testo precedente era disponibile un solo \texttt{b} da cui partire.
+cioè, dopo le prime quattro triple, il testo decodificato è:
+\[
+    \texttt{acaaacb}.
+\]
+Ora si deve decodificare l'ultima tripla:
+\[
+    \langle 1,10,\texttt{a}\rangle.
+\]
+Il valore $o=1$ dice di copiare dal simbolo immediatamente precedente alla
+posizione corrente. All'inizio quel simbolo è l'ultima \texttt{b} di
+\texttt{acaaacb}; appena il decoder copia questa \texttt{b}, la nuova
+\texttt{b} appena prodotta diventa a sua volta il simbolo precedente e può
+essere copiata nel passo successivo. Quindi la copia procede così:
+\[
+\begin{array}{c|c|c}
+    \textbf{stato prima della tripla} & \textbf{tripla} & \textbf{frase prodotta} \\ \hline
+    \texttt{acaaacb} & \langle 1,10,\texttt{a}\rangle & \texttt{bbbbbbbbbba}
+\end{array}
+\]
+La frase prodotta contiene dieci \texttt{b}, ottenute copiando sempre a
+distanza $1$, e poi il simbolo finale \texttt{a}. Il risultato complessivo
+della decodifica è quindi:
+\[
+    \texttt{acaaacb}\,\texttt{bbbbbbbbbba}
+    =
+    \texttt{acaaacbbbbbbbbbbba}.
+\]
+Questo è il punto essenziale: il riferimento non deve per forza puntare a
+un blocco già interamente scritto prima della tripla. Può anche
+``inseguire'' il testo che sta producendo, purché la copia venga eseguita
+un simbolo alla volta.
 
 \subsubsection{Finestra, lunghezza massima e fattore di compressione}
 In pratica LZ77 limita sia la distanza massima del puntatore sia la lunghezza massima del match. Se la finestra è troppo piccola, si perdono ripetizioni lontane; se è troppo grande, la ricerca del match diventa più costosa. Analogamente, aumentare molto la lunghezza massima dei match può non valere il costo se i match lunghi sono rari.
