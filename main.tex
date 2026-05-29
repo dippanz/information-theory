@@ -4587,15 +4587,17 @@ cioè \texttt{aa}. Alla fine aggiunge il simbolo esplicito
 $s=\texttt{a}$, ottenendo la frase:
 \[
     \underbrace{\texttt{aab}}_{\text{già disponibile}}
+    \quad
     \underbrace{\texttt{aa}}_{\text{copiato durante la produzione}}
+    \quad
     \texttt{a}
     =
     \texttt{aabaaa}.
 \]
-Quindi la tua lettura è corretta: copia \texttt{a}, \texttt{a},
-\texttt{b}, poi ricomincia dai simboli appena prodotti, copia ancora
-\texttt{a}, \texttt{a}, e infine aggiunge la \texttt{a} della terza
-componente della tripla.
+In altri termini: il decoder copia \texttt{a}, \texttt{a}, \texttt{b},
+poi ricomincia dai simboli appena prodotti, copia ancora \texttt{a},
+\texttt{a}, e infine aggiunge la \texttt{a} della terza componente della
+tripla.
 
 Un caso ancora più evidente si ottiene con offset $1$. Per esempio:
 \[
