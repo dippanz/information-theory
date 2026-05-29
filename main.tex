@@ -4271,4 +4271,539 @@ Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Za
 
 
 
+\section{Compressione basata su dizionario}
+Gli algoritmi studiati finora comprimono soprattutto tramite modelli probabilistici o trasformazioni che rendono più semplice una successiva codifica statistica. Huffman e la codifica aritmetica richiedono una distribuzione, stimata o nota, dei simboli; la BWT riorganizza il testo per creare contesti più favorevoli a MTF, RLE e codificatori di ordine zero. I \textbf{compressori basati su dizionario}, invece, partono da un'altra idea: se una sottostringa è già comparsa, non conviene riscriverla per intero, ma si può sostituirla con un riferimento.
+
+Questa famiglia è spesso indicata come famiglia \textbf{Lempel-Ziv} o \textbf{LZ}. Il vantaggio centrale è che non serve conoscere in anticipo la sorgente: la ridondanza viene dedotta dalla ripetitività del testo stesso. Per questo motivo i metodi LZ sono molto usati in pratica, ad esempio in ZIP, gzip, PNG, GIF e in molti formati derivati.
+
+\begin{definizione}
+    Sia $T$ un testo. Un \textbf{dizionario} per $T$ è un insieme di coppie
+    \[
+        D=\{(f,c)\mid f\in F,\ c\in C\},
+    \]
+    dove $F$ è un insieme di fattori, cioè sottostringhe, di $T$, mentre $C$ è l'insieme delle parole di codice associate. La compressione consiste nel sostituire alcune occorrenze dei fattori $f$ con le corrispondenti parole di codice $c$.
+\end{definizione}
+
+Un dizionario può essere \textbf{statico}, se è fissato prima della compressione, oppure \textbf{adattivo}, se viene costruito mentre il testo viene letto. Nel primo caso encoder e decoder devono già conoscere lo stesso dizionario, oppure bisogna trasmetterlo insieme al file compresso. Nel secondo caso, invece, il dizionario non viene normalmente trasmesso: il decoder lo ricostruisce perché segue la stessa regola deterministica dell'encoder.
+
+\subsection{Dizionari statici e dizionari dipendenti dal testo}
+Un dizionario statico contiene una lista predefinita di stringhe o pattern che si ritengono frequenti. Può essere costruito usando statistiche su testi tipici, ma resta fisso durante codifica e decodifica. Questa scelta è semplice, ma funziona bene solo se il dizionario è davvero adatto alla sorgente.
+
+\subsubsection{Dizionari di digrammi}
+Un esempio elementare di dizionario statico è la codifica dei \textbf{digrammi}, cioè coppie di caratteri. Il dizionario contiene tutti i caratteri singoli dell'alfabeto e, in più, alcune coppie frequenti.
+
+Supponiamo di avere l'alfabeto:
+\[
+    A=\{\texttt{a},\texttt{b},\texttt{c},\texttt{d},\texttt{r}\}
+\]
+e il seguente dizionario:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{c|c||c|c}
+        \textbf{Codice} & \textbf{Entrata} & \textbf{Codice} & \textbf{Entrata} \\ \hline
+        \texttt{000} & \texttt{a}  & \texttt{100} & \texttt{r}  \\
+        \texttt{001} & \texttt{b}  & \texttt{101} & \texttt{ab} \\
+        \texttt{010} & \texttt{c}  & \texttt{110} & \texttt{ac} \\
+        \texttt{011} & \texttt{d}  & \texttt{111} & \texttt{ad}
+    \end{tabular}
+    \caption{Dizionario statico con caratteri singoli e alcuni digrammi.}
+    \label{tab:static_digram_dictionary}
+\end{table}
+
+Per codificare \texttt{abracadabra}, l'encoder legge due caratteri alla volta. Se la coppia è nel dizionario, emette il codice della coppia; se non lo è, emette il codice del primo carattere e usa il secondo come inizio del prossimo tentativo. In questo caso la scansione è:
+\[
+    \texttt{ab}\quad \texttt{r}\quad \texttt{ac}\quad \texttt{ad}\quad
+    \texttt{ab}\quad \texttt{r}\quad \texttt{a},
+\]
+quindi l'output è:
+\[
+    \texttt{101100110111101100000}.
+\]
+
+Il limite di questa tecnica è evidente: se le coppie frequenti del testo non sono quelle nel dizionario, la compressione peggiora. Un dizionario costruito per un libro di economia, ad esempio, può essere poco adatto a un articolo sportivo. Si potrebbe allora costruire un dizionario specifico per ogni file, ma questo introduce un costo aggiuntivo, perché il dizionario va memorizzato o trasmesso.
+
+\subsubsection{Perché servono dizionari adattivi}
+I dizionari adattivi risolvono questo problema costruendo il dizionario durante la compressione. Il testo già letto diventa la sorgente naturale dei pattern futuri: se una certa frase, parola o sottostringa è comparsa nella parte precedente del file, è ragionevole cercarla anche nella parte successiva.
+
+L'idea Lempel-Ziv è proprio questa:
+\begin{itemize}
+    \item il dizionario viene costruito dinamicamente mentre il messaggio viene compresso;
+    \item encoder e decoder aggiornano il dizionario nello stesso modo;
+    \item non è necessario trasmettere un dizionario esplicito;
+    \item le varianti differiscono soprattutto per il tipo di riferimento usato e per le restrizioni su ciò che può essere referenziato.
+\end{itemize}
+
+\subsection{\texorpdfstring{LZ77}{LZ77}}
+L'algoritmo LZ77, introdotto da Ziv e Lempel nel 1977, è alla base di molti compressori pratici, tra cui DEFLATE, gzip e zlib. La sua idea è usare una \textbf{finestra scorrevole} sul testo. La finestra è divisa in due parti:
+\begin{itemize}
+    \item il \textbf{\texten{search buffer}}, che contiene una porzione già codificata;
+    \item il \textbf{\texten{look-ahead buffer}}, che contiene la parte ancora da codificare.
+\end{itemize}
+
+Alla posizione corrente l'encoder cerca nel \texten{search buffer} la sottostringa più lunga che coincide con un prefisso del \texten{look-ahead buffer}. Se trova un match, lo rappresenta tramite una tripla:
+\[
+    \langle o,\ell,s\rangle,
+\]
+dove:
+\begin{itemize}
+    \item $o$ è l'\textbf{offset}, cioè la distanza all'indietro dall'inizio del match;
+    \item $\ell$ è la \textbf{lunghezza} del match;
+    \item $s$ è il simbolo che segue il match nel \texten{look-ahead buffer}.
+\end{itemize}
+Se non c'è nessun match utile, si emette una tripla del tipo $\langle 0,0,s\rangle$, cioè un carattere letterale.
+
+\begin{algorithm}[htpb]
+    \caption{Schema di codifica LZ77}
+    \begin{algorithmic}[1]
+        \Require testo $S[1..N]$, ampiezza massima della finestra $W$
+        \State $p\gets 1$
+        \While{$p\leq N$}
+            \State cerca il match più lungo di $S[p..]$ in $S[\max(1,p-W)..p-1]$
+            \State sia il match a distanza $o$ e lunghezza $\ell$
+            \State emetti $\langle o,\ell,S[p+\ell]\rangle$
+            \State $p\gets p+\ell+1$
+        \EndWhile
+    \end{algorithmic}
+    \label{alg:lz77_encoding}
+\end{algorithm}
+
+\subsubsection{Esempio di codifica}
+Consideriamo la stringa:
+\[
+    \texttt{abaababaabb}.
+\]
+Una possibile codifica LZ77, come nelle slide, è:
+\[
+    \langle 0,0,\texttt{a}\rangle
+    \langle 0,0,\texttt{b}\rangle
+    \langle 2,1,\texttt{a}\rangle
+    \langle 3,2,\texttt{b}\rangle
+    \langle 5,3,\texttt{b}\rangle.
+\]
+Le prime due triple sono letterali. La terza, $\langle 2,1,\texttt{a}\rangle$, dice: torna indietro di $2$ posizioni, copia $1$ carattere e poi scrivi \texttt{a}. Le triple successive copiano blocchi più lunghi perché il testo già prodotto contiene prefissi sempre più utili.
+
+Un esempio più esteso riportato nelle slide codifica:
+\[
+    \texttt{babbababbbaabbaabaabaaa}
+\]
+come:
+\[
+    \langle 0,0,\texttt{b}\rangle
+    \langle 0,0,\texttt{a}\rangle
+    \langle 2,1,\texttt{b}\rangle
+    \langle 3,2,\texttt{a}\rangle
+    \langle 5,3,\texttt{a}\rangle
+    \langle 4,4,\texttt{b}\rangle
+    \langle 3,5,\texttt{a}\rangle.
+\]
+Questo secondo esempio mostra bene il comportamento progressivo della finestra: più testo è stato emesso, più aumentano le possibilità di trovare match lunghi.
+
+\subsubsection{Decodifica e copie auto-referenziali}
+La decodifica è più semplice della codifica. Per ogni tripla $\langle o,\ell,s\rangle$, il decoder copia $\ell$ caratteri a partire dalla posizione corrente meno $o$, poi aggiunge $s$.
+
+\begin{algorithm}[htpb]
+    \caption{Schema di decodifica LZ77}
+    \begin{algorithmic}[1]
+        \Require sequenza di triple LZ77
+        \State $p\gets 1$
+        \ForAll{triple $\langle o,\ell,s\rangle$}
+            \For{$k=0$ \textbf{to} $\ell-1$}
+                \State $S[p+k]\gets S[p-o+k]$
+            \EndFor
+            \State $S[p+\ell]\gets s$
+            \State $p\gets p+\ell+1$
+        \EndFor
+    \end{algorithmic}
+    \label{alg:lz77_decoding}
+\end{algorithm}
+
+È importante che la copia venga fatta \textbf{simbolo per simbolo}, non come copia in blocco già completamente disponibile. Infatti LZ77 permette copie auto-referenziali: il riferimento può puntare a una zona che si sta ancora producendo. Per esempio:
+\[
+    \langle 0,0,\texttt{a}\rangle
+    \langle 0,0,\texttt{c}\rangle
+    \langle 2,1,\texttt{a}\rangle
+    \langle 4,2,\texttt{b}\rangle
+    \langle 1,10,\texttt{a}\rangle
+\]
+produce prima:
+\[
+    \texttt{a},\quad \texttt{c},\quad \texttt{aa},\quad \texttt{acb},
+\]
+e poi l'ultima tripla copia dieci volte a distanza $1$. Appena viene prodotto un nuovo \texttt{b}, quel simbolo diventa immediatamente disponibile per produrre il successivo. Per questo il risultato finale può contenere una lunga run di \texttt{b} anche se nel testo precedente era disponibile un solo \texttt{b} da cui partire.
+
+\subsubsection{Finestra, lunghezza massima e fattore di compressione}
+In pratica LZ77 limita sia la distanza massima del puntatore sia la lunghezza massima del match. Se la finestra è troppo piccola, si perdono ripetizioni lontane; se è troppo grande, la ricerca del match diventa più costosa. Analogamente, aumentare molto la lunghezza massima dei match può non valere il costo se i match lunghi sono rari.
+
+Nelle slide viene mostrato un caso in cui la compressione può addirittura peggiorare la dimensione. Si codifica:
+\[
+    \texttt{010020\$0110\$\$0111}
+\]
+su un alfabeto di dimensione $4$, quindi $2$ bit per carattere. La stringa non compressa usa:
+\[
+    17\cdot 2=34\ \text{bit}.
+\]
+Con una finestra di $7$ simboli e match lunghi al massimo $3$, servono $3$ bit per l'offset, $2$ bit per la lunghezza e $2$ bit per il carattere, quindi $7$ bit per tripla. La codifica riportata è:
+\[
+\begin{aligned}
+    &\langle 0,0,\texttt{0}\rangle
+    \langle 0,0,\texttt{1}\rangle
+    \langle 2,1,\texttt{0}\rangle
+    \langle 0,0,\texttt{2}\rangle \\
+    &\langle 2,1,\texttt{\$}\rangle
+    \langle 7,2,\texttt{1}\rangle
+    \langle 5,2,\texttt{\$}\rangle
+    \langle 6,3,\texttt{1}\rangle.
+\end{aligned}
+\]
+Ci sono $8$ triple, cioè $8\cdot 7=56$ bit. Il rapporto:
+\[
+    \frac{34}{56}\simeq 0{,}607
+\]
+è minore di $1$, quindi in questo esempio il formato compresso è più grande del testo originario. Questo non contraddice il principio dell'algoritmo: mostra solo che il guadagno dipende dalla ripetitività effettiva e dal costo dei riferimenti.
+
+\subsubsection{Parsing ed encoding}
+Per LZ77 conviene distinguere due fasi:
+\begin{itemize}
+    \item il \textbf{parsing}, che trasforma il testo in una sequenza di triple o frasi;
+    \item l'\textbf{encoding}, che rappresenta queste triple come bit.
+\end{itemize}
+La fase di encoding può usare un compressore statistico, come Huffman o codifica aritmetica, sulle componenti delle triple, oppure un codice universale per interi. Questo chiarisce perché molti compressori reali siano ibridi: LZ individua le ripetizioni, poi un codificatore statistico rappresenta in modo compatto letterali, lunghezze e distanze.
+
+La ricerca del prefisso più lungo è il collo di bottiglia dell'encoder. Una ricerca ingenua, che controlla tutte le possibili occorrenze nel \texten{search buffer}, è troppo lenta su file grandi. Il decoder, invece, è molto veloce: deve solo copiare caratteri da posizioni già ricostruite.
+
+\subsection{\texorpdfstring{LZss}{LZss}}
+Storer e Szymanski proposero nel 1982 una variante di LZ77, chiamata \textbf{LZss}. L'osservazione è che una tripla LZ77 contiene sempre tre componenti, anche quando non tutte sono davvero utili:
+\begin{itemize}
+    \item se è stato trovato un match lungo, il carattere successivo può essere gestito come inizio della frase successiva, quindi non è sempre necessario aggiungerlo nella stessa tripla;
+    \item se non è stato trovato un match, emettere $\langle 0,0,c\rangle$ spreca due componenti nulle.
+\end{itemize}
+
+LZss emette quindi sempre una coppia, ma di due tipi:
+\[
+    \langle d,\ell\rangle
+    \quad\text{oppure}\quad
+    \langle 0,c\rangle.
+\]
+Nel primo caso si copia una frase già apparsa a distanza $d$ e lunga $\ell$; nel secondo caso si emette un letterale $c$. Nelle implementazioni reali si usa spesso un bit di flag per distinguere letterali e riferimenti.
+
+Per la stringa:
+\[
+    \texttt{aabbabab},
+\]
+le slide riportano la seguente codifica LZss:
+\[
+    \langle 0,\texttt{a}\rangle
+    \langle 1,1\rangle
+    \langle 0,\texttt{b}\rangle
+    \langle 1,1\rangle
+    \langle 3,2\rangle
+    \langle 2,2\rangle.
+\]
+L'idea è la stessa di LZ77, ma i letterali e i riferimenti sono trattati in modo più economico.
+
+\subsubsection{Confronto tra parsing LZ77 e LZss}
+Indichiamo con $z$ il numero di frasi nel parsing LZ77 di una stringa $t$ e con $z'$ il numero di frasi nel parsing LZss. Le slide introducono due famiglie di fattorizzazioni.
+
+Sia:
+\[
+    s=t_1t_2\cdots t_r
+\]
+una decomposizione di $s$ in stringhe non vuote. È una fattorizzazione di tipo LZss se ogni $t_i$ è un singolo carattere oppure ha un'occorrenza nel prefisso già visto:
+\[
+    t_1t_2\cdots t_{i-1}.
+\]
+È invece una fattorizzazione di tipo LZ77 se, per ogni frase $t_i$, il prefisso $t_i[1..|t_i|-1]$ ha un'occorrenza nella parte già disponibile del testo, eventualmente sfruttando la copia progressiva tipica di LZ77\footnote{Nella slide la seconda definizione sembra chiamare ancora questa fattorizzazione ``LZss-type parsing''. Dal contesto e dal confronto successivo con $z=|\operatorname{LZ77}(t)|$ la tratto come un refuso: la seconda definizione è quella di tipo LZ77.}.
+
+\begin{theorem}[Lempel-Ziv, 1976]
+    Per ogni stringa $t$, il numero $z'$ di frasi prodotte dal parsing LZss è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZss. Analogamente, il numero $z$ di frasi prodotte dal parsing LZ77 è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZ77.
+\end{theorem}
+
+\begin{theorem}[Kosolobov-Shur, 2019]
+    Per ogni stringa $t$ vale:
+    \[
+        \frac{1}{2}z' < z \leq z'.
+    \]
+\end{theorem}
+
+Il significato è che LZ77 non produce più frasi di LZss, ma il vantaggio non può essere arbitrariamente grande: il numero di frasi LZss è al più quasi il doppio del numero di frasi LZ77.
+
+\subsection{Gzip e DEFLATE}
+Gzip è una variante pratica molto importante della famiglia LZ77. Usa l'algoritmo \textbf{DEFLATE}, che combina LZ77 con codifica di Huffman. In modo schematico:
+\begin{itemize}
+    \item LZ77 produce letterali, lunghezze e distanze;
+    \item Huffman codifica in modo compatto questi valori;
+    \item l'output finale non contiene triple grezze, ma una rappresentazione statistica dei loro componenti.
+\end{itemize}
+
+Il problema implementativo principale è trovare velocemente il prefisso più lungo $\alpha$ del \texten{look-ahead buffer} $B$ che compare nella finestra precedente $W$. Gzip accelera questa ricerca usando una tabella hash di \textbf{3-grammi}:
+\begin{enumerate}
+    \item si cerca il trigramma $B[1..3]$ nella tabella;
+    \item se non esiste, si emette un letterale e si avanza di un carattere;
+    \item se esiste, si recuperano le posizioni precedenti in cui il trigramma compare;
+    \item da quelle posizioni si estende il confronto per trovare il prefisso comune più lungo;
+    \item si sceglie il match migliore e si emette una coppia distanza-lunghezza.
+\end{enumerate}
+
+Quando la finestra scorre, la tabella hash deve essere aggiornata: si rimuovono i 3-grammi che escono dalla finestra e si inseriscono quelli che entrano. Le distanze e le lunghezze sono poi codificate con Huffman. In gzip, il formato usa due alfabeti: uno per letterali e lunghezze, e uno per le distanze. Se il decoder legge un letterale, lo emette direttamente; se legge una lunghezza, sa che deve leggere anche una distanza.
+
+La dimensione della finestra è un compromesso. gzip usa una finestra di $32\cdot 2^{10}=32768$ byte, mentre 7-zip può usare finestre molto più grandi, fino a dimensioni dell'ordine di $2^{30}$. Finestre più grandi possono trovare ripetizioni più lontane, ma richiedono più memoria e più tempo di ricerca.
+
+\subsection{\texorpdfstring{LZ78}{LZ78}}
+LZ78, introdotto da Ziv e Lempel nel 1978, usa un dizionario esplicito di frasi già parse. A differenza di LZ77, non si può puntare a qualunque sottostringa della finestra: si possono referenziare solo frasi complete già presenti nel dizionario.
+
+Questa restrizione ha due effetti:
+\begin{itemize}
+    \item evita alcune rappresentazioni ridondanti o parziali tipiche di LZ77;
+    \item richiede di mantenere un dizionario vero e proprio, quindi la decodifica usa più memoria ed è meno locale.
+\end{itemize}
+
+Il dizionario parte da una frase vuota, con indice $0$. A ogni passo l'encoder cerca il prefisso più lungo già presente nel dizionario, poi emette la coppia:
+\[
+    \langle \text{indice della frase precedente},\ \text{prossimo carattere}\rangle.
+\]
+La concatenazione tra la frase precedente e il prossimo carattere diventa una nuova frase del dizionario.
+
+\begin{algorithm}[htpb]
+    \caption{Schema di codifica LZ78}
+    \begin{algorithmic}[1]
+        \Require testo $S$
+        \State inizializza $D[0]\gets \epsilon$
+        \State $p\gets 1$
+        \While{$p\leq |S|$}
+            \State sia $w$ il prefisso più lungo di $S[p..]$ presente in $D$
+            \State sia $c$ il carattere che segue $w$
+            \State emetti $\langle \operatorname{index}(w),c\rangle$
+            \State aggiungi $wc$ al dizionario con un nuovo indice
+            \State $p\gets p+|w|+1$
+        \EndWhile
+    \end{algorithmic}
+    \label{alg:lz78_encoding}
+\end{algorithm}
+
+\subsubsection{Esempio di parsing}
+Per la stringa:
+\[
+    \texttt{abaababaa},
+\]
+le slide ottengono:
+\[
+    \langle 0,\texttt{a}\rangle
+    \langle 0,\texttt{b}\rangle
+    \langle 1,\texttt{a}\rangle
+    \langle 2,\texttt{a}\rangle
+    \langle 4,\texttt{a}\rangle.
+\]
+Il dizionario costruito è:
+\begin{table}[htpb]
+    \centering
+    \begin{tabular}{c|c}
+        \textbf{Indice} & \textbf{Frase} \\ \hline
+        $0$ & $\epsilon$ \\
+        $1$ & \texttt{a} \\
+        $2$ & \texttt{b} \\
+        $3$ & \texttt{aa} \\
+        $4$ & \texttt{ba} \\
+        $5$ & \texttt{baa}
+    \end{tabular}
+    \caption{Dizionario LZ78 costruito per \texttt{abaababaa}.}
+    \label{tab:lz78_abaababaa}
+\end{table}
+
+Un altro esempio delle slide è:
+\[
+    \texttt{aabbababbbaababaa},
+\]
+il cui parsing LZ78 è:
+\[
+    \langle 0,\texttt{a}\rangle
+    \langle 1,\texttt{b}\rangle
+    \langle 0,\texttt{b}\rangle
+    \langle 2,\texttt{a}\rangle
+    \langle 3,\texttt{b}\rangle
+    \langle 3,\texttt{a}\rangle
+    \langle 4,\texttt{b}\rangle
+    \langle 1,\texttt{a}\rangle.
+\]
+
+\subsubsection{Memorizzazione con trie}
+Per implementare LZ78 in modo efficiente si usa un \textbf{trie}. La radice rappresenta la frase vuota e ogni cammino dalla radice a un nodo rappresenta una frase del dizionario. Il numero del nodo è l'indice della frase.
+
+Durante la codifica:
+\begin{itemize}
+    \item i caratteri in input vengono usati per scendere nel trie;
+    \item l'ultimo nodo raggiunto rappresenta la frase più lunga già nota;
+    \item si emette l'indice di quel nodo insieme al prossimo carattere;
+    \item si aggiunge un nuovo nodo per rappresentare la frase estesa.
+\end{itemize}
+
+Per esempio, se il trie contiene la frase \texttt{baa} con indice $5$ e il prossimo carattere è \texttt{b}, allora si può emettere $\langle 5,\texttt{b}\rangle$ e aggiungere la nuova frase \texttt{baab}.
+
+\subsubsection{Decodifica LZ78}
+La decodifica è simmetrica. Per ogni coppia $\langle i,c\rangle$, il decoder recupera la frase $D[i]$, aggiunge $c$, emette $D[i]c$ e inserisce la stessa nuova frase nel dizionario.
+
+\begin{algorithm}[htpb]
+    \caption{Schema di decodifica LZ78}
+    \begin{algorithmic}[1]
+        \Require sequenza di coppie $\langle i,c\rangle$
+        \State inizializza $D[0]\gets \epsilon$
+        \ForAll{coppie $\langle i,c\rangle$}
+            \State $w\gets D[i]c$
+            \State emetti $w$
+            \State aggiungi $w$ al dizionario
+        \EndFor
+    \end{algorithmic}
+    \label{alg:lz78_decoding}
+\end{algorithm}
+
+Per esempio:
+\[
+    \langle 0,\texttt{c}\rangle
+    \langle 1,\texttt{a}\rangle
+    \langle 1,\texttt{c}\rangle
+    \langle 0,\texttt{b}\rangle
+    \langle 2,\texttt{b}\rangle
+    \langle 5,\texttt{a}\rangle
+\]
+ricostruisce:
+\[
+    \texttt{c}\quad \texttt{ca}\quad \texttt{cc}\quad \texttt{b}\quad
+    \texttt{cab}\quad \texttt{caba},
+\]
+cioè:
+\[
+    \texttt{ccacccabcaba}.
+\]
+
+\subsubsection{Limiti pratici di LZ78}
+Il trie cresce durante la compressione e, se non viene limitato, può occupare molta memoria. Le slide indicano alcune strategie:
+\begin{itemize}
+    \item ricostruire il trie da zero quando diventa troppo grande;
+    \item congelarlo e continuare a usarlo senza aggiungere nuove frasi;
+    \item ricostruirlo parzialmente usando solo dati recenti.
+\end{itemize}
+
+Rispetto a LZ77, LZ78 non ha una finestra che impedisce di referenziare pattern molto lontani, ma deve memorizzare frasi esplicite. L'encoding può essere veloce se il trie è ben implementato; il decoding è in genere più pesante perché deve conservare e ricostruire le frasi.
+
+\subsection{\texorpdfstring{LZW}{LZW}}
+LZW è una variante di LZ78 proposta da Welch nel 1984. È stata usata in formati e strumenti molto noti, tra cui GIF, TIFF e l'utility Unix \texttt{compress}.
+
+La differenza principale rispetto a LZ78 è che LZW emette \textbf{solo indici di frasi}, senza trasmettere il carattere aggiuntivo. Per rendere possibile questa scelta, il dizionario iniziale contiene già tutti i simboli dell'alfabeto. Le nuove frasi vengono costruite concatenando la frase appena codificata con il primo carattere della frase successiva.
+
+\begin{algorithm}[htpb]
+    \caption{Schema di codifica LZW}
+    \begin{algorithmic}[1]
+        \Require testo $S$, dizionario iniziale con tutti i caratteri dell'alfabeto
+        \State $w\gets$ primo carattere di $S$
+        \ForAll{caratteri successivi $k$}
+            \If{$wk$ è nel dizionario}
+                \State $w\gets wk$
+            \Else
+                \State emetti $\operatorname{code}(w)$
+                \State aggiungi $wk$ al dizionario
+                \State $w\gets k$
+            \EndIf
+        \EndFor
+        \State emetti $\operatorname{code}(w)$
+    \end{algorithmic}
+    \label{alg:lzw_encoding}
+\end{algorithm}
+
+\subsubsection{Esempio di codifica}
+Consideriamo il dizionario iniziale:
+\[
+    \texttt{a}\mapsto 1,\qquad
+    \texttt{b}\mapsto 2,\qquad
+    \texttt{c}\mapsto 3
+\]
+e il testo:
+\[
+    \texttt{bcababbcbcbaaaabbc}.
+\]
+L'encoding LZW produce:
+\[
+    2,\ 3,\ 1,\ 2,\ 6,\ 4,\ 9,\ 1,\ 11,\ 8,\ 3.
+\]
+Le nuove entrate del dizionario sono:
+\[
+\begin{array}{c|cccccccccc}
+    \text{Indice} & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 \\ \hline
+    \text{Frase} &
+    \texttt{bc} & \texttt{ca} & \texttt{ab} & \texttt{ba} &
+    \texttt{abb} & \texttt{bcb} & \texttt{bcba} &
+    \texttt{aa} & \texttt{aaa} & \texttt{abbc}
+\end{array}
+\]
+L'annotazione manuale presente nella slide evidenzia proprio il passaggio in cui la sequenza di \texttt{a} fa comparire le frasi \texttt{aa} e \texttt{aaa}; la regola dell'algoritmo resta quella appena descritta.
+
+\subsubsection{Decodifica e caso speciale}
+Il decoder parte dallo stesso dizionario iniziale. Dopo aver decodificato una frase corrente $w$, legge il codice successivo. Se il codice è già nel dizionario, lo traduce normalmente; poi aggiunge al dizionario la concatenazione:
+\[
+    w + \text{primo carattere della frase appena decodificata}.
+\]
+
+Esiste però un caso speciale: il decoder può leggere un codice che non è ancora nel dizionario. Questo accade quando l'encoder ha appena creato una frase del tipo:
+\[
+    w + \operatorname{first}(w).
+\]
+Allora il decoder può ricostruirla comunque, perché conosce $w$ e conosce il suo primo carattere.
+
+\begin{algorithm}[htpb]
+    \caption{Schema di decodifica LZW}
+    \begin{algorithmic}[1]
+        \Require sequenza di codici LZW
+        \State leggi il primo codice e decodificalo come $w$
+        \State emetti $w$
+        \ForAll{codici successivi $k$}
+            \If{$k$ è nel dizionario}
+                \State $e\gets D[k]$
+            \Else
+                \State $e\gets w\,\operatorname{first}(w)$
+            \EndIf
+            \State emetti $e$
+            \State aggiungi $w\,\operatorname{first}(e)$ al dizionario
+            \State $w\gets e$
+        \EndFor
+    \end{algorithmic}
+    \label{alg:lzw_decoding}
+\end{algorithm}
+
+Per la sequenza:
+\[
+    2,\ 3,\ 1,\ 2,\ 6,\ 4,\ 9,\ 1,\ 11,\ 8,\ 3
+\]
+con dizionario iniziale $\texttt{a}=1,\texttt{b}=2,\texttt{c}=3$, il decoder ricostruisce:
+\[
+    \texttt{bcababbcbcbaaaabbc}.
+\]
+Durante la decodifica compaiono proprio due casi speciali: il codice $9$, che viene interpretato come \texttt{bcb}, e il codice $11$, che viene interpretato come \texttt{aa}. In entrambi i casi la frase mancante è della forma ``frase precedente più il suo primo carattere''.
+
+\subsection{Confronto finale}
+Le tre famiglie viste nelle slide possono essere riassunte così:
+\begin{itemize}
+    \item \textbf{LZ77} referenzia sottostringhe nel testo precedente tramite distanza e lunghezza. Decodifica velocemente, ma l'encoder deve cercare match in una finestra.
+    \item \textbf{LZss} elimina alcune ridondanze di LZ77 distinguendo meglio letterali e riferimenti.
+    \item \textbf{LZ78} costruisce un dizionario esplicito di frasi e referenzia solo frasi complete già parse.
+    \item \textbf{LZW} parte da un dizionario iniziale con i simboli dell'alfabeto ed emette solo indici, rendendo implicito il carattere aggiuntivo.
+\end{itemize}
+
+Il filo comune è che questi algoritmi non modellano direttamente le probabilità dei simboli, ma sfruttano la ripetizione delle sottostringhe. Per questo sono detti anche \textbf{compressori universali}: cercano regolarità nel testo stesso, senza richiedere una descrizione probabilistica completa della sorgente. Nei compressori reali, però, la parte LZ è spesso solo una fase del sistema: dopo il parsing a dizionario, letterali, lunghezze, distanze o indici vengono ulteriormente codificati con Huffman, codifica aritmetica o codici per interi.
+
+\subsubsection{Esercizi dalle slide}
+Per esercitarsi sui passaggi meccanici degli algoritmi, le slide propongono in particolare:
+\begin{itemize}
+    \item trovare la codifica LZ77 di $\texttt{aacaacabcabaaac}$;
+    \item ripetere la codifica LZ77 della stessa stringa con finestra di $8$ caratteri e match lungo al massimo $4$;
+    \item codificare con LZss $\texttt{abcabcabcabcabc}$ e confrontare il risultato con LZ77;
+    \item simulare LZ78 su $\texttt{ababcababaaaa}$ mostrando il dizionario crescente;
+    \item decodificare l'output LZ78
+          $\langle 0,\texttt{a}\rangle
+          \langle 0,\texttt{b}\rangle
+          \langle 1,\texttt{b}\rangle
+          \langle 2,\texttt{c}\rangle
+          \langle 3,\texttt{a}\rangle$;
+    \item applicare LZW a \texttt{TOBEORNOTTOBEORTOBEORNOT} con dizionario iniziale formato dai simboli \texttt{B}, \texttt{E}, \texttt{N}, \texttt{O}, \texttt{R}, \texttt{T};
+    \item decodificare sequenze LZW come $[1,2,6,3,7,9]$ oppure $[1,2,6,8,6]$ con dizionario iniziale specificato.
+\end{itemize}
+
+
 \end{document}

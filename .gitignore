@@ -29,3 +29,6 @@ Desktop.ini
 !/images/*.pdf
 !/images/*.svg
 !/images/*.tex
+
+# tmp file
+.codex-tmp
