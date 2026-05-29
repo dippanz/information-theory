@@ -25,31 +25,31 @@
 
 % Riga dei caratteri: search buffer a sinistra, look-ahead buffer a destra.
 \foreach \ch [count=\i from 1] in {a,b,a,a,b,a,b,a,a,b,b} {
-    \ifnum\i<6
+    \ifnum\i<8
         \node[cell,search] (c\i) at ({0.72*(\i-1)},0) {\ch};
     \else
         \node[cell,lookahead] (c\i) at ({0.72*(\i-1)},0) {\ch};
     \fi
 }
 
-% Evidenziazione del match nel testo gia' codificato e nel look-ahead.
-\foreach \i in {1,2,3,6,7,8} {
+% Evidenziazione del match dell'ultimo passo: aab.
+\foreach \i in {3,4,5,8,9,10} {
     \node[cell,match] at (c\i) {};
-    \node[cell,match] (c\i) at (c\i) {\ifcase\i\or a\or b\or a\or\or\or a\or b\or a\fi};
+    \node[cell,match] (c\i) at (c\i) {\ifcase\i\or\or\or a\or a\or b\or\or\or a\or a\or b\fi};
 }
 
 % Graffe descrittive.
 \draw[decorate,decoration={brace,mirror,amplitude=5pt}]
-    ($(c1.south west)+(0,-0.12)$) -- ($(c5.south east)+(0,-0.12)$)
+    ($(c1.south west)+(0,-0.12)$) -- ($(c7.south east)+(0,-0.12)$)
     node[midway,below=6pt,title,blue!60!black] {search buffer};
 \draw[decorate,decoration={brace,mirror,amplitude=5pt}]
-    ($(c6.south west)+(0,-0.12)$) -- ($(c11.south east)+(0,-0.12)$)
+    ($(c8.south west)+(0,-0.12)$) -- ($(c11.south east)+(0,-0.12)$)
     node[midway,below=6pt,title,green!45!black] {look-ahead buffer};
 
 % Puntatori i e j.
-\draw[pointer,blue!70!black] ($(c6.north)+(0,0.78)$) -- ($(c6.north)+(0,0.12)$)
+\draw[pointer,blue!70!black] ($(c8.north)+(0,0.78)$) -- ($(c8.north)+(0,0.12)$)
     node[pos=0,above,note] {$i$};
-\draw[pointer,orange!75!black] ($(c1.north)+(0,0.78)$) -- ($(c1.north)+(0,0.12)$)
+\draw[pointer,orange!75!black] ($(c3.north)+(0,0.78)$) -- ($(c3.north)+(0,0.12)$)
     node[pos=0,above,note] {$j$};
 
 \end{tikzpicture}

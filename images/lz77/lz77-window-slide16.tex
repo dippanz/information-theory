@@ -1,0 +1,58 @@
+\documentclass[tikz,border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta,calc,decorations.pathreplacing,positioning}
+
+\begin{document}
+\begin{tikzpicture}[
+    % Figura generale ispirata alla slide 16.
+    cell/.style={
+        draw,
+        minimum width=0.38cm,
+        minimum height=0.50cm,
+        font=\ttfamily\small,
+        inner sep=0pt
+    },
+    search/.style={fill=blue!7},
+    lookahead/.style={fill=green!9},
+    match/.style={fill=orange!28},
+    pointer/.style={-Latex,thick},
+    note/.style={font=\small,align=center},
+    title/.style={font=\bfseries\small}
+]
+
+% Riga dei caratteri: abbaccbbcabc | bbcacbcaacbbcb.
+\foreach \ch [count=\i from 1] in {
+    a,b,b,a,c,c,b,b,c,a,b,c,
+    b,b,c,a,c,b,c,a,a,c,b,b,c,b
+} {
+    \ifnum\i<13
+        \node[cell,search] (c\i) at ({0.38*(\i-1)},0) {\ch};
+    \else
+        \node[cell,lookahead] (c\i) at ({0.38*(\i-1)},0) {\ch};
+    \fi
+}
+
+% Match bbca nel search buffer e all'inizio del look-ahead buffer.
+\foreach \i/\ch in {7/b,8/b,9/c,10/a,13/b,14/b,15/c,16/a} {
+    \node[cell,match] (c\i) at (c\i) {\ch};
+}
+
+% Graffe descrittive.
+\draw[decorate,decoration={brace,mirror,amplitude=4pt}]
+    ($(c1.south west)+(0,-0.09)$) -- ($(c12.south east)+(0,-0.09)$)
+    node[midway,below=5pt,title,blue!60!black] {search buffer};
+\draw[decorate,decoration={brace,mirror,amplitude=4pt}]
+    ($(c13.south west)+(0,-0.09)$) -- ($(c26.south east)+(0,-0.09)$)
+    node[midway,below=5pt,title,green!45!black] {look-ahead buffer};
+
+% Puntatori i e j.
+\draw[pointer,blue!70!black] ($(c13.north)+(0,0.66)$) -- ($(c13.north)+(0,0.10)$)
+    node[pos=0,above,note] {$i$};
+\draw[pointer,orange!75!black] ($(c7.north)+(0,0.66)$) -- ($(c7.north)+(0,0.10)$)
+    node[pos=0,above,note] {$j$};
+
+\end{tikzpicture}
+\end{document}

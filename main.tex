@@ -4356,21 +4356,20 @@ Il puntatore $i$ identifica l'inizio del \texten{look-ahead buffer}, cioè la pr
 
 \begin{figure}[htpb]
     \centering
-    \includegraphics[width=0.94\textwidth]{lz77/lz77-window-example.pdf}
-    \caption{Finestra scorrevole di LZ77 con un esempio integrato. Le celle evidenziate indicano il prefisso del \texten{look-ahead buffer} che compare già nel \texten{search buffer}.}
-    \label{fig:lz77_sliding_window_example}
+    \includegraphics[width=0.82\textwidth]{lz77/lz77-window-slide16.pdf}
+    \caption{Finestra scorrevole di LZ77 ispirata alla slide 16. Le celle evidenziate indicano il prefisso del \texten{look-ahead buffer} che compare già nel \texten{search buffer}.}
+    \label{fig:lz77_sliding_window_slide16}
 \end{figure}
 
-Nell'esempio di \autoref{fig:lz77_sliding_window_example}, il prefisso
-$\alpha=\texttt{aba}$ del \texten{look-ahead buffer} compare già nel
-\texten{search buffer}. L'occorrenza precedente inizia in $j$, mentre il
-prefisso da codificare inizia in $i$; quindi l'offset è $o=i-j=5$. La
-lunghezza del match è $\ell=|\alpha|=3$ e il simbolo successivo al match
-è $s=\texttt{a}$. In altre parole, l'encoder copia \texttt{aba} dal
-\texten{search buffer} e poi scrive il simbolo successivo \texttt{a},
-emettendo la tripla:
+In \autoref{fig:lz77_sliding_window_slide16} il prefisso
+$\alpha=\texttt{bbca}$ del \texten{look-ahead buffer} è già presente nel
+\texten{search buffer}. Il puntatore $i$ indica la posizione corrente,
+mentre $j$ indica l'occorrenza precedente scelta come riferimento. La
+distanza tra $i$ e $j$ è $6$, quindi l'offset è $o=6$; la lunghezza del
+match è $\ell=4$ e il simbolo che segue il match è $s=\texttt{c}$. Se
+l'encoder sceglie questa occorrenza, emette quindi:
 \[
-    \langle 5,3,\texttt{a}\rangle.
+    \langle 6,4,\texttt{c}\rangle.
 \]
 
 In generale, alla posizione corrente l'encoder cerca nel \texten{search buffer} la sottostringa più lunga che coincide con un prefisso del \texten{look-ahead buffer}. Se trova un match, lo rappresenta tramite una tripla:
@@ -4405,28 +4404,70 @@ Consideriamo la stringa:
 \[
     \texttt{abaababaabb}.
 \]
-Una possibile codifica LZ77, come nelle slide, è:
+L'encoder procede da sinistra verso destra. A ogni passo guarda il
+prefisso ancora da codificare, cerca il match più lungo nel testo già
+prodotto e poi emette una tripla. La simulazione completa è:
+
+\begin{center}
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{tabular}{|c|c|p{0.22\textwidth}|p{0.34\textwidth}|p{0.18\textwidth}|}
+    \hline
+    \textbf{Passo} & \textbf{$p$} & \textbf{Testo già prodotto} & \textbf{Scelta dell'encoder} & \textbf{Tripla} \\ \hline
+    1 & 1 & \emph{vuoto} &
+    nessun match: si emette il letterale \texttt{a} &
+    $\langle 0,0,\texttt{a}\rangle$ \\ \hline
+    2 & 2 & \texttt{a} &
+    nessun match utile per \texttt{b}: si emette il letterale \texttt{b} &
+    $\langle 0,0,\texttt{b}\rangle$ \\ \hline
+    3 & 3 & \texttt{ab} &
+    il prefisso \texttt{a} compare a distanza $2$; si copia \texttt{a} e poi si scrive \texttt{a} &
+    $\langle 2,1,\texttt{a}\rangle$ \\ \hline
+    4 & 5 & \texttt{abaa} &
+    il prefisso \texttt{ba} compare a distanza $3$; si copia \texttt{ba} e poi si scrive \texttt{b} &
+    $\langle 3,2,\texttt{b}\rangle$ \\ \hline
+    5 & 8 & \texttt{abaabab} &
+    il prefisso \texttt{aab} compare a distanza $5$; si copia \texttt{aab} e poi si scrive \texttt{b} &
+    $\langle 5,3,\texttt{b}\rangle$ \\ \hline
+\end{tabular}
+\end{center}
+
+La figura seguente visualizza l'ultimo passo della tabella: il
+\texten{search buffer} contiene il testo già prodotto, il
+\texten{look-ahead buffer} inizia dalla posizione $i$ e il match
+\texttt{aab} viene ripreso dalla posizione $j$.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.62\textwidth]{lz77/lz77-window-example.pdf}
+    \caption{Ultimo passo della codifica LZ77 di \texttt{abaababaabb}. Il match evidenziato è \texttt{aab}; il simbolo successivo è \texttt{b}.}
+    \label{fig:lz77_encoding_example_last_step}
+\end{figure}
+
+Mettendo in fila le triple, si ottiene quindi:
 \[
-    \langle 0,0,\texttt{a}\rangle
-    \langle 0,0,\texttt{b}\rangle
-    \langle 2,1,\texttt{a}\rangle
-    \langle 3,2,\texttt{b}\rangle
+    \langle 0,0,\texttt{a}\rangle\quad
+    \langle 0,0,\texttt{b}\rangle\quad
+    \langle 2,1,\texttt{a}\rangle\quad
+    \langle 3,2,\texttt{b}\rangle\quad
     \langle 5,3,\texttt{b}\rangle.
 \]
-Le prime due triple sono letterali. La terza, $\langle 2,1,\texttt{a}\rangle$, dice: torna indietro di $2$ posizioni, copia $1$ carattere e poi scrivi \texttt{a}. Le triple successive copiano blocchi più lunghi perché il testo già prodotto contiene prefissi sempre più utili.
+Le frasi prodotte dalle cinque triple sono, rispettivamente,
+\texttt{a}, \texttt{b}, \texttt{aa}, \texttt{bab} e \texttt{aabb}; la
+loro concatenazione ricostruisce esattamente \texttt{abaababaabb}.
 
-Un esempio più esteso riportato nelle slide codifica:
+Un secondo esempio, più esteso, riportato nelle slide codifica:
 \[
     \texttt{babbababbbaabbaabaabaaa}
 \]
 come:
 \[
-    \langle 0,0,\texttt{b}\rangle
-    \langle 0,0,\texttt{a}\rangle
-    \langle 2,1,\texttt{b}\rangle
-    \langle 3,2,\texttt{a}\rangle
-    \langle 5,3,\texttt{a}\rangle
-    \langle 4,4,\texttt{b}\rangle
+    \langle 0,0,\texttt{b}\rangle\quad
+    \langle 0,0,\texttt{a}\rangle\quad
+    \langle 2,1,\texttt{b}\rangle\quad
+    \langle 3,2,\texttt{a}\rangle\quad
+    \langle 5,3,\texttt{a}\rangle\quad
+    \langle 4,4,\texttt{b}\rangle\quad
     \langle 3,5,\texttt{a}\rangle.
 \]
 Questo secondo esempio mostra bene il comportamento progressivo della finestra: più testo è stato emesso, più aumentano le possibilità di trovare match lunghi.
