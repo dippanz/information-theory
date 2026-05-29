@@ -223,7 +223,7 @@ allora:
 \subsection{Codici univocamente decodificabili}
 Solitamente, l'alfabeto di una sorgente non è trasmesso direttamente. Un encoder, prima di trasmettere, si occupa di codificare il messaggio trasformando i simboli del vecchio alfabeto in quelli del nuovo cosi da rendere agevole la loro trasmissione attraverso il canale di comunicazione. Una volta arrivato il messaggio deve essere decodificato per poter tornare al contenuto originale.
 \begin{definizione}
-    Data una sorgente $S = \{ s_1,s_2,\ldots,s_m\}$. Viene definita \textbf{funzione di codifica}\footnote{Nelle slide queste vengono definite in diversi modi. Qui vengono definite come funzioni, visto che lo sono a tutti gli effetti. Quindi quando si parla di \textbf{funzioni di codifica} si fa riferimento sia a code che a block code. Inoltre, verrà usato anche il termine \textbf{blocco di codifica} per riferirsi alla stessa cosa.} una funzione che mappa una sequenza degli elementi di $S$ in una sequenza di un altro alfabeto $X=\{ x_1,x_2,\ldots,x_m\}$, chiamato \textbf{alfabeto di codifica}.
+    Data una sorgente $S = \{ s_1,s_2,\ldots,s_m\}$. Viene definita \textbf{funzione di codifica}\footnote{Qui la codifica viene trattata esplicitamente come una funzione, visto che associa a ogni sequenza di simboli sorgente una sequenza sull'alfabeto di codifica. Quando si parla di \textbf{funzioni di codifica} si fa quindi riferimento sia a code che a block code. Inoltre, verrà usato anche il termine \textbf{blocco di codifica} per riferirsi alla stessa cosa.} una funzione che mappa una sequenza degli elementi di $S$ in una sequenza di un altro alfabeto $X=\{ x_1,x_2,\ldots,x_m\}$, chiamato \textbf{alfabeto di codifica}.
 \end{definizione}
 Le \textbf{funzioni di codifica} possono essere rappresentate come tabelle di associazione dei simboli dell'alfabeto originale in quelli dell'alfabeto codificato. Ecco un esempio:
 
@@ -263,7 +263,7 @@ Il processo iterativo convergerà verso una delle seguenti possibili condizioni 
     \item $\exists i,j>0, S_i=S_j$, se esistono due insieme dei residui uguali allora il codice $C$ è UD. In questo caso, è presente un ciclo infinito che comporta un ritardo di decodifica illimitato\footnote{Il messaggio deve essere ricevuto per intero prima di accertarsi che il codice sia UD e poterlo decodificare correttamente. Facendo l'esempio con dei simboli di codifica del tipo $a\xrightarrow{}0$, $b\xrightarrow{}01$ e $c\xrightarrow{}11$ e ricevendo il codice $C=0111111\ldots$ allora verranno generati degli insiemi dei residui sempre uguali a $S_i=\{1\}$. Solo quando ricevo l'intero messaggio posso capire se questo sia veramente UD e cosi poterlo decodificare per associare correttamente i simboli giusti alle varie parole.}.
 \end{itemize}
 
-\subsubsection{Esempio codice non UD}\label{example_sardinas_patterson_not_ud}\footnote{Altri esempi nelle slide fornite dalla prof.}
+\subsubsection{Esempio codice non UD}\label{example_sardinas_patterson_not_ud}
 Facciamo un esempio con il codice $C=\{a,c,ad,abb,bad,deb,bbdce\}$, la prima operazione è associare all'insieme base l'insieme di codifica, cioè $S_0 = C$, poi generando gli insieme dei residui secondo i seguenti passaggi:
 \begin{itemize}
     \item \textbf{Iterazione 1:}  Per generare $S_1$ effettuo un confronto tra l'insieme base $S_0$ e $S_{i-1}$ (che in questa prima iterazione coincide con $S_0$). Per ogni elemento dell'insieme base $S_0$, \textbf{cerco nell'altro insieme un codice diverso tale che uno dei due sia prefisso dell'altro} (la regola di ricerca verifica entrambe le occorrenze)\footnote{Ovviamente, durante il confronto dell'insieme base $S_0$ con se stesso, i codici confrontati sono tra loro distinti. Altrimenti, confrontando un codice con se stesso, si otterrebbe un insieme vuoto, invalidando il risultato. Spiegato in altre parole, nel caso $a=bw$ \textbf{(Il residuo vecchio è prefisso della parola originale)} la parola originale $a$ è più lunga. Essa inizia esattamente con la stringa $b$, e la parte che avanza è $w$. Invece, nel secondo caso $b=aw$ \textbf{(Il "viceversa": La parola originale è prefisso del residuo vecchio)} In questo scenario, è il residuo vecchio $b$ ad essere più lungo. Esso inizia esattamente con la parola originale $a$, e la parte che avanza è $w$}. Analizzando il primo codice di $S_0$, che è $a$, si osserva che esso è prefisso del codice $ad$; viene quindi estratto il residuo $w = d$ ed inserito nel nuovo insieme. Proseguendo l'analisi per il codice $a$, si nota che esso è prefisso anche del codice $abb$, generando così un secondo residuo $w = bb$. Questo processo di confronto incrociato viene eseguito per tutti i codici. Alla fine della prima iterazione, l'insieme generato è $S_1 = \{d, bb\}$.
@@ -1596,12 +1596,12 @@ Attraversare l'albero bit per bit è un metodo naturale e facile da descrivere, 
 
 Per velocizzare la decodifica si possono usare delle \textbf{lookup table}, cioè tabelle parzialmente decodificate costruite a partire dal codice di Huffman. Invece di leggere un solo bit alla volta, il decoder legge blocchi di $k$ bit, ad esempio $8$ o $16$, e usa il blocco letto come indice di una tabella. L'elemento della tabella può indicare uno o più simboli già decodificati e, se necessario, quale tabella usare per continuare la decodifica.
 
-Le slide mostrano questa idea con un piccolo esempio: il flusso compresso viene spezzato in blocchi di lunghezza $k$ e ciascun blocco viene usato per anticipare parte del lavoro che l'attraversamento dell'albero avrebbe svolto passo dopo passo. Il vantaggio è una decodifica più rapida; lo svantaggio è che le tabelle richiedono spazio e devono essere costruite prima dell'inizio della decodifica. Valori più grandi di $k$ aumentano la velocità, ma fanno crescere anche la memoria richiesta e il costo di preparazione delle tabelle.
+L'idea si può vedere in questo modo: il flusso compresso viene spezzato in blocchi di lunghezza $k$ e ciascun blocco viene usato per anticipare parte del lavoro che l'attraversamento dell'albero avrebbe svolto passo dopo passo. Il vantaggio è una decodifica più rapida; lo svantaggio è che le tabelle richiedono spazio e devono essere costruite prima dell'inizio della decodifica. Valori più grandi di $k$ aumentano la velocità, ma fanno crescere anche la memoria richiesta e il costo di preparazione delle tabelle.
 
 \subsubsection{Osservazioni su varianza e ridondanza}
 A parità di lunghezza media, può essere preferibile un codice con \textbf{varianza minore} nelle lunghezze delle parole di codice, cioè un codice in cui le lunghezze siano meno sbilanciate. Questo aspetto è rilevante nelle applicazioni pratiche, perché molti sistemi di comunicazione o memorizzazione lavorano con buffer di dimensione fissata. Se alcune parole di codice sono molto più lunghe di altre, il flusso compresso può diventare meno regolare da gestire. Quando durante l'algoritmo sono possibili più fusioni equivalenti, scegliere opportunamente quali sottoalberi fondere può aiutare a ottenere codici con varianza più bassa.
 
-La ridondanza dei codici di Huffman può essere studiata anche con bound più precisi\footnote{Nelle slide questo aspetto viene approfondito in modo più tecnico, mostrando alcuni bound superiori e inferiori della ridondanza in funzione delle probabilità della sorgente.}. Qui basta l'idea intuitiva: se la sorgente è molto sbilanciata e un simbolo ha probabilità vicina a $1$, allora l'entropia tende a $0$ perché quasi tutta l'incertezza scompare. Huffman, però, deve comunque assegnare almeno un bit a quel simbolo, quindi la lunghezza media non può scendere altrettanto velocemente e può restare sensibilmente sopra il limite teorico.
+La ridondanza dei codici di Huffman può essere studiata anche con bound più precisi\footnote{Esistono bound superiori e inferiori della ridondanza in funzione delle probabilità della sorgente; qui non servono i dettagli tecnici, ma il fenomeno intuitivo che descrivono.}. Qui basta l'idea intuitiva: se la sorgente è molto sbilanciata e un simbolo ha probabilità vicina a $1$, allora l'entropia tende a $0$ perché quasi tutta l'incertezza scompare. Huffman, però, deve comunque assegnare almeno un bit a quel simbolo, quindi la lunghezza media non può scendere altrettanto velocemente e può restare sensibilmente sopra il limite teorico.
 
 \paragraph{Esempio concettuale.}
 Consideriamo una sorgente binaria con $p(a)=0.99$ e $p(b)=0.01$. In questo caso l'entropia è molto piccola, perché quasi sempre viene emesso $a$; tuttavia un codice di Huffman binario deve comunque assegnare, ad esempio, $a\mapsto 0$ e $b\mapsto 1$, quindi la lunghezza media resta pari a $1$ bit per simbolo. Questo esempio mostra bene perché, per sorgenti molto sbilanciate, Huffman può essere ottimale tra i codici a prefisso e allo stesso tempo non essere particolarmente vicino all'entropia.
@@ -2504,7 +2504,7 @@ In forma decimale, l'intervallo finale è circa:
 \[
     [0.6389,0.6500).
 \]
-Le slide scelgono come rappresentante il valore $0.6390$, che cade dentro l'intervallo. Il decoder, partendo dallo stesso modello uniforme, riconosce:
+Scegliamo come rappresentante il valore $0.6390$, che cade dentro l'intervallo. Il decoder, partendo dallo stesso modello uniforme, riconosce:
 \[
     0.6390\in\left[\frac{1}{3},\frac{2}{3}\right)
     \quad \Rightarrow \quad b.
@@ -3108,7 +3108,7 @@ Il parametro $k$ controlla il compromesso tra parte unaria e parte binaria. Se $
 \[
     p(x)=(1-p)^{x-1}p.
 \]
-Nel caso geometrico, le slide riportano la scelta approssimata:
+Nel caso geometrico, una scelta approssimata è:
 \[
     2^k=\ln\left(\frac{2}{p}\right)\simeq 0.69\,\operatorname{mean}(S),
 \]
@@ -3260,7 +3260,7 @@ Dato $L=\operatorname{BWT}(v)$ e l'indice $I$, la ricostruzione da destra verso 
     \qquad
     0\leq i<n.
 \end{equation}
-Per esempio, per $v=\texttt{mathematics}$ le slide riportano:
+Per esempio, per $v=\texttt{mathematics}$ si ottiene:
 \[
     L=\texttt{mmihttsecaa},
     \qquad
@@ -3415,7 +3415,7 @@ La MTF è utile perché trasforma i cluster locali prodotti dalla BWT in molti n
 può produrre molti valori $0$ e $1$ dopo la MTF. A quel punto Huffman, codifica aritmetica o RLE possono rappresentare la sequenza in modo molto più efficiente.
 
 \paragraph{La MTF è sempre necessaria?}
-Le slide sottolineano una questione importante: la MTF è molto utile nella pipeline classica, ma non è teoricamente indispensabile. Giancarlo e Scaturro hanno mostrato nel 2003 che si possono ottenere buoni limiti anche senza MTF; Ferragina et al. hanno poi proposto nel 2005 una tecnica basata su partizioni, anche se non efficiente nella prima implementazione. Dal punto di vista didattico, però, la catena BWT+MTF+compressore di ordine zero resta la più semplice da interpretare.
+Una questione importante è che la MTF è molto utile nella pipeline classica, ma non è teoricamente indispensabile. Giancarlo e Scaturro hanno mostrato nel 2003 che si possono ottenere buoni limiti anche senza MTF; Ferragina et al. hanno poi proposto nel 2005 una tecnica basata su partizioni, anche se non efficiente nella prima implementazione. Dal punto di vista didattico, però, la catena BWT+MTF+compressore di ordine zero resta la più semplice da interpretare.
 
 \subsubsection{\texorpdfstring{\texten{Run-Length Encoding}}{Run-Length Encoding}}
 Il \textbf{\texten{Run-Length Encoding}} è una tecnica efficace quando l'input contiene lunghe sequenze dello stesso simbolo. Una \texten{run}:
@@ -3731,7 +3731,7 @@ Questa proprietà è importante anche per il \texten{pattern matching}: tutti i 
 \[
     6,5,3,1,0,4,2,
 \]
-cioè il \texten{suffix array}. Il sottoalbero evidenziato sotto l'arco \texttt{a} contiene proprio le foglie $5,3,1$, che corrispondono ai suffissi \texttt{a\$}, \texttt{ana\$} e \texttt{anana\$}. Questa è la versione ad albero dell'intervallo $SA[1,3]$ citato nelle slide.
+cioè il \texten{suffix array}. Il sottoalbero evidenziato sotto l'arco \texttt{a} contiene proprio le foglie $5,3,1$, che corrispondono ai suffissi \texttt{a\$}, \texttt{ana\$} e \texttt{anana\$}. Questa è la versione ad albero dell'intervallo $SA[1,3]$ nella rappresentazione tramite \texten{suffix array}.
 
 \subsubsection{\texorpdfstring{BWT da \texten{suffix array}}{BWT da suffix array}}
 Una volta costruito il \texten{suffix array} di $T=s\texttt{\$}$, la BWT si ottiene in modo diretto. Se $SA[r]=i$, allora la riga di rango $r$ corrisponde alla rotazione che inizia in $i$, oppure, equivalentemente, al suffisso che parte da $i$. Il carattere della colonna $L$ è il carattere che precede quel suffisso nel testo:
@@ -4020,7 +4020,7 @@ Ordinando queste coppie con \texten{radix sort}:
 \paragraph{Passo 3: fusione.}
 Resta da fondere $SA^{1,2}$ e $SA^0$. Questa è una fusione tra due liste già ordinate, come nel \texten{merge sort}; l'unica difficoltà è decidere quale dei due suffissi in testa alle liste venga prima in ordine lessicografico. DC3 evita confronti carattere per carattere usando ancora i ranghi già calcolati.
 
-La scelta delle classi $1$ e $2$ modulo $3$ serve proprio a questo: se un suffisso parte in $P_0$, dopo aver saltato uno o due caratteri si arriva sempre a una posizione campionata, quindi a un suffisso di rango già noto. Sia $i\in P_0$ e sia $j\in P_{1,2}$. Ci sono due casi:
+La scelta delle classi $1$ e $2$ modulo $3$ serve proprio a questo: se un suffisso parte in $P_0$, dopo aver saltato uno o due caratteri si arriva sempre a una posizione campionata, quindi a un suffisso di rango già noto. Sia $i\in P_0$ e sia $j\in P_{1,2}$. Ci sono due casi\footnote{Il motivo della distinzione è modulare. Se $j\bmod 3=1$, allora $j+1\bmod 3=2$, quindi dopo un carattere si arriva ancora in $P_{1,2}$ e il rango è noto. Se invece $j\bmod 3=2$, allora $j+1\bmod 3=0$, quindi dopo un solo carattere si finirebbe in $P_0$, dove il rango non è noto; bisogna avanzare di un altro carattere, arrivando a $j+2\bmod 3=1$.}:
 \begin{itemize}
     \item se $j\bmod 3=1$, allora si confrontano le coppie:
           \[
@@ -4041,32 +4041,6 @@ La scelta delle classi $1$ e $2$ modulo $3$ serve proprio a questo: se un suffis
 \end{itemize}
 In entrambi i casi il confronto costa $O(1)$, perché dopo uno o due caratteri si arriva a suffissi il cui rango è già noto in $SA^{1,2}$.
 
-Per esempio, confrontare il suffisso in posizione $0$ con quello in posizione $1$ richiede solo:
-\[
-    \langle \texttt{m},\operatorname{pos}(1)\rangle
-    =
-    \langle \texttt{m},4\rangle
-    \quad
-    \text{contro}
-    \quad
-    \langle \texttt{i},\operatorname{pos}(2)\rangle
-    =
-    \langle \texttt{i},7\rangle,
-\]
-quindi il suffisso che parte da $1$ viene prima. Confrontare invece la posizione $0$ con la posizione $8$, che è congruente a $2$ modulo $3$, usa due caratteri e poi un rango:
-\[
-    \langle \texttt{m},\texttt{i},\operatorname{pos}(2)\rangle
-    =
-    \langle \texttt{m},\texttt{i},7\rangle
-    \quad
-    \text{contro}
-    \quad
-    \langle \texttt{p},\texttt{p},\operatorname{pos}(10)\rangle
-    =
-    \langle \texttt{p},\texttt{p},1\rangle.
-\]
-In questo caso viene prima il suffisso che parte da $0$. Questi confronti locali sono ciò che permette di fondere le due liste in tempo lineare.
-
 Per l'esempio:
 \[
     T=\texttt{mississippi\$},
@@ -4077,13 +4051,55 @@ partendo da:
     \qquad
     SA^0=(0,9,6,3),
 \]
-la fusione produce:
+conviene tenere esplicite le chiavi che saranno usate durante la fusione. Per gli elementi di $SA^0$ si preparano sia la coppia sia la tripletta, perché il tipo di confronto dipende dall'elemento di $SA^{1,2}$ con cui verranno confrontati:
+
+\begin{table}[htpb]
+    \centering
+    \small
+    \begin{minipage}{0.44\textwidth}
+        \centering
+        \[
+            \begin{array}{c|c|c}
+                \multicolumn{3}{c}{SA^0=(0,9,6,3)} \\
+                i & \text{coppia} & \text{tripletta} \\ \hline
+                0 & \langle \texttt{m},4\rangle & \langle \texttt{m},\texttt{i},7\rangle \\
+                9 & \langle \texttt{p},1\rangle & \langle \texttt{p},\texttt{i},0\rangle \\
+                6 & \langle \texttt{s},2\rangle & \langle \texttt{s},\texttt{i},5\rangle \\
+                3 & \langle \texttt{s},3\rangle & \langle \texttt{s},\texttt{i},6\rangle
+            \end{array}
+        \]
+    \end{minipage}
+    \hfill
+    \begin{minipage}{0.52\textwidth}
+        \centering
+        \[
+            \begin{array}{c|c|c}
+                \multicolumn{3}{c}{SA^{1,2}=(11,10,7,4,1,8,5,2)} \\
+                j & \text{caso} & \text{chiave usata} \\ \hline
+                11 & \text{tripletta} & \langle \texttt{\$},\texttt{\$},0\rangle \\
+                10 & \text{coppia}    & \langle \texttt{i},0\rangle \\
+                7  & \text{coppia}    & \langle \texttt{i},5\rangle \\
+                4  & \text{coppia}    & \langle \texttt{i},6\rangle \\
+                1  & \text{coppia}    & \langle \texttt{i},7\rangle \\
+                8  & \text{tripletta} & \langle \texttt{p},\texttt{p},1\rangle \\
+                5  & \text{tripletta} & \langle \texttt{s},\texttt{s},2\rangle \\
+                2  & \text{tripletta} & \langle \texttt{s},\texttt{s},3\rangle
+            \end{array}
+        \]
+    \end{minipage}
+    \caption{Chiavi locali usate nella fusione tra $SA^0$ e $SA^{1,2}$ per $T=\texttt{mississippi\$}$.}
+    \label{tab:dc3_merge_keys_mississippi}
+\end{table}
+
+La colonna ``caso'' di $SA^{1,2}$ indica quale chiave confrontare: se è una coppia si usa anche la coppia dell'elemento di $SA^0$, mentre se è una tripletta si usa la tripletta. Per esempio, confrontando $i=0$ con $j=1$ si confrontano $\langle\texttt{m},4\rangle$ e $\langle\texttt{i},7\rangle$; confrontando $i=0$ con $j=8$ si confrontano invece $\langle\texttt{m},\texttt{i},7\rangle$ e $\langle\texttt{p},\texttt{p},1\rangle$.
+
+La fusione produce:
 \[
     SA=(11,10,7,4,1,0,9,8,6,3,5,2).
 \]
 
 \subsubsection{Esercizio guidato: \texttt{yabbadabbado\$}}
-Le slide propongono di applicare DC3 a:
+Applichiamo DC3 alla stringa:
 \[
     T=\texttt{yabbadabbado\$}.
 \]
@@ -4111,7 +4127,7 @@ Ordinandole e sostituendole con i rispettivi ranghi, si ottiene:
 \[
     u'=(1,2,4,6,4,5,3,7),
 \]
-a cui si aggiunge un simbolo di fine stringa. Le slide riportano:
+a cui si aggiunge un simbolo di fine stringa. Da questa stringa ridotta si ottiene:
 \[
     SA(u')=(0,1,6,4,2,5,3,7).
 \]
@@ -4139,7 +4155,7 @@ La chiamata ricorsiva lavora infatti sulla stringa ridotta associata a $P_{1,2}$
     T(n)=O(n).
 \]
 
-Le slide richiamano anche la forma classica del Master Theorem. Se:
+Richiamiamo anche la forma classica del Master Theorem. Se:
 \[
     T(n)=aT(n/b)+f(n),
     \qquad
@@ -4228,7 +4244,7 @@ Nel caso di alfabeti binari, è stato dimostrato che la BWT produce un clusterin
 \[
     1^p0^q,
 \]
-con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una parola Sturmiana standard. Le parole di Fibonacci sono un caso particolare di parole Sturmiane standard. Le slide richiamano questo collegamento perché le parole Sturmiane codificano linee digitali, cioè traiettorie discrete che approssimano rette nel piano.
+con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una parola Sturmiana standard. Le parole di Fibonacci sono un caso particolare di parole Sturmiane standard. Questo collegamento è naturale perché le parole Sturmiane codificano linee digitali, cioè traiettorie discrete che approssimano rette nel piano.
 
 Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Zamboni tramite la codifica di particolari traiettorie nel piano. Per gli scopi della compressione, la morale è più semplice: la BWT è efficace quando trasforma la struttura contestuale del testo in poche run visibili nella colonna $L$.
 
