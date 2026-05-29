@@ -4272,9 +4272,15 @@ Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Za
 
 
 \section{Compressione basata su dizionario}
-Gli algoritmi studiati finora comprimono soprattutto tramite modelli probabilistici o trasformazioni che rendono più semplice una successiva codifica statistica. Huffman e la codifica aritmetica richiedono una distribuzione, stimata o nota, dei simboli; la BWT riorganizza il testo per creare contesti più favorevoli a MTF, RLE e codificatori di ordine zero. I \textbf{compressori basati su dizionario}, invece, partono da un'altra idea: se una sottostringa è già comparsa, non conviene riscriverla per intero, ma si può sostituirla con un riferimento.
+Gli algoritmi studiati finora comprimono soprattutto tramite modelli probabilistici o trasformazioni che rendono più semplice una successiva codifica statistica. Huffman e la codifica aritmetica richiedono una distribuzione, stimata o nota, dei simboli; la BWT riorganizza il testo per creare contesti più favorevoli a MTF, RLE e codificatori di ordine zero. Queste tecniche funzionano molto bene quando le statistiche della sorgente sono disponibili, stabili o stimabili con un costo accettabile.
 
-Questa famiglia è spesso indicata come famiglia \textbf{Lempel-Ziv} o \textbf{LZ}. Il vantaggio centrale è che non serve conoscere in anticipo la sorgente: la ridondanza viene dedotta dalla ripetitività del testo stesso. Per questo motivo i metodi LZ sono molto usati in pratica, ad esempio in ZIP, gzip, PNG, GIF e in molti formati derivati.
+In molte situazioni pratiche, però, questa ipotesi è debole. La sorgente può essere sconosciuta, non stazionaria, troppo irregolare, oppure può contenere dipendenze a lunga distanza che non emergono osservando solo le frequenze dei singoli simboli. In questi casi costruire un buon modello probabilistico può essere costoso o poco affidabile: se il modello è povero, anche un codificatore teoricamente molto efficiente finisce per comprimere male.
+
+I \textbf{compressori basati su dizionario}, invece, partono da un'altra idea: se una sottostringa è già comparsa, non conviene riscriverla per intero, ma si può sostituirla con un riferimento. La ridondanza non viene quindi descritta primariamente come una distribuzione di probabilità, ma come \textbf{ripetizione di frasi, parole o blocchi} all'interno dello stesso testo.
+
+Questa famiglia è spesso indicata come famiglia \textbf{Lempel-Ziv} o \textbf{LZ}. Il vantaggio centrale è che non serve conoscere in anticipo la sorgente: la struttura utile viene dedotta dal testo già letto. Per questo motivo i metodi LZ sono particolarmente adatti a testi naturali, codice sorgente, log, file strutturati, archivi con parti ripetute e, più in generale, dati in cui le stesse sottostringhe ricompaiono più volte. Non sono però automaticamente migliori dei compressori statistici: su testi molto brevi, poco ripetitivi o quasi casuali il costo dei riferimenti può superare il risparmio ottenuto.
+
+Il confronto corretto, quindi, non è ``dizionario contro statistica'' in senso assoluto. I metodi a dizionario sono utili perché imparano localmente dal testo e non richiedono una descrizione preventiva della sorgente; i metodi statistici sono utili perché rappresentano in modo molto compatto simboli o eventi con probabilità sbilanciate. Nei compressori reali le due idee vengono spesso combinate: una fase LZ trova le ripetizioni e una fase Huffman o aritmetica codifica in modo efficiente letterali, lunghezze, distanze o indici.
 
 \begin{definizione}
     Sia $T$ un testo. Un \textbf{dizionario} per $T$ è un insieme di coppie
@@ -4287,7 +4293,11 @@ Questa famiglia è spesso indicata come famiglia \textbf{Lempel-Ziv} o \textbf{L
 Un dizionario può essere \textbf{statico}, se è fissato prima della compressione, oppure \textbf{adattivo}, se viene costruito mentre il testo viene letto. Nel primo caso encoder e decoder devono già conoscere lo stesso dizionario, oppure bisogna trasmetterlo insieme al file compresso. Nel secondo caso, invece, il dizionario non viene normalmente trasmesso: il decoder lo ricostruisce perché segue la stessa regola deterministica dell'encoder.
 
 \subsection{Dizionari statici e dizionari dipendenti dal testo}
-Un dizionario statico contiene una lista predefinita di stringhe o pattern che si ritengono frequenti. Può essere costruito usando statistiche su testi tipici, ma resta fisso durante codifica e decodifica. Questa scelta è semplice, ma funziona bene solo se il dizionario è davvero adatto alla sorgente.
+Un dizionario statico contiene una lista predefinita di stringhe o pattern che si ritengono frequenti. Può essere costruito usando statistiche su testi tipici, ma resta fisso durante codifica e decodifica. Questa scelta è semplice, ma \uline{funziona bene solo se il dizionario è davvero adatto alla sorgente}.
+
+Qui compare il compromesso fondamentale. Se il dizionario è \textbf{indipendente dalla sorgente}, cioè viene scelto una volta per tutte e poi riutilizzato su molti tipi di testo, non bisogna trasmetterlo e il decoder può conoscerlo in anticipo. Però questa indipendenza ha un costo: il dizionario potrebbe contenere frasi frequenti in generale, ma poco utili per il file corrente. Se invece il dizionario è \textbf{dipendente dalla sorgente}, allora può contenere le frasi davvero ricorrenti in quel dominio o in quel testo, e quindi può comprimere meglio; in cambio, bisogna in qualche modo renderlo disponibile anche al decoder.
+
+Il punto non è quindi che un dizionario indipendente comprima meglio. Al contrario, per migliorare il rapporto di compressione conviene che il dizionario sia il più possibile rappresentativo della sorgente. Il problema è pratico: più il dizionario è specializzato, più aumenta il costo di costruirlo, memorizzarlo o trasmetterlo. Gli algoritmi Lempel-Ziv nascono proprio per aggirare questo costo, perché costruiscono un dizionario che dipende dal testo, ma lo fanno in modo sincronizzato tra encoder e decoder.
 
 \subsubsection{Dizionari di digrammi}
 Un esempio elementare di dizionario statico è la codifica dei \textbf{digrammi}, cioè coppie di caratteri. Il dizionario contiene tutti i caratteri singoli dell'alfabeto e, in più, alcune coppie frequenti.
@@ -4324,6 +4334,8 @@ Il limite di questa tecnica è evidente: se le coppie frequenti del testo non so
 
 \subsubsection{Perché servono dizionari adattivi}
 I dizionari adattivi risolvono questo problema costruendo il dizionario durante la compressione. Il testo già letto diventa la sorgente naturale dei pattern futuri: se una certa frase, parola o sottostringa è comparsa nella parte precedente del file, è ragionevole cercarla anche nella parte successiva.
+
+In questo senso LZ realizza una via intermedia molto importante: il dizionario non è indipendente dal testo, perché nasce proprio dalle ripetizioni del testo corrente; però non deve essere trasmesso come oggetto separato, perché il decoder lo ricostruisce passo dopo passo seguendo la stessa regola dell'encoder. Si ottiene quindi un adattamento alla sorgente senza il costo esplicito di allegare un dizionario già pronto.
 
 L'idea Lempel-Ziv è proprio questa:
 \begin{itemize}
