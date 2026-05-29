@@ -4352,7 +4352,16 @@ L'algoritmo LZ77, introdotto da Ziv e Lempel nel 1977, è alla base di molti com
     \item il \textbf{\texten{look-ahead buffer}}, che contiene la parte ancora da codificare.
 \end{itemize}
 
-Alla posizione corrente l'encoder cerca nel \texten{search buffer} la sottostringa più lunga che coincide con un prefisso del \texten{look-ahead buffer}. Se trova un match, lo rappresenta tramite una tripla:
+Il puntatore $i$ identifica l'inizio del \texten{look-ahead buffer}, cioè la prossima posizione da codificare. Un secondo puntatore $j$ viene usato per indicare l'inizio di una possibile occorrenza precedente dentro il \texten{search buffer}. La distanza tra $i$ e $j$ diventa l'offset del riferimento.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.94\textwidth]{lz77/lz77-window-example.pdf}
+    \caption{Finestra scorrevole di LZ77 con un esempio integrato. Il prefisso \texttt{aba} del \texten{look-ahead buffer} compare già nel \texten{search buffer}; l'encoder può quindi emettere offset $o=i-j=5$, lunghezza $\ell=3$ e simbolo successivo $s=\texttt{a}$.}
+    \label{fig:lz77_sliding_window_example}
+\end{figure}
+
+Alla posizione corrente l'encoder cerca nel \texten{search buffer} la sottostringa più lunga che coincide con un prefisso del \texten{look-ahead buffer}, come in \autoref{fig:lz77_sliding_window_example}. Se trova un match, lo rappresenta tramite una tripla:
 \[
     \langle o,\ell,s\rangle,
 \]

@@ -1,0 +1,77 @@
+\documentclass[tikz,border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{amsmath}
+\usetikzlibrary{arrows.meta,calc,decorations.pathreplacing,positioning}
+
+\begin{document}
+\begin{tikzpicture}[
+    % Stili principali della finestra.
+    cell/.style={
+        draw,
+        minimum width=0.72cm,
+        minimum height=0.72cm,
+        font=\ttfamily\large,
+        inner sep=0pt
+    },
+    search/.style={fill=blue!7},
+    lookahead/.style={fill=green!9},
+    match/.style={fill=orange!28},
+    nextsymbol/.style={fill=red!18},
+    pointer/.style={-Latex,thick},
+    note/.style={font=\small,align=center},
+    title/.style={font=\bfseries\small}
+]
+
+% Riga dei caratteri: search buffer a sinistra, look-ahead buffer a destra.
+\foreach \ch [count=\i from 1] in {a,b,a,a,b,a,b,a,a,b,b} {
+    \ifnum\i<6
+        \node[cell,search] (c\i) at ({0.72*(\i-1)},0) {\ch};
+    \else
+        \node[cell,lookahead] (c\i) at ({0.72*(\i-1)},0) {\ch};
+    \fi
+}
+
+% Evidenziazione del match e del simbolo successivo.
+\foreach \i in {1,2,3,6,7,8} {
+    \node[cell,match] at (c\i) {};
+    \node[cell,match] (c\i) at (c\i) {\ifcase\i\or a\or b\or a\or\or\or a\or b\or a\fi};
+}
+\node[cell,nextsymbol] (c9) at (c9) {a};
+
+% Separatore tra le due parti della finestra.
+\node[title,blue!60!black] at ($(c3.north)+(0,0.45)$) {search buffer};
+\node[title,green!45!black] at ($(c8.north)+(0.3,0.45)$) {look-ahead buffer};
+
+% Graffe descrittive.
+\draw[decorate,decoration={brace,mirror,amplitude=5pt}]
+    ($(c1.south west)+(0,-0.12)$) -- ($(c5.south east)+(0,-0.12)$)
+    node[midway,below=6pt,note] {testo gi\`a codificato};
+\draw[decorate,decoration={brace,mirror,amplitude=5pt}]
+    ($(c6.south west)+(0,-0.12)$) -- ($(c11.south east)+(0,-0.12)$)
+    node[midway,below=6pt,note] {testo ancora da codificare};
+
+% Puntatori i e j.
+\draw[pointer,blue!70!black] ($(c6.north)+(0,1.0)$) -- ($(c6.north)+(0,0.12)$)
+    node[pos=0,above,note] {$i$};
+\draw[pointer,orange!75!black] ($(c1.north)+(0,1.0)$) -- ($(c1.north)+(0,0.12)$)
+    node[pos=0,above,note] {$j$};
+
+% Collegamento tra prefisso del look-ahead e occorrenza precedente.
+\draw[pointer,orange!80!black,bend left=22]
+    ($(c7.north)+(0,0.15)$) to
+    node[midway,above=5pt,note] {match $\alpha=\texttt{aba}$}
+    ($(c2.north)+(0,0.15)$);
+
+% Spiegazione della tripla prodotta.
+\node[note,align=center] at ($(c6.south)+(0,-1.45)$) {
+    $o=i-j=5$ \quad $\ell=|\alpha|=3$ \quad $s=\texttt{a}$
+    \quad $\Rightarrow$ \quad output: $\langle 5,3,\texttt{a}\rangle$
+};
+\node[note,align=center] at ($(c6.south)+(0,-2.0)$) {
+    si copia \texttt{aba} dal search buffer e poi si scrive il simbolo successivo \texttt{a}
+};
+
+\end{tikzpicture}
+\end{document}
