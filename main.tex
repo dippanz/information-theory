@@ -4683,7 +4683,21 @@ La fase di encoding può usare un compressore statistico, come Huffman o codific
 
 La ricerca del prefisso più lungo è il collo di bottiglia dell'encoder. Una ricerca ingenua, che controlla tutte le possibili occorrenze nel \texten{search buffer}, è troppo lenta su file grandi. Il decoder, invece, è molto veloce: deve solo copiare caratteri da posizioni già ricostruite.
 
-\subsection{\texorpdfstring{LZss}{LZss}}
+\subsubsection{Varianti pratiche di LZ77}
+La descrizione vista finora specifica il \textbf{parsing} di LZ77, cioè il modo in cui il testo viene diviso in riferimenti della forma:
+\[
+    \langle o,\ell,s\rangle.
+\]
+Non specifica però in modo unico come queste triple debbano essere rappresentate in bit. Questa distinzione è importante perché, nelle implementazioni reali, le tre componenti non hanno tutte lo stesso comportamento statistico. Per ottimizzare la compressione, conviene quindi trattarle in modo diverso, usando codifiche più adatte a ciascuna di esse.
+\begin{itemize}
+    \item L'\textbf{offset} $o$, indica quanto bisogna tornare indietro nella finestra. In molti testi i match più utili sono spesso abbastanza recenti: parole, frammenti o pattern tendono a ripetersi vicino al punto in cui sono già comparsi. Per questo motivo gli offset piccoli compaiono spesso più degli offset grandi. Codificarli tutti con lo stesso numero di bit può essere uno spreco; conviene invece usare una \textbf{codifica a lunghezza variabile}, assegnando parole di codice più corte agli offset piccoli e parole più lunghe agli offset grandi.
+    \item La \textbf{lunghezza} $\ell$ del match. Anche $\ell$ è un intero, e in molti casi valori piccoli sono più frequenti di valori molto grandi. Una variante pratica può quindi usare codici a lunghezza variabile anche per le lunghezze, evitando di pagare sempre il costo massimo previsto dalla finestra.
+    \item Il \textbf{simbolo esplicito} $s$, è ancora più delicata. Nella forma base di LZ77 ogni riferimento contiene sempre anche il simbolo successivo al match. Questo è comodo perché garantisce l'avanzamento della codifica, ma non è sempre necessario: se il match è abbastanza lungo, quel simbolo può essere trattato come inizio della frase successiva; se invece non c'è un match utile, scrivere una tripla del tipo $\langle 0,0,c\rangle$ significa pagare due componenti nulle solo per trasmettere un letterale.
+\end{itemize}
+
+Per questo alcune varianti aggiungono la terza componente solo quando serve, usando un bit di flag per indicare se essa è presente oppure assente. La variante \textbf{LZss} nasce proprio da questa idea: invece di forzare sempre la forma a tre componenti, distingue tra letterali e riferimenti, rappresentando ciascun caso nel modo più economico.
+
+\subsection{LZss}
 Storer e Szymanski proposero nel 1982 una variante di LZ77, chiamata \textbf{LZss}. L'osservazione è che una tripla LZ77 contiene sempre tre componenti, anche quando non tutte sono davvero utili:
 \begin{itemize}
     \item se è stato trovato un match lungo, il carattere successivo può essere gestito come inizio della frase successiva, quindi non è sempre necessario aggiungerlo nella stessa tripla;
@@ -4714,28 +4728,58 @@ le slide riportano la seguente codifica LZss:
 L'idea è la stessa di LZ77, ma i letterali e i riferimenti sono trattati in modo più economico.
 
 \subsubsection{Confronto tra parsing LZ77 e LZss}
-Indichiamo con $z$ il numero di frasi nel parsing LZ77 di una stringa $t$ e con $z'$ il numero di frasi nel parsing LZss. Le slide introducono due famiglie di fattorizzazioni.
-
-Sia:
+Indichiamo con $z$ il numero di frasi nel parsing LZ77 di una stringa $s$ e con $z'$ il numero di frasi nel parsing LZss. Consideriamo una decomposizione di $s$ in stringhe non vuote:
 \[
     s=t_1t_2\cdots t_r
 \]
-una decomposizione di $s$ in stringhe non vuote. È una fattorizzazione di tipo LZss se ogni $t_i$ è un singolo carattere oppure ha un'occorrenza nel prefisso già visto:
-\[
-    t_1t_2\cdots t_{i-1}.
-\]
-È invece una fattorizzazione di tipo LZ77 se, per ogni frase $t_i$, il prefisso $t_i[1..|t_i|-1]$ ha un'occorrenza nella parte già disponibile del testo, eventualmente sfruttando la copia progressiva tipica di LZ77\footnote{Nella slide la seconda definizione sembra chiamare ancora questa fattorizzazione ``LZss-type parsing''. Dal contesto e dal confronto successivo con $z=|\operatorname{LZ77}(t)|$ la tratto come un refuso: la seconda definizione è quella di tipo LZ77.}.
+Distinguiamo due tipi di fattorizzazione:
+\begin{itemize}
+    \item Una fattorizzazione è di tipo \textbf{LZss} se ogni $t_i$ è:
+    \begin{itemize}
+        \item un singolo carattere;
+        \item una stringa che ha un'occorrenza nel prefisso che termina prima dell'ultimo simbolo di $t_i$:
+        \[
+            s[1..|t_1t_2\cdots t_i|-1].
+        \]
+    \end{itemize}
+
+    \item Una fattorizzazione è di tipo \textbf{LZ77} se, per ogni frase $t_i$, il prefisso
+    \[
+        t_i[1..|t_i|-1]
+    \]
+    ha un'occorrenza nel prefisso
+    \[
+        s[1..|t_1t_2\cdots t_i|-2].
+    \]
+    Anche qui l'occorrenza può essere autosovrapposta alla frase corrente, come nella copia progressiva di LZ77.
+\end{itemize}
 
 \begin{theorem}[Lempel-Ziv, 1976]
-    Per ogni stringa $t$, il numero $z'$ di frasi prodotte dal parsing LZss è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZss. Analogamente, il numero $z$ di frasi prodotte dal parsing LZ77 è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZ77.
+    Per ogni stringa $s$, il numero $z'$ di frasi prodotte dal parsing LZss è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZss. Analogamente, il numero $z$ di frasi prodotte dal parsing LZ77 è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZ77.
 \end{theorem}
 
 \begin{theorem}[Kosolobov-Shur, 2019]
-    Per ogni stringa $t$ vale:
+    Per ogni stringa $s$ vale:
     \[
         \frac{1}{2}z' < z \leq z'.
     \]
 \end{theorem}
+\begin{proof}
+    La disuguaglianza $z\leq z'$ segue dal fatto che una fattorizzazione di tipo LZss è automaticamente anche una fattorizzazione di tipo LZ77. Infatti LZss richiede che sia copiabile tutta la frase, oppure che la frase sia un singolo carattere; LZ77 richiede solo che sia copiabile la frase senza l'ultimo carattere. È quindi una richiesta più debole. Il parsing LZss, che ha $z'$ frasi, è allora una fattorizzazione LZ77 valida; poiché il parsing LZ77 è minimo tra le fattorizzazioni LZ77, deve valere $z\leq z'$.
+
+    Per l'altra disuguaglianza, partiamo invece dal parsing LZ77 di $s$, formato da $z$ frasi. Ogni frase LZ77 può essere vista come:
+    \begin{itemize}
+        \item una parte iniziale copiata dal testo disponibile;
+        \item un carattere finale scritto esplicitamente.
+    \end{itemize}
+    La parte copiata, se non è vuota, è una frase valida per una fattorizzazione LZss; il carattere finale è comunque valido come letterale. Dunque ogni frase LZ77 può essere sostituita da al più due frasi LZss.
+
+    La prima frase LZ77, però, non può copiare nulla da sinistra, perché all'inizio non esiste testo già disponibile: quindi è necessariamente un solo carattere e contribuisce una sola frase LZss. In totale otteniamo una fattorizzazione LZss con al più $2z-1$ frasi. Per la minimalità del parsing LZss:
+    \[
+        z' \leq 2z-1 < 2z,
+    \]
+    da cui segue $\frac{1}{2}z' < z$.
+\end{proof}
 
 Il significato è che LZ77 non produce più frasi di LZss, ma il vantaggio non può essere arbitrariamente grande: il numero di frasi LZss è al più quasi il doppio del numero di frasi LZ77.
 
