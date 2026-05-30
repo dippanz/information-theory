@@ -4967,7 +4967,7 @@ Il trie cresce durante la compressione e, se non viene limitato, può occupare m
 
 Rispetto a LZ77, LZ78 non ha una finestra che impedisce di referenziare pattern molto lontani, ma deve memorizzare frasi esplicite. L'encoding può essere veloce se il trie è ben implementato; il decoding è in genere più pesante perché deve conservare e ricostruire le frasi.
 
-\subsection{\texorpdfstring{LZW}{LZW}}
+\subsection{LZW}
 LZW è una variante di LZ78 proposta da Welch nel 1984. È stata usata in formati e strumenti molto noti, tra cui GIF, TIFF e l'utility Unix \texttt{compress}.
 
 La differenza principale rispetto a LZ78 è che LZW emette \textbf{solo indici di frasi}, senza trasmettere il carattere aggiuntivo. Per rendere possibile questa scelta, il dizionario iniziale contiene già tutti i simboli dell'alfabeto. Le nuove frasi vengono costruite concatenando la frase appena codificata con il primo carattere della frase successiva.
@@ -5002,19 +5002,32 @@ e il testo:
 \[
     \texttt{bcababbcbcbaaaabbc}.
 \]
-L'encoding LZW produce:
+La codifica procede cercando ogni volta la frase più lunga $w$ già presente nel dizionario. Quando il carattere successivo $k$ non permette più di estendere $w$, si emette il codice di $w$ e si aggiunge la nuova frase $wk$. Nella tabella seguente, la parte sottolineata è la sequenza appena testata e inserita nel codebook; la parte rossa, invece, è il prefisso già noto di cui viene prodotto il codice in output.
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{c|l|c|l}
+        \textbf{Passo} & \textbf{Input corrente} & \textbf{Output} & \textbf{Codebook} \\ \hline
+        $0$  & \texttt{bcababbcbcbaaaabbc}        & --   & $1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{c}$ \\
+        $1$  & \uline{\textcolor{red}{\texttt{b}}\texttt{c}}\texttt{ababbcbcbaaaabbc}       & $2$  & $4:\texttt{bc}$ \\
+        $2$  & \uline{\textcolor{red}{\texttt{c}}\texttt{a}}\texttt{babbcbcbaaaabbc}        & $3$  & $5:\texttt{ca}$ \\
+        $3$  & \uline{\textcolor{red}{\texttt{a}}\texttt{b}}\texttt{abbcbcbaaaabbc}         & $1$  & $6:\texttt{ab}$ \\
+        $4$  & \uline{\textcolor{red}{\texttt{b}}\texttt{a}}\texttt{bbcbcbaaaabbc}          & $2$  & $7:\texttt{ba}$ \\
+        $5$  & \uline{\textcolor{red}{\texttt{ab}}\texttt{b}}\texttt{cbcbaaaabbc}           & $6$  & $8:\texttt{abb}$ \\
+        $6$  & \uline{\textcolor{red}{\texttt{bc}}\texttt{b}}\texttt{cbaaaabbc}             & $4$  & $9:\texttt{bcb}$ \\
+        $7$  & \uline{\textcolor{red}{\texttt{bcb}}\texttt{a}}\texttt{aaaabbc}              & $9$  & $10:\texttt{bcba}$ \\
+        $8$  & \uline{\textcolor{red}{\texttt{a}}\texttt{a}}\texttt{aabbc}                  & $1$  & $11:\texttt{aa}$ \\
+        $9$  & \uline{\textcolor{red}{\texttt{aa}}\texttt{a}}\texttt{bbc}                   & $11$ & $12:\texttt{aaa}$ \\
+        $10$ & \uline{\textcolor{red}{\texttt{abb}}\texttt{c}}                              & $8$  & $13:\texttt{abbc}$ \\
+        $11$ & \textcolor{red}{\uline{\texttt{c}}}                                  & $3$  & --
+    \end{tabular}
+    \caption{Passi della codifica LZW di \texttt{bcababbcbcbaaaabbc}.}
+    \label{tab:lzw_encoding_bcababb}
+\end{table}
+
+Leggendo la colonna degli output si ottiene:
 \[
     2,\ 3,\ 1,\ 2,\ 6,\ 4,\ 9,\ 1,\ 11,\ 8,\ 3.
-\]
-Le nuove entrate del dizionario sono:
-\[
-    \begin{array}{c|cccccccccc}
-        \text{Indice} & 4            & 5             & 6           & 7 & 8 & 9 & 10 & 11 & 12 & 13 \\ \hline
-        \text{Frase}  &
-        \texttt{bc}   & \texttt{ca}  & \texttt{ab}   & \texttt{ba} &
-        \texttt{abb}  & \texttt{bcb} & \texttt{bcba} &
-        \texttt{aa}   & \texttt{aaa} & \texttt{abbc}
-    \end{array}
 \]
 L'annotazione manuale presente nella slide evidenzia proprio il passaggio in cui la sequenza di \texttt{a} fa comparire le frasi \texttt{aa} e \texttt{aaa}; la regola dell'algoritmo resta quella appena descritta.
 
