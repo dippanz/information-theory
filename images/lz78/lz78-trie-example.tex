@@ -1,0 +1,65 @@
+\documentclass[tikz,border=7pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[italian]{babel}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,positioning}
+
+\begin{document}
+\begin{tikzpicture}[
+    level distance=16mm,
+    level 1/.style={sibling distance=47mm},
+    level 2/.style={sibling distance=26mm},
+    level 3/.style={sibling distance=18mm},
+    level 4/.style={sibling distance=14mm},
+    every node/.style={font=\scriptsize, align=center},
+    trie node/.style={circle, draw, fill=black!5, minimum size=8mm, inner sep=1pt},
+    new node/.style={circle, draw=orange!80!black, dashed, fill=orange!10, minimum size=8mm, inner sep=1pt},
+    edge from parent/.style={draw, line width=0.45pt},
+    edge label/.style={font=\scriptsize, inner sep=1pt, fill=white},
+    path edge/.style={draw=blue!65!black, line width=1.1pt},
+    note/.style={rectangle, draw=black!30, rounded corners=2pt, fill=black!3, align=left, font=\scriptsize, inner sep=5pt}
+]
+
+% Trie costruito dal dizionario dell'esempio LZ78 su abaababaa.
+\node[trie node] (n0) {$0$\\$\epsilon$}
+    child {
+        node[trie node] (n1) {$1$\\\texttt{a}}
+        child {
+            node[trie node] (n3) {$3$\\\texttt{aa}}
+            edge from parent node[edge label, left] {\texttt{a}}
+        }
+        edge from parent node[edge label, left] {\texttt{a}}
+    }
+    child {
+        node[trie node] (n2) {$2$\\\texttt{b}}
+        child {
+            node[trie node] (n4) {$4$\\\texttt{ba}}
+            child {
+                node[trie node] (n5) {$5$\\\texttt{baa}}
+                child {
+                    node[new node] (n6) {$6$\\\texttt{baab}}
+                    edge from parent node[edge label, right] {\texttt{b}}
+                }
+                edge from parent node[edge label, left] {\texttt{a}}
+            }
+            edge from parent node[edge label, right] {\texttt{a}}
+        }
+        edge from parent node[edge label, right] {\texttt{b}}
+    };
+
+% Evidenzia il cammino seguito codificando baab.
+\draw[path edge] (n0) -- (n2);
+\draw[path edge] (n2) -- (n4);
+\draw[path edge] (n4) -- (n5);
+\draw[-Latex, orange!80!black, line width=0.9pt] (n5) -- (n6);
+
+\node[note, right=18mm of n4] {
+    input \texttt{baab}\\
+    ultimo nodo noto: $5=\texttt{baa}$\\
+    prossimo carattere: \texttt{b}\\
+    output: $\langle 5,\texttt{b}\rangle$
+};
+
+\end{tikzpicture}
+\end{document}

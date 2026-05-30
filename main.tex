@@ -3694,13 +3694,13 @@ prima si elencano tutti i suffissi, cioè tutte le stringhe ottenute tagliando $
     \centering
     \begin{tabular}{c|c|c}
         \textbf{rango $r$} & \textbf{$SA[r]$} & \textbf{suffisso $T[SA[r],n)$} \\ \hline
-        $0$ & $6$ & \texttt{\$}       \\
-        $1$ & $5$ & \texttt{a\$}      \\
-        $2$ & $3$ & \texttt{ana\$}    \\
-        $3$ & $1$ & \texttt{anana\$}  \\
-        $4$ & $0$ & \texttt{banana\$} \\
-        $5$ & $4$ & \texttt{na\$}     \\
-        $6$ & $2$ & \texttt{nana\$}
+        $0$                & $6$              & \texttt{\$}                    \\
+        $1$                & $5$              & \texttt{a\$}                   \\
+        $2$                & $3$              & \texttt{ana\$}                 \\
+        $3$                & $1$              & \texttt{anana\$}               \\
+        $4$                & $0$              & \texttt{banana\$}              \\
+        $5$                & $4$              & \texttt{na\$}                  \\
+        $6$                & $2$              & \texttt{nana\$}
     \end{tabular}
     \caption{\texten{Suffix array} di \texttt{banana\$}}
     \label{tab:suffix_array_banana}
@@ -3739,7 +3739,7 @@ Una volta costruito il \texten{suffix array} di $T=s\texttt{\$}$, la BWT si otti
     L[r]=
     \begin{cases}
         T[SA[r]-1]=T[i-1], & \text{se } i>0, \\
-        \texttt{\$}, & \text{se } i=0.
+        \texttt{\$},       & \text{se } i=0.
     \end{cases}
 \end{equation}
 Il secondo caso gestisce la rotazione ciclica: se il suffisso parte dall'inizio del testo, il carattere precedente è il simbolo finale \texttt{\$}, cioè $T[n-1]$.
@@ -3759,13 +3759,13 @@ Per costruire la BWT non serve scrivere tutta la matrice delle rotazioni: basta 
     \centering
     \begin{tabular}{c|c|c|c}
         \textbf{rango $r$} & \textbf{$SA[r]$} & \textbf{suffisso} & \textbf{$L[r]$} \\ \hline
-        $0$ & $6$ & \texttt{\$}       & \texttt{a}  \\
-        $1$ & $5$ & \texttt{a\$}      & \texttt{b}  \\
-        $2$ & $2$ & \texttt{aaba\$}   & \texttt{b}  \\
-        $3$ & $3$ & \texttt{aba\$}    & \texttt{a}  \\
-        $4$ & $0$ & \texttt{abaaba\$} & \texttt{\$} \\
-        $5$ & $4$ & \texttt{ba\$}     & \texttt{a}  \\
-        $6$ & $1$ & \texttt{baaba\$}  & \texttt{a}
+        $0$                & $6$              & \texttt{\$}       & \texttt{a}      \\
+        $1$                & $5$              & \texttt{a\$}      & \texttt{b}      \\
+        $2$                & $2$              & \texttt{aaba\$}   & \texttt{b}      \\
+        $3$                & $3$              & \texttt{aba\$}    & \texttt{a}      \\
+        $4$                & $0$              & \texttt{abaaba\$} & \texttt{\$}     \\
+        $5$                & $4$              & \texttt{ba\$}     & \texttt{a}      \\
+        $6$                & $1$              & \texttt{baaba\$}  & \texttt{a}
     \end{tabular}
     \caption{Calcolo della BWT di \texttt{abaaba\$} dal \texten{suffix array}}
     \label{tab:bwt_from_suffix_array_abaaba}
@@ -3924,7 +3924,7 @@ e si assegna rango $0$ alla più piccola, rango $1$ alla successiva, e così via
 \[
     \begin{array}{c|cccccc}
         \text{tripletta} & \texttt{\$ \$ \$} & \texttt{i \$ \$} & \texttt{i p p} & \texttt{i s s} & \texttt{p p i} & \texttt{s s i} \\ \hline
-        \text{rango}     & 0                  & 1                 & 2               & 3               & 4               & 5
+        \text{rango}     & 0                 & 1                & 2              & 3              & 4              & 5
     \end{array}
 \]
 
@@ -3932,9 +3932,9 @@ Le occorrenze uguali ricevono lo stesso rango. Tornando allora all'ordine in cui
 
 \begin{center}
     \begin{tabular}{c|cccccccc}
-        \textbf{posizione in $T$} & $1$ & $4$ & $7$ & $10$ & $2$ & $5$ & $8$ & $11$ \\ \hline
+        \textbf{posizione in $T$} & $1$          & $4$          & $7$          & $10$           & $2$          & $5$          & $8$          & $11$            \\ \hline
         \textbf{tripletta}        & \texttt{iss} & \texttt{iss} & \texttt{ipp} & \texttt{i\$\$} & \texttt{ssi} & \texttt{ssi} & \texttt{ppi} & \texttt{\$\$\$} \\
-        \textbf{rango}            & $3$ & $3$ & $2$ & $1$ & $5$ & $5$ & $4$ & $0$
+        \textbf{rango}            & $3$          & $3$          & $2$          & $1$            & $5$          & $5$          & $4$          & $0$
     \end{tabular}
 \end{center}
 
@@ -3947,14 +3947,14 @@ Se tutti i simboli di $T^{1,2}$ fossero distinti, i suffissi campionati sarebber
 \begin{center}
     \begin{tabular}{c|c|l}
         \textbf{rango} & \textbf{posizione in $T^{1,2}$} & \textbf{suffisso} \\ \hline
-        $0$ & $7$ & $0$ \\
-        $1$ & $3$ & $1,5,5,4,0$ \\
-        $2$ & $2$ & $2,1,5,5,4,0$ \\
-        $3$ & $1$ & $3,2,1,5,5,4,0$ \\
-        $4$ & $0$ & $3,3,2,1,5,5,4,0$ \\
-        $5$ & $6$ & $4,0$ \\
-        $6$ & $5$ & $5,4,0$ \\
-        $7$ & $4$ & $5,5,4,0$
+        $0$            & $7$                             & $0$               \\
+        $1$            & $3$                             & $1,5,5,4,0$       \\
+        $2$            & $2$                             & $2,1,5,5,4,0$     \\
+        $3$            & $1$                             & $3,2,1,5,5,4,0$   \\
+        $4$            & $0$                             & $3,3,2,1,5,5,4,0$ \\
+        $5$            & $6$                             & $4,0$             \\
+        $6$            & $5$                             & $5,4,0$           \\
+        $7$            & $4$                             & $5,5,4,0$
     \end{tabular}
 \end{center}
 
@@ -3965,7 +3965,7 @@ Le posizioni lette nella seconda colonna formano quindi il \texten{suffix array}
 Questo array però è espresso in posizioni della stringa ridotta. Per tornare al testo originale si usa il modo in cui $T^{1,2}$ è stato costruito: le prime quattro posizioni corrispondono ai suffissi che partono da $1,4,7,10$, mentre le ultime quattro corrispondono ai suffissi che partono da $2,5,8,11$:
 \[
     \begin{array}{c|cccccccc}
-        \text{posizione in }T^{1,2} & 0 & 1 & 2 & 3 & 4 & 5 & 6 & 7 \\ \hline
+        \text{posizione in }T^{1,2} & 0 & 1 & 2 & 3  & 4 & 5 & 6 & 7  \\ \hline
         \text{posizione in }T       & 1 & 4 & 7 & 10 & 2 & 5 & 8 & 11
     \end{array}
 \]
@@ -3996,7 +3996,7 @@ Nel caso:
 si costruisce prima:
 \[
     \begin{array}{c|cccccccc}
-        k                    & 11 & 10 & 7 & 4 & 1 & 8 & 5 & 2 \\ \hline
+        k                     & 11 & 10 & 7 & 4 & 1 & 8 & 5 & 2 \\ \hline
         \operatorname{pos}(k) & 0  & 1  & 2 & 3 & 4 & 5 & 6 & 7
     \end{array}
 \]
@@ -4004,11 +4004,11 @@ e poi, per $P_0=\{0,3,6,9\}$, le seguenti coppie:
 
 \begin{center}
     \begin{tabular}{c|c|c}
-        \textbf{posizione $i$} & \textbf{suffisso $T[i,n)$} & \textbf{coppia} \\ \hline
-        $0$ & \texttt{mississippi\$} & $\langle \texttt{m},4\rangle$ \\
-        $3$ & \texttt{sissippi\$}    & $\langle \texttt{s},3\rangle$ \\
-        $6$ & \texttt{sippi\$}       & $\langle \texttt{s},2\rangle$ \\
-        $9$ & \texttt{pi\$}          & $\langle \texttt{p},1\rangle$
+        \textbf{posizione $i$} & \textbf{suffisso $T[i,n)$} & \textbf{coppia}               \\ \hline
+        $0$                    & \texttt{mississippi\$}     & $\langle \texttt{m},4\rangle$ \\
+        $3$                    & \texttt{sissippi\$}        & $\langle \texttt{s},3\rangle$ \\
+        $6$                    & \texttt{sippi\$}           & $\langle \texttt{s},2\rangle$ \\
+        $9$                    & \texttt{pi\$}              & $\langle \texttt{p},1\rangle$
     \end{tabular}
 \end{center}
 
@@ -4060,8 +4060,8 @@ conviene tenere esplicite le chiavi che saranno usate durante la fusione. Per gl
         \centering
         \[
             \begin{array}{c|c|c}
-                \multicolumn{3}{c}{SA^0=(0,9,6,3)} \\
-                i & \text{coppia} & \text{tripletta} \\ \hline
+                \multicolumn{3}{c}{SA^0=(0,9,6,3)}                                       \\
+                i & \text{coppia}               & \text{tripletta}                       \\ \hline
                 0 & \langle \texttt{m},4\rangle & \langle \texttt{m},\texttt{i},7\rangle \\
                 9 & \langle \texttt{p},1\rangle & \langle \texttt{p},\texttt{i},0\rangle \\
                 6 & \langle \texttt{s},2\rangle & \langle \texttt{s},\texttt{i},5\rangle \\
@@ -4074,15 +4074,15 @@ conviene tenere esplicite le chiavi che saranno usate durante la fusione. Per gl
         \centering
         \[
             \begin{array}{c|c|c}
-                \multicolumn{3}{c}{SA^{1,2}=(11,10,7,4,1,8,5,2)} \\
-                j & \text{caso} & \text{chiave usata} \\ \hline
+                \multicolumn{3}{c}{SA^{1,2}=(11,10,7,4,1,8,5,2)}                 \\
+                j  & \text{caso}      & \text{chiave usata}                      \\ \hline
                 11 & \text{tripletta} & \langle \texttt{\$},\texttt{\$},0\rangle \\
-                10 & \text{coppia}    & \langle \texttt{i},0\rangle \\
-                7  & \text{coppia}    & \langle \texttt{i},5\rangle \\
-                4  & \text{coppia}    & \langle \texttt{i},6\rangle \\
-                1  & \text{coppia}    & \langle \texttt{i},7\rangle \\
-                8  & \text{tripletta} & \langle \texttt{p},\texttt{p},1\rangle \\
-                5  & \text{tripletta} & \langle \texttt{s},\texttt{s},2\rangle \\
+                10 & \text{coppia}    & \langle \texttt{i},0\rangle              \\
+                7  & \text{coppia}    & \langle \texttt{i},5\rangle              \\
+                4  & \text{coppia}    & \langle \texttt{i},6\rangle              \\
+                1  & \text{coppia}    & \langle \texttt{i},7\rangle              \\
+                8  & \text{tripletta} & \langle \texttt{p},\texttt{p},1\rangle   \\
+                5  & \text{tripletta} & \langle \texttt{s},\texttt{s},2\rangle   \\
                 2  & \text{tripletta} & \langle \texttt{s},\texttt{s},3\rangle
             \end{array}
         \]
@@ -4311,10 +4311,10 @@ e il seguente dizionario:
     \centering
     \begin{tabular}{c|c||c|c}
         \textbf{Codice} & \textbf{Entrata} & \textbf{Codice} & \textbf{Entrata} \\ \hline
-        \texttt{000} & \texttt{a}  & \texttt{100} & \texttt{r}  \\
-        \texttt{001} & \texttt{b}  & \texttt{101} & \texttt{ab} \\
-        \texttt{010} & \texttt{c}  & \texttt{110} & \texttt{ac} \\
-        \texttt{011} & \texttt{d}  & \texttt{111} & \texttt{ad}
+        \texttt{000}    & \texttt{a}       & \texttt{100}    & \texttt{r}       \\
+        \texttt{001}    & \texttt{b}       & \texttt{101}    & \texttt{ab}      \\
+        \texttt{010}    & \texttt{c}       & \texttt{110}    & \texttt{ac}      \\
+        \texttt{011}    & \texttt{d}       & \texttt{111}    & \texttt{ad}
     \end{tabular}
     \caption{Dizionario statico con caratteri singoli e alcuni digrammi.}
     \label{tab:static_digram_dictionary}
@@ -4397,10 +4397,10 @@ oltre la frase appena rappresentata.
         \Require testo $S[1..N]$, ampiezza massima della finestra $W$
         \State $p\gets 1$
         \While{$p\leq N$}
-            \State cerca il match più lungo di $S[p..]$ in $S[\max(1,p-W)..p-1]$
-            \State sia il match a distanza $o$ e lunghezza $\ell$
-            \State emetti $\langle o,\ell,S[p+\ell]\rangle$
-            \State $p\gets p+\ell+1$
+        \State cerca il match più lungo di $S[p..]$ in $S[\max(1,p-W)..p-1]$
+        \State sia il match a distanza $o$ e lunghezza $\ell$
+        \State emetti $\langle o,\ell,S[p+\ell]\rangle$
+        \State $p\gets p+\ell+1$
         \EndWhile
     \end{algorithmic}
     \label{alg:lz77_encoding}
@@ -4417,11 +4417,11 @@ molto più semplice e veloce dell'encoder.
         \Require sequenza di triple LZ77
         \State $p\gets 1$
         \ForAll{triple $\langle o,\ell,s\rangle$}
-            \For{$k=0$ \textbf{to} $\ell-1$}
-                \State $S[p+k]\gets S[p-o+k]$
-            \EndFor
-            \State $S[p+\ell]\gets s$
-            \State $p\gets p+\ell+1$
+        \For{$k=0$ \textbf{to} $\ell-1$}
+        \State $S[p+k]\gets S[p-o+k]$
+        \EndFor
+        \State $S[p+\ell]\gets s$
+        \State $p\gets p+\ell+1$
         \EndFor
     \end{algorithmic}
     \label{alg:lz77_decoding}
@@ -4437,27 +4437,27 @@ prefisso ancora da codificare, cerca il match più lungo nel testo già
 prodotto e poi emette una tripla. La simulazione completa è:
 
 \begin{center}
-\small
-\renewcommand{\arraystretch}{1.25}
-\begin{tabular}{|c|c|p{0.22\textwidth}|p{0.34\textwidth}|p{0.18\textwidth}|}
-    \hline
-    \textbf{Passo} & \textbf{$p$} & \textbf{Testo già prodotto} & \textbf{Scelta dell'encoder} & \textbf{Tripla} \\ \hline
-    1 & 1 & \emph{vuoto} &
-    nessun match: si emette il letterale \texttt{a} &
-    $\langle 0,0,\texttt{a}\rangle$ \\ \hline
-    2 & 2 & \texttt{a} &
-    nessun match utile per \texttt{b}: si emette il letterale \texttt{b} &
-    $\langle 0,0,\texttt{b}\rangle$ \\ \hline
-    3 & 3 & \texttt{ab} &
-    il prefisso \texttt{a} compare a distanza $2$; si copia \texttt{a} e poi si scrive \texttt{a} &
-    $\langle 2,1,\texttt{a}\rangle$ \\ \hline
-    4 & 5 & \texttt{abaa} &
-    il prefisso \texttt{ba} compare a distanza $3$; si copia \texttt{ba} e poi si scrive \texttt{b} &
-    $\langle 3,2,\texttt{b}\rangle$ \\ \hline
-    5 & 8 & \texttt{abaabab} &
-    il prefisso \texttt{aab} compare a distanza $5$; si copia \texttt{aab} e poi si scrive \texttt{b} &
-    $\langle 5,3,\texttt{b}\rangle$ \\ \hline
-\end{tabular}
+    \small
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{|c|c|p{0.22\textwidth}|p{0.34\textwidth}|p{0.18\textwidth}|}
+        \hline
+        \textbf{Passo}                                                                                    & \textbf{$p$} & \textbf{Testo già prodotto} & \textbf{Scelta dell'encoder} & \textbf{Tripla} \\ \hline
+        1                                                                                                 & 1            & \emph{vuoto}                &
+        nessun match: si emette il letterale \texttt{a}                                                   &
+        $\langle 0,0,\texttt{a}\rangle$                                                                                                                                                                 \\ \hline
+        2                                                                                                 & 2            & \texttt{a}                  &
+        nessun match utile per \texttt{b}: si emette il letterale \texttt{b}                              &
+        $\langle 0,0,\texttt{b}\rangle$                                                                                                                                                                 \\ \hline
+        3                                                                                                 & 3            & \texttt{ab}                 &
+        il prefisso \texttt{a} compare a distanza $2$; si copia \texttt{a} e poi si scrive \texttt{a}     &
+        $\langle 2,1,\texttt{a}\rangle$                                                                                                                                                                 \\ \hline
+        4                                                                                                 & 5            & \texttt{abaa}               &
+        il prefisso \texttt{ba} compare a distanza $3$; si copia \texttt{ba} e poi si scrive \texttt{b}   &
+        $\langle 3,2,\texttt{b}\rangle$                                                                                                                                                                 \\ \hline
+        5                                                                                                 & 8            & \texttt{abaabab}            &
+        il prefisso \texttt{aab} compare a distanza $5$; si copia \texttt{aab} e poi si scrive \texttt{b} &
+        $\langle 5,3,\texttt{b}\rangle$                                                                                                                                                                 \\ \hline
+    \end{tabular}
 \end{center}
 
 La figura seguente visualizza l'ultimo passo della tabella: il
@@ -4486,42 +4486,42 @@ loro concatenazione ricostruisce esattamente \texttt{abaababaabb}.
 
 Un secondo esempio più esteso permette di vedere lo stesso meccanismo su
 frasi più lunghe. Consideriamo la stringa\footnote{Ci potrebbe essere una errore nella sequenza di triple
-seguente che ricostruisce \texttt{babbababbaabbaabaabaaa}. Con la variante
-\texttt{babbababbbaabbaabaabaaa}, cioè con una \texttt{b} in più dopo il
-prefisso \texttt{babbaba}, queste triple non tornerebbero.}:
+    seguente che ricostruisce \texttt{babbababbaabbaabaabaaa}. Con la variante
+    \texttt{babbababbbaabbaabaabaaa}, cioè con una \texttt{b} in più dopo il
+    prefisso \texttt{babbaba}, queste triple non tornerebbero.}:
 \[
     \texttt{babbababbaabbaabaabaaa}.
 \]
 Il procedimento è:
 
 \begin{center}
-\scriptsize
-\renewcommand{\arraystretch}{1.25}
-\begin{tabular}{|c|c|p{0.20\textwidth}|p{0.39\textwidth}|p{0.17\textwidth}|}
-    \hline
-    \textbf{Passo} & \textbf{$p$} & \textbf{Testo già prodotto} & \textbf{Scelta dell'encoder} & \textbf{Tripla} \\ \hline
-    1 & 1 & \emph{vuoto} &
-    nessun match: si emette il letterale \texttt{b} &
-    $\langle 0,0,\texttt{b}\rangle$ \\ \hline
-    2 & 2 & \texttt{b} &
-    nessun match utile per \texttt{a}: si emette il letterale \texttt{a} &
-    $\langle 0,0,\texttt{a}\rangle$ \\ \hline
-    3 & 3 & \texttt{ba} &
-    il prefisso \texttt{b} compare a distanza $2$; si copia \texttt{b} e poi si scrive \texttt{b}, producendo \texttt{bb} &
-    $\langle 2,1,\texttt{b}\rangle$ \\ \hline
-    4 & 5 & \texttt{babb} &
-    il prefisso \texttt{ab} compare a distanza $3$; si copia \texttt{ab} e poi si scrive \texttt{a}, producendo \texttt{aba} &
-    $\langle 3,2,\texttt{a}\rangle$ \\ \hline
-    5 & 8 & \texttt{babbaba} &
-    il prefisso \texttt{bba} compare a distanza $5$; si copia \texttt{bba} e poi si scrive \texttt{a}, producendo \texttt{bbaa} &
-    $\langle 5,3,\texttt{a}\rangle$ \\ \hline
-    6 & 12 & \texttt{babbababbaa} &
-    il prefisso \texttt{bbaa} compare a distanza $4$; si copia \texttt{bbaa} e poi si scrive \texttt{b}, producendo \texttt{bbaab} &
-    $\langle 4,4,\texttt{b}\rangle$ \\ \hline
-    7 & 17 & \texttt{babbabab}\allowbreak\texttt{baabbaab} &
-    a distanza $3$ si copia progressivamente \texttt{aabaa} e poi si scrive \texttt{a}, producendo \texttt{aabaaa} &
-    $\langle 3,5,\texttt{a}\rangle$ \\ \hline
-\end{tabular}
+    \scriptsize
+    \renewcommand{\arraystretch}{1.25}
+    \begin{tabular}{|c|c|p{0.20\textwidth}|p{0.39\textwidth}|p{0.17\textwidth}|}
+        \hline
+        \textbf{Passo}                                                                                                                 & \textbf{$p$} & \textbf{Testo già prodotto}                   & \textbf{Scelta dell'encoder} & \textbf{Tripla} \\ \hline
+        1                                                                                                                              & 1            & \emph{vuoto}                                  &
+        nessun match: si emette il letterale \texttt{b}                                                                                &
+        $\langle 0,0,\texttt{b}\rangle$                                                                                                                                                                                                                \\ \hline
+        2                                                                                                                              & 2            & \texttt{b}                                    &
+        nessun match utile per \texttt{a}: si emette il letterale \texttt{a}                                                           &
+        $\langle 0,0,\texttt{a}\rangle$                                                                                                                                                                                                                \\ \hline
+        3                                                                                                                              & 3            & \texttt{ba}                                   &
+        il prefisso \texttt{b} compare a distanza $2$; si copia \texttt{b} e poi si scrive \texttt{b}, producendo \texttt{bb}          &
+        $\langle 2,1,\texttt{b}\rangle$                                                                                                                                                                                                                \\ \hline
+        4                                                                                                                              & 5            & \texttt{babb}                                 &
+        il prefisso \texttt{ab} compare a distanza $3$; si copia \texttt{ab} e poi si scrive \texttt{a}, producendo \texttt{aba}       &
+        $\langle 3,2,\texttt{a}\rangle$                                                                                                                                                                                                                \\ \hline
+        5                                                                                                                              & 8            & \texttt{babbaba}                              &
+        il prefisso \texttt{bba} compare a distanza $5$; si copia \texttt{bba} e poi si scrive \texttt{a}, producendo \texttt{bbaa}    &
+        $\langle 5,3,\texttt{a}\rangle$                                                                                                                                                                                                                \\ \hline
+        6                                                                                                                              & 12           & \texttt{babbababbaa}                          &
+        il prefisso \texttt{bbaa} compare a distanza $4$; si copia \texttt{bbaa} e poi si scrive \texttt{b}, producendo \texttt{bbaab} &
+        $\langle 4,4,\texttt{b}\rangle$                                                                                                                                                                                                                \\ \hline
+        7                                                                                                                              & 17           & \texttt{babbabab}\allowbreak\texttt{baabbaab} &
+        a distanza $3$ si copia progressivamente \texttt{aabaa} e poi si scrive \texttt{a}, producendo \texttt{aabaaa}                 &
+        $\langle 3,5,\texttt{a}\rangle$                                                                                                                                                                                                                \\ \hline
+    \end{tabular}
 \end{center}
 
 Mettendo in fila le triple, si ottiene:
@@ -4625,10 +4625,10 @@ posizione corrente. All'inizio quel simbolo è l'ultima \texttt{b} di
 \texttt{b} appena prodotta diventa a sua volta il simbolo precedente e può
 essere copiata nel passo successivo. Quindi la copia procede così:
 \[
-\begin{array}{c|c|c}
-    \textbf{stato prima della tripla} & \textbf{tripla} & \textbf{frase prodotta} \\ \hline
-    \texttt{acaaacb} & \langle 1,10,\texttt{a}\rangle & \texttt{bbbbbbbbbba}
-\end{array}
+    \begin{array}{c|c|c}
+        \textbf{stato prima della tripla} & \textbf{tripla}                & \textbf{frase prodotta} \\ \hline
+        \texttt{acaaacb}                  & \langle 1,10,\texttt{a}\rangle & \texttt{bbbbbbbbbba}
+    \end{array}
 \]
 La frase prodotta contiene dieci \texttt{b}, ottenute copiando sempre a
 distanza $1$, e poi il simbolo finale \texttt{a}. Il risultato complessivo
@@ -4656,16 +4656,16 @@ su un alfabeto di dimensione $4$, quindi $2$ bit per carattere. La stringa non c
 \]
 Con una finestra di $7$ simboli e match lunghi al massimo $3$, servono $3$ bit per l'offset, $2$ bit per la lunghezza e $2$ bit per il carattere, quindi $7$ bit per tripla. La codifica riportata è:
 \[
-\begin{aligned}
-    &\langle 0,0,\texttt{0}\rangle
-    \langle 0,0,\texttt{1}\rangle
-    \langle 2,1,\texttt{0}\rangle
-    \langle 0,0,\texttt{2}\rangle \\
-    &\langle 2,1,\texttt{\$}\rangle
-    \langle 7,2,\texttt{1}\rangle
-    \langle 5,2,\texttt{\$}\rangle
-    \langle 6,3,\texttt{1}\rangle.
-\end{aligned}
+    \begin{aligned}
+         & \langle 0,0,\texttt{0}\rangle
+        \langle 0,0,\texttt{1}\rangle
+        \langle 2,1,\texttt{0}\rangle
+        \langle 0,0,\texttt{2}\rangle     \\
+         & \langle 2,1,\texttt{\$}\rangle
+        \langle 7,2,\texttt{1}\rangle
+        \langle 5,2,\texttt{\$}\rangle
+        \langle 6,3,\texttt{1}\rangle.
+    \end{aligned}
 \]
 Ci sono $8$ triple, cioè $8\cdot 7=56$ bit. Il rapporto:
 \[
@@ -4735,23 +4735,23 @@ Indichiamo con $z$ il numero di frasi nel parsing LZ77 di una stringa $s$ e con 
 Distinguiamo due tipi di fattorizzazione:
 \begin{itemize}
     \item Una fattorizzazione è di tipo \textbf{LZss} se ogni $t_i$ è:
-    \begin{itemize}
-        \item un singolo carattere;
-        \item una stringa che ha un'occorrenza nel prefisso che termina prima dell'ultimo simbolo di $t_i$:
-        \[
-            s[1..|t_1t_2\cdots t_i|-1].
-        \]
-    \end{itemize}
+          \begin{itemize}
+              \item un singolo carattere;
+              \item una stringa che ha un'occorrenza nel prefisso che termina prima dell'ultimo simbolo di $t_i$:
+                    \[
+                        s[1..|t_1t_2\cdots t_i|-1].
+                    \]
+          \end{itemize}
 
     \item Una fattorizzazione è di tipo \textbf{LZ77} se, per ogni frase $t_i$, il prefisso
-    \[
-        t_i[1..|t_i|-1]
-    \]
-    ha un'occorrenza nel prefisso
-    \[
-        s[1..|t_1t_2\cdots t_i|-2].
-    \]
-    Anche qui l'occorrenza può essere autosovrapposta alla frase corrente, come nella copia progressiva di LZ77.
+          \[
+              t_i[1..|t_i|-1]
+          \]
+          ha un'occorrenza nel prefisso
+          \[
+              s[1..|t_1t_2\cdots t_i|-2].
+          \]
+          Anche qui l'occorrenza può essere autosovrapposta alla frase corrente, come nella copia progressiva di LZ77.
 \end{itemize}
 
 \begin{theorem}[Lempel-Ziv, 1976]
@@ -4804,8 +4804,8 @@ Quando la finestra scorre, la tabella hash deve essere aggiornata: si rimuovono 
 
 La dimensione della finestra è un compromesso. gzip usa una finestra di $32\cdot 2^{10}=32768$ byte, mentre 7-zip può usare finestre molto più grandi, fino a dimensioni dell'ordine di $2^{30}$. Finestre più grandi possono trovare ripetizioni più lontane, ma richiedono più memoria e più tempo di ricerca.
 
-\subsection{\texorpdfstring{LZ78}{LZ78}}
-LZ78, introdotto da Ziv e Lempel nel 1978, usa un dizionario esplicito di frasi già parse. A differenza di LZ77, non si può puntare a qualunque sottostringa della finestra: si possono referenziare solo frasi complete già presenti nel dizionario.
+\subsection{LZ78}
+LZ78, introdotto da Ziv e Lempel nel 1978, usa un dizionario esplicito di frasi già parsate. A differenza di LZ77, non si può puntare a qualunque sottostringa della finestra: si possono referenziare solo frasi complete già presenti nel dizionario.
 
 Questa restrizione ha due effetti:
 \begin{itemize}
@@ -4826,22 +4826,47 @@ La concatenazione tra la frase precedente e il prossimo carattere diventa una nu
         \State inizializza $D[0]\gets \epsilon$
         \State $p\gets 1$
         \While{$p\leq |S|$}
-            \State sia $w$ il prefisso più lungo di $S[p..]$ presente in $D$
-            \State sia $c$ il carattere che segue $w$
-            \State emetti $\langle \operatorname{index}(w),c\rangle$
-            \State aggiungi $wc$ al dizionario con un nuovo indice
-            \State $p\gets p+|w|+1$
+        \State sia $w$ il prefisso più lungo di $S[p..]$ presente in $D$
+        \State sia $c$ il carattere che segue $w$
+        \State emetti $\langle \operatorname{index}(w),c\rangle$
+        \State aggiungi $wc$ al dizionario con un nuovo indice
+        \State $p\gets p+|w|+1$
         \EndWhile
     \end{algorithmic}
     \label{alg:lz78_encoding}
 \end{algorithm}
+
+In parole, LZ78 legge il testo una frase alla volta: cerca la frase già nota più lunga che coincide con il testo corrente, la identifica tramite il suo indice nel dizionario e aggiunge il primo carattere nuovo che la estende. La coppia emessa descrive proprio questi due elementi, mentre la nuova frase viene salvata nel dizionario per i passi successivi.
 
 \subsubsection{Esempio di parsing}
 Per la stringa:
 \[
     \texttt{abaababaa},
 \]
-le slide ottengono:
+conviene leggere il testo da sinistra a destra, aggiornando il dizionario dopo ogni emissione. Il passo $0$ è già il primo passo di codifica: il dizionario disponibile contiene solo la frase vuota, con indice $0$. A ogni passo si prende il prefisso già noto più lungo $w$, si legge il carattere successivo $c$, si emette $\langle\operatorname{index}(w),c\rangle$ e si aggiunge $wc$ al dizionario:
+\begin{table}[htpb]
+    \centering
+    \small
+    \begin{tabular}{l|l|l|l|l}
+        \textbf{Passo} & \textbf{Dizionario disponibile}                                      & \textbf{$w$ trovato} & \textbf{Output}               & \textbf{Nuova frase} \\ \hline
+        $0$            & $\{\,\}$                                                             & $\epsilon$           & $\langle 0,\texttt{a}\rangle$ & $\texttt{a}$       \\
+        $1$            & $\{ 1:\texttt{a}\,\}$                                                & $\epsilon$           & $\langle 0,\texttt{b}\rangle$ & $\texttt{b}$       \\
+        $2$            & $\{ 1:\texttt{a},\ 2:\texttt{b}\,\}$                                 & \texttt{a}           & $\langle 1,\texttt{a}\rangle$ & $\texttt{aa}$      \\
+        $3$            & $\{ 1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{aa}\,\}$                 & \texttt{b}           & $\langle 2,\texttt{a}\rangle$ & $\texttt{ba}$      \\
+        $4$            & $\{ 1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{aa},\ 4:\texttt{ba}\,\}$ & \texttt{ba}          & $\langle 4,\texttt{a}\rangle$ & $\texttt{baa}$
+    \end{tabular}
+    \caption{Costruzione passo-passo del parsing LZ78 di \texttt{abaababaa}.}
+    \label{tab:lz78_abaababaa_steps}
+\end{table}
+
+In questo modo il primo elemento della coppia è sempre l'indice della frase $w$ nel dizionario disponibile: per esempio, in $\langle 2,\texttt{a}\rangle$ il numero $2$ rimanda alla voce $2:\texttt{b}$, e la nuova frase diventa \texttt{ba}.
+
+Concatenando le nuove frasi prodotte nelle cinque emissioni si recupera il testo originale:
+\[
+    \texttt{a}\ \texttt{b}\ \texttt{aa}\ \texttt{ba}\ \texttt{baa}
+    = \texttt{abaababaa}.
+\]
+La sequenza di coppie emessa è quindi:
 \[
     \langle 0,\texttt{a}\rangle
     \langle 0,\texttt{b}\rangle
@@ -4850,16 +4875,11 @@ le slide ottengono:
     \langle 4,\texttt{a}\rangle.
 \]
 Il dizionario costruito è:
-\begin{table}[htpb]
+\begin{table}[H]
     \centering
-    \begin{tabular}{c|c}
-        \textbf{Indice} & \textbf{Frase} \\ \hline
-        $0$ & $\epsilon$ \\
-        $1$ & \texttt{a} \\
-        $2$ & \texttt{b} \\
-        $3$ & \texttt{aa} \\
-        $4$ & \texttt{ba} \\
-        $5$ & \texttt{baa}
+    \begin{tabular}{c|cccccc}
+        \textbf{Indice} & $0$        & $1$        & $2$        & $3$         & $4$         & $5$          \\ \hline
+        \textbf{Frase}  & $\epsilon$ & \texttt{a} & \texttt{b} & \texttt{aa} & \texttt{ba} & \texttt{baa}
     \end{tabular}
     \caption{Dizionario LZ78 costruito per \texttt{abaababaa}.}
     \label{tab:lz78_abaababaa}
@@ -4884,6 +4904,15 @@ il cui parsing LZ78 è:
 \subsubsection{Memorizzazione con trie}
 Per implementare LZ78 in modo efficiente si usa un \textbf{trie}. La radice rappresenta la frase vuota e ogni cammino dalla radice a un nodo rappresenta una frase del dizionario. Il numero del nodo è l'indice della frase.
 
+Nel caso dell'esempio precedente, il dizionario della \autoref{tab:lz78_abaababaa} può essere rappresentato come nella \autoref{fig:lz78_trie_example}. Per cercare una frase, l'encoder parte dalla radice e segue gli archi etichettati con i caratteri in input. Se il prossimo testo fosse \texttt{baab}, il cammino \texttt{b}\(\to\)\texttt{a}\(\to\)\texttt{a} porterebbe al nodo $5$, cioè alla frase già nota \texttt{baa}; il carattere successivo \texttt{b} non è ancora nel trie, quindi si emette $\langle 5,\texttt{b}\rangle$ e si aggiunge il nuovo nodo \texttt{baab}.
+
+\begin{figure}[htpb]
+    \centering
+    \includegraphics[width=0.78\textwidth]{lz78/lz78-trie-example.pdf}
+    \caption{Trie associato al dizionario LZ78 dell'esempio su \texttt{abaababaa}. Il cammino evidenziato mostra come verrebbe codificato il testo successivo \texttt{baab}.}
+    \label{fig:lz78_trie_example}
+\end{figure}
+
 Durante la codifica:
 \begin{itemize}
     \item i caratteri in input vengono usati per scendere nel trie;
@@ -4891,8 +4920,6 @@ Durante la codifica:
     \item si emette l'indice di quel nodo insieme al prossimo carattere;
     \item si aggiunge un nuovo nodo per rappresentare la frase estesa.
 \end{itemize}
-
-Per esempio, se il trie contiene la frase \texttt{baa} con indice $5$ e il prossimo carattere è \texttt{b}, allora si può emettere $\langle 5,\texttt{b}\rangle$ e aggiungere la nuova frase \texttt{baab}.
 
 \subsubsection{Decodifica LZ78}
 La decodifica è simmetrica. Per ogni coppia $\langle i,c\rangle$, il decoder recupera la frase $D[i]$, aggiunge $c$, emette $D[i]c$ e inserisce la stessa nuova frase nel dizionario.
@@ -4903,9 +4930,9 @@ La decodifica è simmetrica. Per ogni coppia $\langle i,c\rangle$, il decoder re
         \Require sequenza di coppie $\langle i,c\rangle$
         \State inizializza $D[0]\gets \epsilon$
         \ForAll{coppie $\langle i,c\rangle$}
-            \State $w\gets D[i]c$
-            \State emetti $w$
-            \State aggiungi $w$ al dizionario
+        \State $w\gets D[i]c$
+        \State emetti $w$
+        \State aggiungi $w$ al dizionario
         \EndFor
     \end{algorithmic}
     \label{alg:lz78_decoding}
@@ -4951,13 +4978,13 @@ La differenza principale rispetto a LZ78 è che LZW emette \textbf{solo indici d
         \Require testo $S$, dizionario iniziale con tutti i caratteri dell'alfabeto
         \State $w\gets$ primo carattere di $S$
         \ForAll{caratteri successivi $k$}
-            \If{$wk$ è nel dizionario}
-                \State $w\gets wk$
-            \Else
-                \State emetti $\operatorname{code}(w)$
-                \State aggiungi $wk$ al dizionario
-                \State $w\gets k$
-            \EndIf
+        \If{$wk$ è nel dizionario}
+        \State $w\gets wk$
+        \Else
+        \State emetti $\operatorname{code}(w)$
+        \State aggiungi $wk$ al dizionario
+        \State $w\gets k$
+        \EndIf
         \EndFor
         \State emetti $\operatorname{code}(w)$
     \end{algorithmic}
@@ -4981,13 +5008,13 @@ L'encoding LZW produce:
 \]
 Le nuove entrate del dizionario sono:
 \[
-\begin{array}{c|cccccccccc}
-    \text{Indice} & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 \\ \hline
-    \text{Frase} &
-    \texttt{bc} & \texttt{ca} & \texttt{ab} & \texttt{ba} &
-    \texttt{abb} & \texttt{bcb} & \texttt{bcba} &
-    \texttt{aa} & \texttt{aaa} & \texttt{abbc}
-\end{array}
+    \begin{array}{c|cccccccccc}
+        \text{Indice} & 4            & 5             & 6           & 7 & 8 & 9 & 10 & 11 & 12 & 13 \\ \hline
+        \text{Frase}  &
+        \texttt{bc}   & \texttt{ca}  & \texttt{ab}   & \texttt{ba} &
+        \texttt{abb}  & \texttt{bcb} & \texttt{bcba} &
+        \texttt{aa}   & \texttt{aaa} & \texttt{abbc}
+    \end{array}
 \]
 L'annotazione manuale presente nella slide evidenzia proprio il passaggio in cui la sequenza di \texttt{a} fa comparire le frasi \texttt{aa} e \texttt{aaa}; la regola dell'algoritmo resta quella appena descritta.
 
@@ -5010,14 +5037,14 @@ Allora il decoder può ricostruirla comunque, perché conosce $w$ e conosce il s
         \State leggi il primo codice e decodificalo come $w$
         \State emetti $w$
         \ForAll{codici successivi $k$}
-            \If{$k$ è nel dizionario}
-                \State $e\gets D[k]$
-            \Else
-                \State $e\gets w\,\operatorname{first}(w)$
-            \EndIf
-            \State emetti $e$
-            \State aggiungi $w\,\operatorname{first}(e)$ al dizionario
-            \State $w\gets e$
+        \If{$k$ è nel dizionario}
+        \State $e\gets D[k]$
+        \Else
+        \State $e\gets w\,\operatorname{first}(w)$
+        \EndIf
+        \State emetti $e$
+        \State aggiungi $w\,\operatorname{first}(e)$ al dizionario
+        \State $w\gets e$
         \EndFor
     \end{algorithmic}
     \label{alg:lzw_decoding}
@@ -5053,10 +5080,10 @@ Per esercitarsi sui passaggi meccanici degli algoritmi, le slide propongono in p
     \item simulare LZ78 su $\texttt{ababcababaaaa}$ mostrando il dizionario crescente;
     \item decodificare l'output LZ78
           $\langle 0,\texttt{a}\rangle
-          \langle 0,\texttt{b}\rangle
-          \langle 1,\texttt{b}\rangle
-          \langle 2,\texttt{c}\rangle
-          \langle 3,\texttt{a}\rangle$;
+              \langle 0,\texttt{b}\rangle
+              \langle 1,\texttt{b}\rangle
+              \langle 2,\texttt{c}\rangle
+              \langle 3,\texttt{a}\rangle$;
     \item applicare LZW a \texttt{TOBEORNOTTOBEORTOBEORNOT} con dizionario iniziale formato dai simboli \texttt{B}, \texttt{E}, \texttt{N}, \texttt{O}, \texttt{R}, \texttt{T};
     \item decodificare sequenze LZW come $[1,2,6,3,7,9]$ oppure $[1,2,6,8,6]$ con dizionario iniziale specificato.
 \end{itemize}
