@@ -4356,12 +4356,12 @@ Il puntatore $i$ identifica l'inizio del \texten{look-ahead buffer}, cioè la pr
 
 \begin{figure}[htpb]
     \centering
-    \includegraphics[width=0.82\textwidth]{lz77/lz77-window-slide16.pdf}
-    \caption{Finestra scorrevole di LZ77 ispirata alla slide 16. Le celle evidenziate indicano il prefisso del \texten{look-ahead buffer} che compare già nel \texten{search buffer}.}
-    \label{fig:lz77_sliding_window_slide16}
+    \includegraphics[width=0.82\textwidth]{lz77/lz77-window-overview.pdf}
+    \caption{Finestra scorrevole di LZ77. Le celle evidenziate indicano il prefisso del \texten{look-ahead buffer} che compare già nel \texten{search buffer}.}
+    \label{fig:lz77_sliding_window_overview}
 \end{figure}
 
-In \autoref{fig:lz77_sliding_window_slide16} il prefisso
+In \autoref{fig:lz77_sliding_window_overview} il prefisso
 $\alpha=\texttt{bbca}$ del \texten{look-ahead buffer} è già presente nel
 \texten{search buffer}. Il puntatore $i$ indica la posizione corrente,
 mentre $j$ indica l'occorrenza precedente scelta come riferimento. La
@@ -4646,7 +4646,7 @@ un simbolo alla volta.
 \subsubsection{Finestra, lunghezza massima e fattore di compressione}
 In pratica LZ77 limita sia la distanza massima del puntatore sia la lunghezza massima del match. Se la finestra è troppo piccola, si perdono ripetizioni lontane; se è troppo grande, la ricerca del match diventa più costosa. Analogamente, aumentare molto la lunghezza massima dei match può non valere il costo se i match lunghi sono rari.
 
-Nelle slide viene mostrato un caso in cui la compressione può addirittura peggiorare la dimensione. Si codifica:
+Un caso istruttivo è quello in cui la compressione può addirittura peggiorare la dimensione. Si codifica:
 \[
     \texttt{010020\$0110\$\$0111}
 \]
@@ -4716,7 +4716,7 @@ Per la stringa:
 \[
     \texttt{aabbabab},
 \]
-le slide riportano la seguente codifica LZss:
+una possibile codifica LZss è:
 \[
     \langle 0,\texttt{a}\rangle
     \langle 1,1\rangle
@@ -4885,7 +4885,7 @@ Il dizionario costruito è:
     \label{tab:lz78_abaababaa}
 \end{table}
 
-Un altro esempio delle slide è:
+Consideriamo ora un secondo esempio:
 \[
     \texttt{aabbababbbaababaa},
 \]
@@ -4958,7 +4958,7 @@ cioè:
 \]
 
 \subsubsection{Limiti pratici di LZ78}
-Il trie cresce durante la compressione e, se non viene limitato, può occupare molta memoria. Le slide indicano alcune strategie:
+Il trie cresce durante la compressione e, se non viene limitato, può occupare molta memoria. Per controllarne la dimensione si usano alcune strategie:
 \begin{itemize}
     \item ricostruire il trie da zero quando diventa troppo grande;
     \item congelarlo e continuare a usarlo senza aggiungere nuove frasi;
@@ -5029,7 +5029,7 @@ Leggendo la colonna degli output si ottiene:
 \[
     2,\ 3,\ 1,\ 2,\ 6,\ 4,\ 9,\ 1,\ 11,\ 8,\ 3.
 \]
-L'annotazione manuale presente nella slide evidenzia proprio il passaggio in cui la sequenza di \texttt{a} fa comparire le frasi \texttt{aa} e \texttt{aaa}; la regola dell'algoritmo resta quella appena descritta.
+Il passaggio sulla sequenza di \texttt{a} mostra bene come compaiono le frasi \texttt{aa} e \texttt{aaa}; la regola dell'algoritmo resta quella appena descritta.
 
 \subsubsection{Decodifica e caso speciale}
 Il decoder parte dallo stesso dizionario iniziale. Dopo aver decodificato una frase corrente $w$, legge il codice successivo. Se il codice è già nel dizionario, lo traduce normalmente; poi aggiunge al dizionario la concatenazione:
@@ -5101,7 +5101,7 @@ Leggendo la colonna degli output il decoder ricostruisce:
 Durante la decodifica compaiono proprio due casi speciali: quando il decoder deve usare i codici $9$ e $11$, quelle voci non sono ancora presenti nel codebook. Non è un'ambiguità: significa che l'encoder ha appena creato una frase della forma ``frase precedente più il suo primo carattere''. Perciò il decoder può ricostruire $9$ come \texttt{bcb} e $11$ come \texttt{aa}, questo succede al passo 6 e al passo 8 della tabella.
 
 \subsection{Confronto finale}
-Le tre famiglie viste nelle slide possono essere riassunte così:
+Le tre famiglie discusse fin qui possono essere riassunte così:
 \begin{itemize}
     \item \textbf{LZ77} referenzia sottostringhe nel testo precedente tramite distanza e lunghezza. Decodifica velocemente, ma l'encoder deve cercare match in una finestra.
     \item \textbf{LZss} elimina alcune ridondanze di LZ77 distinguendo meglio letterali e riferimenti.
@@ -5111,8 +5111,8 @@ Le tre famiglie viste nelle slide possono essere riassunte così:
 
 Il filo comune è che questi algoritmi non modellano direttamente le probabilità dei simboli, ma sfruttano la ripetizione delle sottostringhe. Per questo sono detti anche \textbf{compressori universali}: cercano regolarità nel testo stesso, senza richiedere una descrizione probabilistica completa della sorgente. Nei compressori reali, però, la parte LZ è spesso solo una fase del sistema: dopo il parsing a dizionario, letterali, lunghezze, distanze o indici vengono ulteriormente codificati con Huffman, codifica aritmetica o codici per interi.
 
-\subsubsection{Esercizi dalle slide}
-Per esercitarsi sui passaggi meccanici degli algoritmi, le slide propongono in particolare:
+\subsubsection{Esercizi di riepilogo}
+Per esercitarsi sui passaggi meccanici degli algoritmi, si possono usare in particolare questi esercizi:
 \begin{itemize}
     \item trovare la codifica LZ77 di $\texttt{aacaacabcabaaac}$;
     \item ripetere la codifica LZ77 della stessa stringa con finestra di $8$ caratteri e match lungo al massimo $4$;
