@@ -5019,7 +5019,7 @@ La codifica procede cercando ogni volta la frase più lunga $w$ già presente ne
         $8$  & \uline{\textcolor{red}{\texttt{a}}\texttt{a}}\texttt{aabbc}                  & $1$  & $11:\texttt{aa}$ \\
         $9$  & \uline{\textcolor{red}{\texttt{aa}}\texttt{a}}\texttt{bbc}                   & $11$ & $12:\texttt{aaa}$ \\
         $10$ & \uline{\textcolor{red}{\texttt{abb}}\texttt{c}}                              & $8$  & $13:\texttt{abbc}$ \\
-        $11$ & \textcolor{red}{\uline{\texttt{c}}}                                  & $3$  & --
+        $11$ & \textcolor{red}{\texttt{c}}                                  & $3$  & --
     \end{tabular}
     \caption{Passi della codifica LZW di \texttt{bcababbcbcbaaaabbc}.}
     \label{tab:lzw_encoding_bcababb}
@@ -5067,11 +5067,38 @@ Per la sequenza:
 \[
     2,\ 3,\ 1,\ 2,\ 6,\ 4,\ 9,\ 1,\ 11,\ 8,\ 3
 \]
-con dizionario iniziale $\texttt{a}=1,\texttt{b}=2,\texttt{c}=3$, il decoder ricostruisce:
+con dizionario iniziale $\texttt{a}=1,\texttt{b}=2,\texttt{c}=3$, possiamo seguire i passaggi in modo parallelo alla codifica. In decodifica, però, la nuova voce non si ottiene concatenando tutta la frase successiva: si usa solo il suo primo carattere. Quindi, se la frase corrente è $w$ e la frase successiva è $e$, il decoder aggiunge
+\[
+    w\,\operatorname{first}(e).
+\]
+Nella tabella, il codice rosso è quello decodificato in quel passo; la colonna ``primo carattere successivo'' esplicita quale carattere viene usato per costruire la nuova voce:
+\begin{table}[H]
+    \centering
+    \small
+    \begin{tabular}{c|l|c|c|l}
+        \textbf{Passo} & \textbf{Codici correnti} & \textbf{Output} & \textbf{Primo car. succ.} & \textbf{Codebook} \\ \hline
+        $0$  & $2,3,1,2,6,4,9,1,11,8,3$                   & --                            & --         & $1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{c}$ \\
+        $1$  & \textcolor{red}{$2$},$3,1,2,6,4,9,1,11,8,3$    & \textcolor{red}{\texttt{b}}   & \texttt{c} & $4:\uline{\textcolor{red}{\texttt{b}}\texttt{c}}$ \\
+        $2$  & \textcolor{red}{$3$},$1,2,6,4,9,1,11,8,3$      & \textcolor{red}{\texttt{c}}   & \texttt{a} & $5:\uline{\textcolor{red}{\texttt{c}}\texttt{a}}$ \\
+        $3$  & \textcolor{red}{$1$},$2,6,4,9,1,11,8,3$        & \textcolor{red}{\texttt{a}}   & \texttt{b} & $6:\uline{\textcolor{red}{\texttt{a}}\texttt{b}}$ \\
+        $4$  & \textcolor{red}{$2$},$6,4,9,1,11,8,3$          & \textcolor{red}{\texttt{b}}   & \texttt{a} & $7:\uline{\textcolor{red}{\texttt{b}}\texttt{a}}$ \\
+        $5$  & \textcolor{red}{$6$},$4,9,1,11,8,3$            & \textcolor{red}{\texttt{ab}}  & \texttt{b} & $8:\uline{\textcolor{red}{\texttt{ab}}\texttt{b}}$ \\
+        $6$  & \textcolor{red}{$4$},$9,1,11,8,3$              & \textcolor{red}{\texttt{bc}}  & \texttt{b} & $9:\uline{\textcolor{red}{\texttt{bc}}\texttt{b}}$ \\
+        $7$  & \textcolor{red}{$9$},$1,11,8,3$                & \textcolor{red}{\texttt{bcb}} & \texttt{a} & $10:\uline{\textcolor{red}{\texttt{bcb}}\texttt{a}}$ \\
+        $8$  & \textcolor{red}{$1$},$11,8,3$                  & \textcolor{red}{\texttt{a}}   & \texttt{a} & $11:\uline{\textcolor{red}{\texttt{a}}\texttt{a}}$ \\
+        $9$  & \textcolor{red}{$11$},$8,3$                    & \textcolor{red}{\texttt{aa}}  & \texttt{a} & $12:\uline{\textcolor{red}{\texttt{aa}}\texttt{a}}$ \\
+        $10$ & \textcolor{red}{$8$},$3$                       & \textcolor{red}{\texttt{abb}} & \texttt{c} & $13:\uline{\textcolor{red}{\texttt{abb}}\texttt{c}}$ \\
+        $11$ & \textcolor{red}{$3$}                           & \textcolor{red}{\texttt{c}}   & --         & --
+    \end{tabular}
+    \caption{Passi della decodifica LZW della sequenza $2,3,1,2,6,4,9,1,11,8,3$.}
+    \label{tab:lzw_decoding_bcababb}
+\end{table}
+
+Leggendo la colonna degli output il decoder ricostruisce:
 \[
     \texttt{bcababbcbcbaaaabbc}.
 \]
-Durante la decodifica compaiono proprio due casi speciali: il codice $9$, che viene interpretato come \texttt{bcb}, e il codice $11$, che viene interpretato come \texttt{aa}. In entrambi i casi la frase mancante è della forma ``frase precedente più il suo primo carattere''.
+Durante la decodifica compaiono proprio due casi speciali: quando il decoder deve usare i codici $9$ e $11$, quelle voci non sono ancora presenti nel codebook. Non è un'ambiguità: significa che l'encoder ha appena creato una frase della forma ``frase precedente più il suo primo carattere''. Perciò il decoder può ricostruire $9$ come \texttt{bcb} e $11$ come \texttt{aa}, questo succede al passo 6 e al passo 8 della tabella.
 
 \subsection{Confronto finale}
 Le tre famiglie viste nelle slide possono essere riassunte così:
