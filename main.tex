@@ -5307,7 +5307,7 @@ La sua entropia empirica di ordine zero è molto piccola:
 \[
     H_0(s)=\Theta\!\left(\frac{\log n}{n}\right),
 \]
-perché quasi tutti i simboli sono uguali. LZ78, però, non rappresenta una run lunghissima con una sola coppia: costruisce frasi crescenti come \texttt{1}, \texttt{11}, \texttt{111}, e così via. Il risultato è che il rapporto tra la lunghezza prodotta da LZ78 e il limite ideale $nH_0(s)$ può crescere senza limite. Quindi LZ78 è universale nel senso asintotico classico, ma può essere poco adatto a stringhe di bassissima entropia empirica.
+perché quasi tutti i simboli sono uguali. LZ78, però, non rappresenta una run lunghissima con una sola coppia: costruisce frasi crescenti come \texttt{1}, \texttt{11}, \texttt{111}, e così via. Il parsing contiene infatti $\Theta(\sqrt n)$ frasi: per coprire una run di lunghezza circa $n$ con blocchi di lunghezza crescente $1,2,3,\ldots,m$, serve $m=\Theta(\sqrt n)$. Già contando un costo costante per frase, il rapporto di compressione è quindi almeno dell'ordine di $1/\sqrt n$; poiché $H_0(s)=\Theta(\log n/n)$, questo significa che il rapporto tra la lunghezza prodotta da LZ78 e il limite ideale $nH_0(s)$ può crescere almeno come un fattore $\sqrt n/\log n$. Quindi LZ78 è universale nel senso asintotico classico, ma può essere poco adatto a stringhe di bassissima entropia empirica.
 
 \subsubsection{Ottimalità grossolana}
 Una prima nozione deterministica è la \textbf{ottimalità grossolana}. Un compressore $A$ è grossolanamente ottimale se, per ogni $k$, esiste una funzione $f_k(n)$ tale che:
@@ -5325,7 +5325,11 @@ e per ogni stringa $s$ di lunghezza $n$ vale:
 
 LZ77 e LZ78 soddisfano risultati di questo tipo. Il problema è che il termine additivo $f_k(n)$ può dominare quando $H_k(s)$ è molto piccolo. Se, per esempio, $H_k(s)\ll f_k(n)$, allora il rapporto di compressione può essere molto più grande dell'entropia empirica pur rispettando formalmente la definizione. È lo stesso tipo di fenomeno già visto con Huffman su sorgenti molto sbilanciate: un costo additivo piccolo in assoluto può diventare grande rispetto a un limite ideale quasi nullo.
 
-Inoltre, la versione pratica di LZ77 con \textbf{finestra limitata} perde parte della forza teorica. Se la finestra ha dimensione fissata $L$, esistono stringhe in cui le ripetizioni utili cadono sempre appena fuori dalla finestra: il compressore allora produce molte frasi corte anche se l'entropia empirica di ordine opportuno è bassa. Per questo LZ77 con finestra limitata non è grossolanamente ottimale in generale.
+Inoltre, la versione pratica di LZ77 con \textbf{finestra limitata} perde parte della forza teorica. Se la finestra ha dimensione fissata $L$, scegliendo $k=L-1$ si possono costruire stringhe come:
+\[
+    s=(\texttt{0}^{k}\texttt{1}^{k})^n\texttt{1}.
+\]
+Le ripetizioni che permetterebbero frasi lunghe cadono fuori dalla finestra, quindi il parsing produce solo frasi di lunghezza al più $k$ e il numero di frasi cresce come $\Theta(n)$. Tuttavia l'entropia empirica di ordine $k$ resta molto bassa: quasi ogni contesto di lunghezza $k$ determina in modo univoco il simbolo successivo, e il contributo non deterministico è solo dell'ordine di $\log n$. In particolare, per questa famiglia di stringhe vale $|s|H_k(s)=\Theta(\log n)$. Per questo LZ77 con finestra limitata non è grossolanamente ottimale in generale.
 
 \subsubsection{\texorpdfstring{$\lambda$-ottimalità}{lambda-ottimalità}}
 Per evitare che un termine additivo mascheri i casi a entropia quasi nulla, si usa una nozione più esigente. Un compressore $A$ è \textbf{$\lambda$-ottimale} rispetto a $H_k$ se:
