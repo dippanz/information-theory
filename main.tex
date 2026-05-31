@@ -4248,6 +4248,185 @@ con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una par
 
 Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Zamboni tramite la codifica di particolari traiettorie nel piano. Per gli scopi della compressione, la morale è più semplice: la BWT è efficace quando trasforma la struttura contestuale del testo in poche run visibili nella colonna $L$.
 
+\subsection{\texorpdfstring{\texten{Pattern matching} e \texten{FM-index}}{Pattern matching e FM-index}}
+Finora la BWT è stata vista soprattutto come trasformazione utile alla compressione. La stessa struttura, però, permette anche di costruire indici compressi: invece di decomprimere un testo e poi cercare un pattern, si conserva una rappresentazione compressa che supporta direttamente operazioni di ricerca.
+
+Il problema è il seguente. Dato un testo $T[1..n]$ e un pattern $P[1..p]$, vogliamo:
+\begin{itemize}
+    \item \textbf{\texten{count}}: contare quante volte $P$ compare in $T$;
+    \item \textbf{\texten{locate}}: restituire le posizioni di tutte le occorrenze.
+\end{itemize}
+
+Un algoritmo classico come Knuth-Morris-Pratt cerca $P$ in tempo $O(n+p)$ senza costruire un indice. Se però il testo o la collezione sono noti in anticipo, conviene pagare una fase di preprocessing e costruire una struttura dati che renda molte ricerche successive più veloci.
+
+\subsubsection{\texorpdfstring{Ricerca tramite \texten{suffix array}}{Ricerca tramite suffix array}}
+Il \texten{suffix array} è un indice naturale per il \texten{pattern matching}: se $P$ compare in $T$ alla posizione $i$, allora $P$ è prefisso del suffisso $T[i..n]$. Poiché il \texten{suffix array} ordina lessicograficamente tutti i suffissi, le occorrenze di $P$ formano un intervallo contiguo dell'array.
+
+Per cercare $P$ si può quindi fare una ricerca binaria tra i suffissi ordinati. A ogni confronto si confrontano al più $p$ caratteri, quindi il tempo è:
+\[
+    O(p\log n).
+\]
+Con informazioni ausiliarie, per esempio basate sugli \texten{LCP}, il tempo può essere ridotto a:
+\[
+    O(p+\log n).
+\]
+
+Il costo in spazio è però alto. Un \texten{suffix array} contiene $n$ interi nell'intervallo $[1,n]$, quindi richiede idealmente:
+\[
+    n\log n
+    \quad
+    \text{bit}.
+\]
+Nelle implementazioni comuni, se ogni posizione occupa $4$ \texten{byte}, un testo da $100$ \texten{MB} può richiedere circa $400$ \texten{MB} solo per il \texten{suffix array}. Il punto degli indici compressi è proprio combinare due esigenze che sembrano in tensione: \textbf{poco spazio} e \textbf{ricerca veloce}.
+
+\subsubsection{\texorpdfstring{\texten{Backward search} sulla BWT}{Backward search sulla BWT}}
+L'idea dell'\textbf{\texten{FM-index}}, introdotto da Ferragina e Manzini, è usare la BWT come se fosse un \texten{suffix array} compresso. Le righe della matrice BWT sono le rotazioni ordinate del testo, e quindi sono strettamente legate ai suffissi ordinati. Per contare le occorrenze di $P$ non serve ricostruire $T$: basta lavorare sulla colonna $L=\operatorname{BWT}(T)$ e su due strutture ausiliarie.
+
+Usiamo indici da $1$ a $n$ e indichiamo con:
+\begin{itemize}
+    \item $C(c)$ il numero di caratteri di $T$ strettamente minori di $c$;
+    \item $\operatorname{Occ}(c,q)$ il numero di occorrenze di $c$ nel prefisso $L[1..q]$, con $\operatorname{Occ}(c,0)=0$.
+\end{itemize}
+
+La formula LF, nella convenzione a indici da $1$, diventa:
+\[
+    \operatorname{LF}(i)
+    =
+    C(L[i])+\operatorname{Occ}(L[i],i).
+\]
+Essa manda una riga della matrice ordinata alla riga che rappresenta il suffisso precedente nel testo.
+
+La \textbf{\texten{backward search}} mantiene l'intervallo di righe che hanno come prefisso il suffisso già letto del pattern. All'inizio l'intervallo è tutto $[1,n]$. Se il prossimo carattere da aggiungere a sinistra è $c=P[j]$, l'intervallo si aggiorna con:
+\begin{align}
+    \textit{First}' &=
+    C(c)+\operatorname{Occ}(c,\textit{First}-1)+1,
+    \label{eq:fm_backward_first}\\
+    \textit{Last}' &=
+    C(c)+\operatorname{Occ}(c,\textit{Last}).
+    \label{eq:fm_backward_last}
+\end{align}
+Se dopo un aggiornamento $\textit{First}>\textit{Last}$, il pattern non compare. Altrimenti, dopo aver processato tutti i caratteri da destra verso sinistra, il numero di occorrenze è:
+\[
+    \textit{Last}-\textit{First}+1.
+\]
+
+\begin{algorithm}[htpb]
+    \caption{\texten{Backward search}}
+    \begin{algorithmic}[1]
+        \Require pattern $P[1..p]$, colonna BWT $L$, strutture $C$ e $\operatorname{Occ}$
+        \Ensure intervallo delle righe prefissate da $P$
+        \State $\textit{First}\gets 1$
+        \State $\textit{Last}\gets n$
+        \For{$j=p$ \textbf{downto} $1$}
+        \State $c\gets P[j]$
+        \State $\textit{First}\gets C(c)+\operatorname{Occ}(c,\textit{First}-1)+1$
+        \State $\textit{Last}\gets C(c)+\operatorname{Occ}(c,\textit{Last})$
+        \If{$\textit{First}>\textit{Last}$}
+        \State \Return intervallo vuoto
+        \EndIf
+        \EndFor
+        \State \Return $[\textit{First},\textit{Last}]$
+    \end{algorithmic}
+\end{algorithm}
+
+L'aspetto importante è che il numero di iterazioni è $p$: una per carattere del pattern. Se $\operatorname{Occ}$ è disponibile in tempo $O(1)$, il conteggio richiede tempo $O(p)$.
+
+\paragraph{Esempio intuitivo.}
+Nel testo \texttt{mississippi\#}, tutti i suffissi che iniziano con \texttt{i} occupano un intervallo contiguo della matrice ordinata. Per cercare \texttt{si}, la ricerca parte dall'ultimo carattere \texttt{i}, individua l'intervallo dei suffissi che iniziano con \texttt{i}, poi restringe quell'intervallo guardando in $L$ quali righe sono precedute da \texttt{s}. Le formule \eqref{eq:fm_backward_first} e \eqref{eq:fm_backward_last} traducono esattamente questo restringimento.
+
+\subsubsection{\texorpdfstring{Da \texten{count} a \texten{locate}}{Da count a locate}}
+La \texten{backward search} restituisce un intervallo di righe, non direttamente le posizioni nel testo. Se la riga $i$ corrisponde al suffisso che inizia in $\operatorname{pos}(i)$, allora applicando LF si ottiene una riga $i'$ tale che:
+\[
+    \operatorname{pos}(i')
+    =
+    \operatorname{pos}(i)-1
+    \pmod n.
+\]
+Questa operazione è spesso chiamata \textbf{\texten{backward step}}.
+
+Per localizzare le occorrenze senza memorizzare tutto il \texten{suffix array}, l'FM-index campiona alcune righe. Per esempio si marcano le righe corrispondenti a posizioni del testo multiple di:
+\[
+    \left\lceil \log^{1+\varepsilon} n\right\rceil,
+    \qquad
+    0<\varepsilon<1,
+\]
+e per queste righe si conserva la posizione nel testo. Per localizzare una riga non marcata, si applica LF finché si raggiunge una riga marcata; se sono serviti $t$ passi e la riga marcata ha posizione $q$, allora la posizione originaria è $q+t$ modulo $n$.
+
+Il numero di passi è al più:
+\begin{equation}\label{eq:fm_marked_rows_bound}
+    O(\log^{1+\varepsilon} n).
+\end{equation}
+Quindi, se il pattern compare $\operatorname{occ}$ volte, la localizzazione di tutte le occorrenze richiede:
+\[
+    O\!\left(\operatorname{occ}\log^{1+\varepsilon} n\right)
+\]
+oltre al tempo $O(p)$ necessario per il conteggio.
+
+\subsubsection{\texorpdfstring{Come calcolare \texten{Occ} senza decomprimere}{Come calcolare Occ senza decomprimere}}
+La difficoltà vera è implementare $\operatorname{Occ}(c,q)$ senza conservare tutta la matrice e, nella versione compressa, senza conservare nemmeno esplicitamente tutta la colonna $L$. Nella pipeline considerata dall'FM-index, il testo viene trasformato in:
+\[
+    \operatorname{BW\_RLX}(T)
+    =
+    \operatorname{PC}(
+        \operatorname{RLE}(
+            \operatorname{MTF}(
+                \operatorname{BWT}(T)))).
+\]
+Qui $\operatorname{PC}$ indica un codice a prefisso a lunghezza variabile applicato dopo BWT, MTF e RLE. L'RLE usato in questa pipeline codifica le run di zeri prodotte dalla MTF: una run di lunghezza $m$ viene rappresentata tramite la scrittura binaria di $m+1$, letta dal bit meno significativo e privata del bit più significativo. Per esempio:
+\[
+    0\mapsto 0,
+    \qquad
+    00\mapsto 1,
+    \qquad
+    000\mapsto 00.
+\]
+
+Per rendere $\operatorname{Occ}$ veloce, $L$ viene partizionata logicamente in \textbf{\texten{bucket}} di lunghezza $\ell=\Theta(\log n)$ e in \textbf{\texten{superbucket}} di lunghezza $\ell^2=\Theta(\log^2 n)$. Si memorizzano:
+\begin{itemize}
+    \item conteggi cumulativi dei caratteri fino alla fine di ogni \texten{superbucket};
+    \item conteggi relativi all'interno del \texten{superbucket}, fino alla fine di ogni \texten{bucket};
+    \item informazioni per trovare in $Z$ il \texten{bucket} compresso corrispondente;
+    \item lo stato della lista MTF all'inizio di ogni \texten{bucket};
+    \item una piccola tabella universale per decodificare e contare dentro un singolo \texten{bucket}.
+\end{itemize}
+
+Così il calcolo di $\operatorname{Occ}(c,q)$ si divide in tre contributi:
+\[
+    \operatorname{Occ}(c,q)
+    =
+    \text{conteggio nei superbucket}
+    +
+    \text{conteggio nei bucket}
+    +
+    \text{conteggio dentro il bucket corrente}.
+\]
+Il primo e il secondo contributo sono letture di tabelle; il terzo usa il \texten{bucket} compresso, lo stato MTF salvato e la tabella universale. Con una scelta opportuna dei parametri, $\operatorname{Occ}$ si calcola in tempo $O(1)$ usando spazio sublineare aggiuntivo oltre al testo compresso.
+
+\begin{theorem}[Ferragina-Manzini]
+    Per ogni testo $T[1..n]$, per ogni $k\geq 0$ fissato e per ogni costante $0<\varepsilon<1$, esiste un indice compresso che conta le occorrenze di un pattern $P[1..p]$ in tempo $O(p)$ e localizza tutte le $\operatorname{occ}$ occorrenze in tempo:
+    \[
+        O\!\left(p+\operatorname{occ}\log^{1+\varepsilon}n\right).
+    \]
+    Lo spazio è:
+    \[
+        5nH_k(T)+o(n)
+    \]
+    bit, dove il termine $o(n)$ raccoglie le strutture ausiliarie per $\operatorname{Occ}$ e per il campionamento delle righe.
+\end{theorem}
+
+Il significato del teorema è forte: l'indice non è solo più piccolo del \texten{suffix array}, ma ha dimensione controllata dall'entropia empirica del testo. Quando il testo è molto comprimibile, l'indice può essere vicino alla dimensione del testo compresso e permettere comunque la ricerca.
+
+\subsubsection{\texorpdfstring{Testi ripetitivi e \texten{r-index}}{Testi ripetitivi e r-index}}
+Molte collezioni moderne non sono soltanto comprimibili in senso statistico: sono \textbf{altamente ripetitive}. Succede, per esempio, in pangenomi, versioni successive di pagine web, archivi software e collezioni di documenti quasi uguali. In questi casi l'entropia empirica non sempre cattura tutta la ridondanza utile, perché la caratteristica dominante è la presenza di lunghe ripetizioni tra copie simili.
+
+Una misura molto efficace per questi testi è il numero $r$ di \textbf{run} nella BWT. Se:
+\[
+    L=\operatorname{BWT}(T)
+\]
+contiene pochi blocchi massimali di caratteri uguali, allora il testo ha una struttura favorevole a indici basati su run. L'\textbf{\texten{r-index}}, descritto da Gagie, Navarro e Prezza, è un'evoluzione dell'FM-index che sfrutta proprio questo parametro: conserva campioni e informazioni ausiliarie vicino agli inizi delle run della BWT, invece di campionare uniformemente rispetto a $n$.
+
+L'idea resta la stessa dell'FM-index: si usa la LF-mapping per muoversi tra righe corrispondenti a suffissi vicini. La differenza è che, quando $r\ll n$, le strutture principali dipendono da $r$ più che da $n$. Per collezioni molto ripetitive questo può essere decisivo: si mantiene la possibilità di contare e localizzare pattern lavorando direttamente sulla rappresentazione compressa, ma lo spazio segue meglio la ridondanza reale della collezione.
+
 
 
 
@@ -5099,6 +5278,103 @@ Leggendo la colonna degli output il decoder ricostruisce:
     \texttt{bcababbcbcbaaaabbc}.
 \]
 Durante la decodifica compaiono proprio due casi speciali: quando il decoder deve usare i codici $9$ e $11$, quelle voci non sono ancora presenti nel codebook. Non è un'ambiguità: significa che l'encoder ha appena creato una frase della forma ``frase precedente più il suo primo carattere''. Perciò il decoder può ricostruire $9$ come \texttt{bcb} e $11$ come \texttt{aa}, questo succede al passo 6 e al passo 8 della tabella.
+
+\subsection{Ottimalità dei compressori Lempel-Ziv}
+Dire che un compressore Lempel-Ziv è ``ottimale'' può voler dire cose diverse, a seconda del modello con cui si misura la compressione. Nei primi risultati di Lempel e Ziv il testo è pensato come una sequenza infinita prodotta da una sorgente stazionaria ergodica su alfabeto finito. In quel quadro, il rapporto di compressione di un algoritmo $A$ su un prefisso $s$ è:
+\begin{equation}\label{eq:lz_compression_ratio}
+    \rho_A(s)
+    =
+    \frac{|A(s)|}{|s|},
+\end{equation}
+dove $|A(s)|$ è la lunghezza in bit dell'output compresso. L'ottimalità asintotica significa che, quasi certamente:
+\[
+    \rho_A(s)
+    \longrightarrow
+    H,
+\]
+dove $H$ è l'entropia della sorgente.
+
+In questo senso probabilistico, LZ77 e LZ78 hanno risultati molto forti: LZ77 è ottimale per opportune classi di sorgenti, mentre LZ78 raggiunge il miglior rapporto ottenibile da compressori a stati finiti. Questa nozione è importante perché spiega perché gli algoritmi LZ siano detti \textbf{universali}: non richiedono di conoscere prima la distribuzione della sorgente, ma imparano regolarità dal testo già letto.
+
+\paragraph{Perché serve una nozione empirica.}
+Nelle applicazioni reali, però, spesso abbiamo solo il file da comprimere, non la sorgente probabilistica che lo ha generato. Per questo Kosaraju e Manzini analizzano LZ77 e LZ78 in termini di entropie empiriche $H_k(s)$, già introdotte nella sezione sulla BWT. Il valore $|s|H_k(s)$ rappresenta il limite ideale di un compressore che sfrutta contesti di lunghezza $k$ osservati direttamente nel testo.
+
+Questa analisi mette in luce una criticità di LZ78. Consideriamo una stringa con una sola occorrenza di \texttt{0} seguita da una lunga run di \texttt{1}:
+\[
+    s=\texttt{0}\texttt{1}^{n-1}.
+\]
+La sua entropia empirica di ordine zero è molto piccola:
+\[
+    H_0(s)=\Theta\!\left(\frac{\log n}{n}\right),
+\]
+perché quasi tutti i simboli sono uguali. LZ78, però, non rappresenta una run lunghissima con una sola coppia: costruisce frasi crescenti come \texttt{1}, \texttt{11}, \texttt{111}, e così via. Il risultato è che il rapporto tra la lunghezza prodotta da LZ78 e il limite ideale $nH_0(s)$ può crescere senza limite. Quindi LZ78 è universale nel senso asintotico classico, ma può essere poco adatto a stringhe di bassissima entropia empirica.
+
+\subsubsection{Ottimalità grossolana}
+Una prima nozione deterministica è la \textbf{ottimalità grossolana}. Un compressore $A$ è grossolanamente ottimale se, per ogni $k$, esiste una funzione $f_k(n)$ tale che:
+\[
+    f_k(n)\to 0
+    \qquad
+    \text{per } n\to\infty,
+\]
+e per ogni stringa $s$ di lunghezza $n$ vale:
+\[
+    \rho_A(s)
+    \leq
+    H_k(s)+f_k(n).
+\]
+
+LZ77 e LZ78 soddisfano risultati di questo tipo. Il problema è che il termine additivo $f_k(n)$ può dominare quando $H_k(s)$ è molto piccolo. Se, per esempio, $H_k(s)\ll f_k(n)$, allora il rapporto di compressione può essere molto più grande dell'entropia empirica pur rispettando formalmente la definizione. È lo stesso tipo di fenomeno già visto con Huffman su sorgenti molto sbilanciate: un costo additivo piccolo in assoluto può diventare grande rispetto a un limite ideale quasi nullo.
+
+Inoltre, la versione pratica di LZ77 con \textbf{finestra limitata} perde parte della forza teorica. Se la finestra ha dimensione fissata $L$, esistono stringhe in cui le ripetizioni utili cadono sempre appena fuori dalla finestra: il compressore allora produce molte frasi corte anche se l'entropia empirica di ordine opportuno è bassa. Per questo LZ77 con finestra limitata non è grossolanamente ottimale in generale.
+
+\subsubsection{\texorpdfstring{$\lambda$-ottimalità}{lambda-ottimalità}}
+Per evitare che un termine additivo mascheri i casi a entropia quasi nulla, si usa una nozione più esigente. Un compressore $A$ è \textbf{$\lambda$-ottimale} rispetto a $H_k$ se:
+\begin{equation}\label{eq:lz_lambda_optimality}
+    \rho_A(s)
+    \leq
+    \lambda H_k(s)+o(H_k(s)).
+\end{equation}
+Qui l'errore deve essere piccolo rispetto all'entropia stessa, non solo rispetto alla lunghezza del testo.
+
+Con questa misura, LZ78 non è $\lambda$-ottimale rispetto a nessuna entropia empirica $H_k$, nemmeno per $k=0$. La ragione è proprio la cattiva gestione delle run lunghe. Per correggere questo difetto, Kosaraju e Manzini propongono una variante che combina LZ78 con il \texten{Run-Length Encoding}: prima si rappresentano le run, poi si applica LZ78 alla stringa così trasformata. Questa variante, indicata come LZ78-RL, soddisfa:
+\begin{equation}\label{eq:lz78_rl_bound}
+    |LZ78\text{-}RL(s)|
+    \leq
+    3|s|H_0(s)
+    +
+    \text{termini di ordine inferiore}.
+\end{equation}
+Quindi è $3$-ottimale rispetto a $H_0$, ma non rispetto a $H_k$ per $k\geq 1$.
+
+Per LZ77 si ottiene un risultato diverso:
+\begin{equation}\label{eq:lz77_zero_order_bound}
+    |LZ77(s)|
+    \leq
+    8|s|H_0(s)
+    +
+    \text{termini di ordine inferiore}.
+\end{equation}
+Anche qui il risultato riguarda l'ordine zero. LZ77 non è $\lambda$-ottimale rispetto a $H_k$ per $k\geq 1$: le dipendenze contestuali di ordine alto possono rendere $H_k(s)$ molto più piccolo di $H_0(s)$, ma il parsing LZ77 non garantisce di seguire quel limite con un fattore costante.
+
+\paragraph{Confronto con i compressori statistici.}
+Huffman e codifica aritmetica, se usati come compressori statistici di ordine zero, sono valutati naturalmente rispetto a:
+\[
+    |s|H_0(s).
+\]
+Però non sono sensibili alla ripetitività globale. Se un testo $X$ viene ripetuto $t$ volte, cioè si considera $X^t$, le frequenze dei simboli restano essenzialmente le stesse:
+\[
+    H_0(X^t)=H_0(X).
+\]
+Un compressore di ordine zero tende quindi a produrre una dimensione che cresce linearmente con $t$.
+
+Un compressore LZ, invece, può sfruttare il fatto che dopo la prima copia le copie successive sono già apparse: il numero di frasi o riferimenti può crescere molto meno della lunghezza totale. Anche la BWT mostra un comportamento affine sulla ripetitività: per molte ripetizioni, il numero di run della trasformata può restare piccolo. Questo chiarisce il ruolo complementare delle famiglie viste fin qui:
+\begin{itemize}
+    \item i compressori statistici sfruttano frequenze sbilanciate;
+    \item i compressori LZ sfruttano ripetizioni esplicite nel testo;
+    \item i compressori BWT-based trasformano il testo per rendere visibili contesti e run.
+\end{itemize}
+
+Nelle misure sperimentali, per confrontare compressori diversi non basta guardare il rapporto di compressione. Contano anche la velocità di compressione, il tempo di decompressione e il \textbf{\texten{compression saving}}, cioè la percentuale di spazio risparmiata rispetto alla dimensione originale. Compressori come LZMA, LZO, ZIP e varianti BWT-based occupano punti diversi di questo compromesso: alcuni comprimono di più ma sono più lenti, altri decomprimono rapidamente ma risparmiano meno spazio.
 
 \subsection{Confronto finale}
 Le tre famiglie discusse fin qui possono essere riassunte così:
