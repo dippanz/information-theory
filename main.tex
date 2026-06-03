@@ -4249,9 +4249,9 @@ con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una par
 Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Zamboni tramite la codifica di particolari traiettorie nel piano. Per gli scopi della compressione, la morale è più semplice: la BWT è efficace quando trasforma la struttura contestuale del testo in poche run visibili nella colonna $L$.
 
 \subsection{\texorpdfstring{\texten{Pattern matching} e \texten{FM-index}}{Pattern matching e FM-index}}
-Finora la BWT è stata vista soprattutto come trasformazione utile alla compressione. La stessa struttura, però, permette anche di costruire indici compressi: invece di decomprimere un testo e poi cercare un pattern, si conserva una rappresentazione compressa che supporta direttamente operazioni di ricerca.
+Finora la BWT è stata vista soprattutto come trasformazione utile alla compressione. La stessa struttura, però, permette anche di costruire indici compressi: invece di decomprimere un testo e poi cercare un pattern, si conserva una rappresentazione compressa che supporta direttamente operazioni di ricerca. L'obiettivo di questa sezione è quello di spiegare come funziona la ricerca di pattern in del testo.
 
-Il problema è il seguente. Dato un testo $T[1..n]$ e un pattern $P[1..p]$, vogliamo:
+Dato un testo $T[1..n]$ e un pattern $P[1..p]$, vogliamo:
 \begin{itemize}
     \item \textbf{\texten{count}}: contare quante volte $P$ compare in $T$;
     \item \textbf{\texten{locate}}: restituire le posizioni di tutte le occorrenze.
@@ -4279,6 +4279,8 @@ Il costo in spazio è però alto. Un \texten{suffix array} contiene $n$ interi n
 \]
 Nelle implementazioni comuni, se ogni posizione occupa $4$ \texten{byte}, un testo da $100$ \texten{MB} può richiedere circa $400$ \texten{MB} solo per il \texten{suffix array}. Il punto degli indici compressi è proprio combinare due esigenze che sembrano in tensione: \textbf{poco spazio} e \textbf{ricerca veloce}.
 
+Una compressione generica del testo non basta a risolvere questo problema. Strumenti come gzip o bzip2 possono ridurre molto lo spazio occupato, ma se il risultato è soltanto un file compresso, per cercare un pattern bisogna in genere decomprimere almeno una parte consistente del testo. Un \textbf{indice compresso} ha invece un obiettivo più ambizioso: conservare una rappresentazione vicina alla dimensione compressa del testo e supportare direttamente le operazioni di ricerca.
+
 \subsubsection{\texorpdfstring{\texten{Backward search} sulla BWT}{Backward search sulla BWT}}
 L'idea dell'\textbf{\texten{FM-index}}, introdotto da Ferragina e Manzini, è usare la BWT come se fosse un \texten{suffix array} compresso. Le righe della matrice BWT sono le rotazioni ordinate del testo, e quindi sono strettamente legate ai suffissi ordinati. Per contare le occorrenze di $P$ non serve ricostruire $T$: basta lavorare sulla colonna $L=\operatorname{BWT}(T)$ e su due strutture ausiliarie.
 
@@ -4288,7 +4290,7 @@ Usiamo indici da $1$ a $n$ e indichiamo con:
     \item $\operatorname{Occ}(c,q)$ il numero di occorrenze di $c$ nel prefisso $L[1..q]$, con $\operatorname{Occ}(c,0)=0$.
 \end{itemize}
 
-La formula LF, nella convenzione a indici da $1$, diventa:
+La formula LF-mapping, nella convenzione a indici da $1$, diventa:
 \[
     \operatorname{LF}(i)
     =
@@ -4331,8 +4333,53 @@ Se dopo un aggiornamento $\textit{First}>\textit{Last}$, il pattern non compare.
 
 L'aspetto importante è che il numero di iterazioni è $p$: una per carattere del pattern. Se $\operatorname{Occ}$ è disponibile in tempo $O(1)$, il conteggio richiede tempo $O(p)$.
 
+Un modo banale per ottenere questa prestazione sarebbe memorizzare una tabella completa:
+\[
+    \operatorname{OCC}[c][q]
+    =
+    \operatorname{Occ}(c,q),
+    \qquad
+    c\in\Sigma,\ 1\leq q\leq n.
+\]
+In questo caso la \texten{backward search} sarebbe effettivamente veloce, ma la tabella richiederebbe:
+\[
+    O(|\Sigma|\,n\log n)
+\]
+bit. Per alfabeti costanti questo è ancora $O(n\log n)$ bit, cioè dello stesso ordine di grandezza di un \texten{suffix array} esplicito. Il punto tecnico dell'FM-index è quindi implementare $\operatorname{Occ}$ in tempo costante senza pagare una tabella completa.
+
 \paragraph{Esempio intuitivo.}
 Nel testo \texttt{mississippi\#}, tutti i suffissi che iniziano con \texttt{i} occupano un intervallo contiguo della matrice ordinata. Per cercare \texttt{si}, la ricerca parte dall'ultimo carattere \texttt{i}, individua l'intervallo dei suffissi che iniziano con \texttt{i}, poi restringe quell'intervallo guardando in $L$ quali righe sono precedute da \texttt{s}. Le formule \eqref{eq:fm_backward_first} e \eqref{eq:fm_backward_last} traducono esattamente questo restringimento.
+
+\paragraph{Esempio numerico.}
+Per $T=\texttt{mississippi\#}$ si ha:
+\[
+    C(\texttt{i})=1,
+    \qquad
+    C(\texttt{m})=5,
+    \qquad
+    C(\texttt{p})=6,
+    \qquad
+    C(\texttt{s})=8.
+\]
+Cercando $P=\texttt{si}$, il primo carattere letto da destra è \texttt{i}. Partendo da $[\textit{First},\textit{Last}]=[1,12]$ si ottiene:
+\[
+    [\textit{First},\textit{Last}]
+    =
+    [C(\texttt{i})+\operatorname{Occ}(\texttt{i},0)+1,\,
+    C(\texttt{i})+\operatorname{Occ}(\texttt{i},12)]
+    =
+    [2,5].
+\]
+Questo è l'intervallo delle righe prefissate da \texttt{i}. Aggiungendo a sinistra il carattere \texttt{s}:
+\[
+    [\textit{First},\textit{Last}]
+    =
+    [C(\texttt{s})+\operatorname{Occ}(\texttt{s},1)+1,\,
+    C(\texttt{s})+\operatorname{Occ}(\texttt{s},5)]
+    =
+    [9,10].
+\]
+Quindi \texttt{si} compare $10-9+1=2$ volte. Al contrario, se durante un'estensione si ottiene $\textit{First}>\textit{Last}$, l'intervallo è vuoto: per esempio, continuando verso un pattern non presente, l'ultimo aggiornamento può produrre un estremo sinistro maggiore dell'estremo destro.
 
 \subsubsection{\texorpdfstring{Da \texten{count} a \texten{locate}}{Da count a locate}}
 La \texten{backward search} restituisce un intervallo di righe, non direttamente le posizioni nel testo. Se la riga $i$ corrisponde al suffisso che inizia in $\operatorname{pos}(i)$, allora applicando LF si ottiene una riga $i'$ tale che:
@@ -4343,6 +4390,22 @@ La \texten{backward search} restituisce un intervallo di righe, non direttamente
     \pmod n.
 \]
 Questa operazione è spesso chiamata \textbf{\texten{backward step}}.
+
+Nella versione compressa non vogliamo memorizzare esplicitamente $L[i]$. Per calcolare comunque il \texten{backward step}, si può identificare il carattere $c=L[i]$ confrontando:
+\[
+    \operatorname{Occ}(c,i)
+    \quad\text{e}\quad
+    \operatorname{Occ}(c,i-1)
+    \qquad
+    (c\in\Sigma\cup\{\#\}).
+\]
+L'unico carattere per cui i due valori differiscono è proprio il carattere in posizione $i$ di $L$. Una volta trovato $c$, si calcola:
+\[
+    \operatorname{backward\_step}(i)
+    =
+    C(c)+\operatorname{Occ}(c,i).
+\]
+Se $c=\#$, la rotazione attraversa il simbolo di fine testo e la posizione corrispondente è la prima posizione del testo, considerando il testo in modo circolare. Quando l'alfabeto è costante e $\operatorname{Occ}$ costa $O(1)$, anche il \texten{backward step} costa $O(1)$.
 
 Per localizzare le occorrenze senza memorizzare tutto il \texten{suffix array}, l'FM-index campiona alcune righe. Per esempio si marcano le righe corrispondenti a posizioni del testo multiple di:
 \[
@@ -4362,6 +4425,12 @@ Quindi, se il pattern compare $\operatorname{occ}$ volte, la localizzazione di t
 \]
 oltre al tempo $O(p)$ necessario per il conteggio.
 
+Il parametro $\varepsilon$ controlla il compromesso spazio-tempo. Le righe marcate sono circa:
+\[
+    O\!\left(\frac{n}{\log^{1+\varepsilon}n}\right),
+\]
+e per ciascuna bisogna conservare almeno la posizione nel testo. Aumentare $\varepsilon$ riduce il numero di campioni e quindi lo spazio, ma aumenta il numero massimo di \texten{backward step} necessari per localizzare una posizione.
+
 \subsubsection{\texorpdfstring{Come calcolare \texten{Occ} senza decomprimere}{Come calcolare Occ senza decomprimere}}
 La difficoltà vera è implementare $\operatorname{Occ}(c,q)$ senza conservare tutta la matrice e, nella versione compressa, senza conservare nemmeno esplicitamente tutta la colonna $L$. Nella pipeline considerata dall'FM-index, il testo viene trasformato in:
 \[
@@ -4380,27 +4449,48 @@ Qui $\operatorname{PC}$ indica un codice a prefisso a lunghezza variabile applic
     \qquad
     000\mapsto 00.
 \]
+La decodifica segue la stessa idea al contrario: se il codice della run è $b_0b_1\cdots b_t$, letto nell'ordine in cui è stato scritto, la lunghezza recuperata è:
+\[
+    m=\sum_{j=0}^{t}(b_j+1)2^j.
+\]
+Il codice a prefisso finale usa due codici brevi per i simboli speciali introdotti dall'RLE, per esempio:
+\[
+    \mathtt{run0}\mapsto 10,
+    \qquad
+    \mathtt{run1}\mapsto 11,
+\]
+mentre un valore MTF ordinario $a\geq 1$ viene codificato con:
+\[
+    0^{\lfloor\log(a+1)\rfloor}\operatorname{bin}(a+1),
+\]
+dove $\operatorname{bin}(a+1)$ è la rappresentazione binaria di $a+1$ con $1+\lfloor\log(a+1)\rfloor$ bit. La lunghezza complessiva è quindi $1+2\lfloor\log(a+1)\rfloor$ bit.
 
-Per rendere $\operatorname{Occ}$ veloce, $L$ viene partizionata logicamente in \textbf{\texten{bucket}} di lunghezza $\ell=\Theta(\log n)$ e in \textbf{\texten{superbucket}} di lunghezza $\ell^2=\Theta(\log^2 n)$. Si memorizzano:
+Per rendere $\operatorname{Occ}$ veloce, $L$ viene partizionata logicamente in \textbf{\texten{bucket}} di lunghezza $\ell=\Theta(\log n)$ e in \textbf{\texten{superbucket}} di lunghezza $\ell^2=\Theta(\log^2 n)$. Per semplificare l'esposizione, si fa in modo che una run di zeri non attraversi il confine tra due \texten{bucket}; altrimenti bisogna conservare anche l'informazione necessaria a proseguire la run nel blocco successivo.
+
+Le strutture ausiliarie principali sono:
 \begin{itemize}
-    \item conteggi cumulativi dei caratteri fino alla fine di ogni \texten{superbucket};
-    \item conteggi relativi all'interno del \texten{superbucket}, fino alla fine di ogni \texten{bucket};
-    \item informazioni per trovare in $Z$ il \texten{bucket} compresso corrispondente;
-    \item lo stato della lista MTF all'inizio di ogni \texten{bucket};
-    \item una piccola tabella universale per decodificare e contare dentro un singolo \texten{bucket}.
+    \item $NO_t[c]$: conteggi cumulativi dei caratteri fino alla fine del $t$-esimo \texten{superbucket};
+    \item $NO'_i[c]$: conteggi relativi all'interno del \texten{superbucket} corrente, fino alla fine del \texten{bucket} $i$;
+    \item $W_t$ e $W'_i$: informazioni sulle lunghezze compresse dei blocchi, usate per trovare in $Z$ il \texten{bucket} compresso $BZ_i$;
+    \item $MTF_i$: stato della lista MTF all'inizio del \texten{bucket} $i$;
+    \item $S[c,h,BZ_i,MTF_i]$: tabella universale che restituisce quante occorrenze di $c$ compaiono nei primi $h$ caratteri del \texten{bucket} decompresso.
 \end{itemize}
 
-Così il calcolo di $\operatorname{Occ}(c,q)$ si divide in tre contributi:
+Sia $i=\lceil q/\ell\rceil$ il \texten{bucket} che contiene $q$, sia $h=q-(i-1)\ell$ la posizione interna al \texten{bucket}, e sia $t$ il numero di \texten{superbucket} completi prima di $i$. Allora il calcolo di $\operatorname{Occ}(c,q)$ si divide in tre contributi:
 \[
     \operatorname{Occ}(c,q)
     =
-    \text{conteggio nei superbucket}
+    NO_t[c]
     +
-    \text{conteggio nei bucket}
+    NO'_{i-1}[c]
     +
-    \text{conteggio dentro il bucket corrente}.
+    S[c,h,BZ_i,MTF_i].
 \]
-Il primo e il secondo contributo sono letture di tabelle; il terzo usa il \texten{bucket} compresso, lo stato MTF salvato e la tabella universale. Con una scelta opportuna dei parametri, $\operatorname{Occ}$ si calcola in tempo $O(1)$ usando spazio sublineare aggiuntivo oltre al testo compresso.
+Il primo e il secondo contributo sono letture di tabelle; il terzo usa il \texten{bucket} compresso, lo stato MTF salvato e la tabella universale. Le strutture $NO$ e $W$ richiedono $O(n/\log n)$ bit, mentre $NO'$ e $W'$ richiedono $O((n/\log n)\log\log n)$ bit. Gli stati MTF costano ancora $O(n/\log n)$ bit. La tabella universale viene mantenuta sublineare scegliendo la dimensione effettiva del \texten{bucket} in modo che il numero di possibili blocchi compressi sia $n^\alpha$, con $\alpha<1$. Con una scelta opportuna dei parametri, $\operatorname{Occ}$ si calcola in tempo $O(1)$ usando:
+\[
+    Z+O\!\left(\frac{n\log\log n}{\log n}\right)
+\]
+bit oltre alla rappresentazione compressa principale.
 
 \begin{theorem}[Ferragina-Manzini]
     Per ogni testo $T[1..n]$, per ogni $k\geq 0$ fissato e per ogni costante $0<\varepsilon<1$, esiste un indice compresso che conta le occorrenze di un pattern $P[1..p]$ in tempo $O(p)$ e localizza tutte le $\operatorname{occ}$ occorrenze in tempo:
@@ -4409,9 +4499,9 @@ Il primo e il secondo contributo sono letture di tabelle; il terzo usa il \texte
     \]
     Lo spazio è:
     \[
-        5nH_k(T)+o(n)
+        5nH_k(T)+O\!\left(\frac{n}{\log^\varepsilon n}\right)
     \]
-    bit, dove il termine $o(n)$ raccoglie le strutture ausiliarie per $\operatorname{Occ}$ e per il campionamento delle righe.
+    bit, dove il termine additivo raccoglie le strutture ausiliarie per $\operatorname{Occ}$ e per il campionamento delle righe.
 \end{theorem}
 
 Il significato del teorema è forte: l'indice non è solo più piccolo del \texten{suffix array}, ma ha dimensione controllata dall'entropia empirica del testo. Quando il testo è molto comprimibile, l'indice può essere vicino alla dimensione del testo compresso e permettere comunque la ricerca.
@@ -4424,6 +4514,24 @@ Una misura molto efficace per questi testi è il numero $r$ di \textbf{run} nell
     L=\operatorname{BWT}(T)
 \]
 contiene pochi blocchi massimali di caratteri uguali, allora il testo ha una struttura favorevole a indici basati su run. L'\textbf{\texten{r-index}}, descritto da Gagie, Navarro e Prezza, è un'evoluzione dell'FM-index che sfrutta proprio questo parametro: conserva campioni e informazioni ausiliarie vicino agli inizi delle run della BWT, invece di campionare uniformemente rispetto a $n$.
+
+Per esempio, per:
+\[
+    W=\texttt{AGAAGAAGAG\$}
+\]
+la BWT è:
+\[
+    \operatorname{BWT}(W)=\texttt{GGGG\$AAAAAA}.
+\]
+Questa trasformata ha soltanto tre run:
+\[
+    \texttt{G}^4,
+    \qquad
+    \texttt{\$},
+    \qquad
+    \texttt{A}^6,
+\]
+quindi $r=3$ anche se $|W|=11$. L'idea dell'r-index è che, in collezioni molto ripetitive, il numero di run può crescere molto più lentamente della lunghezza totale del testo. Invece di conservare molte posizioni distribuite uniformemente, si conservano informazioni vicino agli inizi delle run e si usa la LF-mapping per propagare le posizioni lungo caratteri uguali consecutivi.
 
 L'idea resta la stessa dell'FM-index: si usa la LF-mapping per muoversi tra righe corrispondenti a suffissi vicini. La differenza è che, quando $r\ll n$, le strutture principali dipendono da $r$ più che da $n$. Per collezioni molto ripetitive questo può essere decisivo: si mantiene la possibilità di contare e localizzare pattern lavorando direttamente sulla rappresentazione compressa, ma lo spazio segue meglio la ridondanza reale della collezione.
 
