@@ -4296,7 +4296,28 @@ La formula LF-mapping, nella convenzione a indici da $1$, diventa:
     =
     C(L[i])+\operatorname{Occ}(L[i],i).
 \]
-Essa manda una riga della matrice ordinata alla riga che rappresenta il suffisso precedente nel testo.
+Più precisamente, se la riga $i$ rappresenta il suffisso che inizia in posizione $k$, allora $\operatorname{LF}(i)$ rappresenta il suffisso che inizia in posizione $k-1$.\footnote{Quando $k=1$, il passo attraversa il simbolo di fine testo e si interpreta il testo in modo circolare. L'idea è che $L[i]$ è proprio il carattere che precede, nel testo originale, il suffisso rappresentato dalla riga $i$; la LF-mapping sposta quindi la riga verso il suffisso ottenuto aggiungendo quel carattere a sinistra.}
+
+Lo schema mentale è il seguente. Se una riga inizia con un certo testo $Q$ e nella sua colonna $L$ compare il carattere $c$, allora LF porta alla riga che inizia con $cQ$:
+\[
+    \boxed{
+        \begin{array}{c}
+            \text{riga } i\\
+            \text{suffisso rappresentato: } Q\\
+            L[i]=c
+        \end{array}
+    }
+    \quad
+    \xrightarrow{\operatorname{LF}}
+    \quad
+    \boxed{
+        \begin{array}{c}
+            \text{riga } \operatorname{LF}(i)\\
+            \text{suffisso rappresentato: } cQ
+        \end{array}
+    }
+\]
+Per esempio, se la riga corrente rappresenta un suffisso che inizia con \texttt{i} e in $L$ compare \texttt{s}, allora LF porta alla riga del suffisso che inizia con \texttt{si}.
 
 La \textbf{\texten{backward search}} mantiene l'intervallo di righe che hanno come prefisso il suffisso già letto del pattern. All'inizio l'intervallo è tutto $[1,n]$. Se il prossimo carattere da aggiungere a sinistra è $c=P[j]$, l'intervallo si aggiorna con:
 \begin{align}
@@ -4348,7 +4369,17 @@ In questo caso la \texten{backward search} sarebbe effettivamente veloce, ma la 
 bit. Per alfabeti costanti questo è ancora $O(n\log n)$ bit, cioè dello stesso ordine di grandezza di un \texten{suffix array} esplicito. Il punto tecnico dell'FM-index è quindi implementare $\operatorname{Occ}$ in tempo costante senza pagare una tabella completa.
 
 \paragraph{Esempio intuitivo.}
-Nel testo \texttt{mississippi\#}, tutti i suffissi che iniziano con \texttt{i} occupano un intervallo contiguo della matrice ordinata. Per cercare \texttt{si}, la ricerca parte dall'ultimo carattere \texttt{i}, individua l'intervallo dei suffissi che iniziano con \texttt{i}, poi restringe quell'intervallo guardando in $L$ quali righe sono precedute da \texttt{s}. Le formule \eqref{eq:fm_backward_first} e \eqref{eq:fm_backward_last} traducono esattamente questo restringimento.
+Nel testo \texttt{mississippi\#}, tutti i suffissi che iniziano con \texttt{i} occupano un intervallo contiguo della matrice ordinata. Per cercare \texttt{si}, la ricerca parte dall'ultimo carattere \texttt{i}: l'intervallo corrente contiene quindi le righe che iniziano con il suffisso già letto, cioè \texttt{i}. Aggiungere a sinistra il carattere \texttt{s} significa chiedersi quali di quelle occorrenze di \texttt{i} erano precedute da una \texttt{s} nel testo originale.
+
+Questa informazione è contenuta nella colonna $L$: se una riga $r$ dell'intervallo corrente ha $L[r]=\texttt{s}$, allora il suffisso rappresentato da quella riga è preceduto da \texttt{s}, quindi corrisponde a un'occorrenza di \texttt{si}. Tuttavia l'algoritmo non scorre davvero tutte le righe dell'intervallo per filtrare quelle con $L=\texttt{s}$. Usa invece $\operatorname{Occ}$ per sapere quali occorrenze di \texttt{s} cadono dentro l'intervallo corrente.
+
+In generale, se l'intervallo corrente è $[\textit{First},\textit{Last}]$ e il carattere da aggiungere a sinistra è $c$, allora:
+\[
+    \operatorname{Occ}(c,\textit{First}-1)+1,
+    \ldots,
+    \operatorname{Occ}(c,\textit{Last})
+\]
+sono i numeri d'ordine delle occorrenze di $c$ in $L$ che cadono dentro l'intervallo. La proprietà LF dice che la $j$-esima occorrenza di $c$ in $L$ corrisponde alla $j$-esima occorrenza di $c$ in $F$; poiché in $F$ tutte le righe che iniziano con $c$ formano un blocco che comincia in $C(c)+1$, quei numeri d'ordine diventano direttamente i nuovi estremi. Le formule \eqref{eq:fm_backward_first} e \eqref{eq:fm_backward_last} traducono esattamente questo filtro logico in un calcolo sugli indici.
 
 \paragraph{Esempio numerico.}
 Per $T=\texttt{mississippi\#}$ si ha:
@@ -4379,7 +4410,37 @@ Questo è l'intervallo delle righe prefissate da \texttt{i}. Aggiungendo a sinis
     =
     [9,10].
 \]
-Quindi \texttt{si} compare $10-9+1=2$ volte. Al contrario, se durante un'estensione si ottiene $\textit{First}>\textit{Last}$, l'intervallo è vuoto: per esempio, continuando verso un pattern non presente, l'ultimo aggiornamento può produrre un estremo sinistro maggiore dell'estremo destro.
+Quindi \texttt{si} compare $10-9+1=2$ volte.
+
+Ora continuiamo lo stesso esempio cercando $P=\texttt{ssi}$. Abbiamo già l'intervallo delle righe prefissate da \texttt{si}, cioè $[9,10]$. Per aggiungere a sinistra un'altra \texttt{s}, si aggiorna:
+\[
+    [\textit{First},\textit{Last}]
+    =
+    [C(\texttt{s})+\operatorname{Occ}(\texttt{s},8)+1,\,
+    C(\texttt{s})+\operatorname{Occ}(\texttt{s},10)]
+    =
+    [8+2+1,\,8+4]
+    =
+    [11,12].
+\]
+L'intervallo non è vuoto, quindi anche \texttt{ssi} compare:
+\[
+    12-11+1=2
+\]
+volte. In termini logici, le due occorrenze di \texttt{si} erano entrambe precedute da una \texttt{s}.
+
+Consideriamo infine $P=\texttt{pssi}$. Ripartiamo dall'intervallo appena ottenuto per \texttt{ssi}, cioè $[11,12]$, e proviamo ad aggiungere \texttt{p} a sinistra:
+\[
+    [\textit{First},\textit{Last}]
+    =
+    [C(\texttt{p})+\operatorname{Occ}(\texttt{p},10)+1,\,
+    C(\texttt{p})+\operatorname{Occ}(\texttt{p},12)]
+    =
+    [6+2+1,\,6+2]
+    =
+    [9,8].
+\]
+Qui $\textit{First}>\textit{Last}$, quindi l'intervallo è vuoto: non esistono occorrenze di \texttt{ssi} precedute da \texttt{p}, e dunque \texttt{pssi} non compare nel testo.
 
 \subsubsection{\texorpdfstring{Da \texten{count} a \texten{locate}}{Da count a locate}}
 La \texten{backward search} restituisce un intervallo di righe, non direttamente le posizioni nel testo. Se la riga $i$ corrisponde al suffisso che inizia in $\operatorname{pos}(i)$, allora applicando LF si ottiene una riga $i'$ tale che:
