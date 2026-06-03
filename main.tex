@@ -4249,7 +4249,7 @@ con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una par
 Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Zamboni tramite la codifica di particolari traiettorie nel piano. Per gli scopi della compressione, la morale è più semplice: la BWT è efficace quando trasforma la struttura contestuale del testo in poche run visibili nella colonna $L$.
 
 \subsection{\texorpdfstring{\texten{Pattern matching} e \texten{FM-index}}{Pattern matching e FM-index}}
-Finora la BWT è stata vista soprattutto come trasformazione utile alla compressione. La stessa struttura, però, permette anche di costruire indici compressi: invece di decomprimere un testo e poi cercare un pattern, si conserva una rappresentazione compressa che supporta direttamente operazioni di ricerca. L'obiettivo di questa sezione è quello di spiegare come funziona la ricerca di pattern in del testo.
+Finora la BWT è stata vista soprattutto come trasformazione utile alla compressione. La stessa struttura, però, permette anche di costruire indici compressi: invece di decomprimere un testo e poi cercare un pattern, si conserva una rappresentazione compressa che supporta direttamente operazioni di ricerca. L'obiettivo di questa sezione è quello di spiegare come funziona la ricerca di pattern nel testo e come un indice compresso basato sulla BWT, chiamato \textbf{\texten{FM-index}}, permette di eseguire questa ricerca in modo efficiente.
 
 Dato un testo $T[1..n]$ e un pattern $P[1..p]$, vogliamo:
 \begin{itemize}
