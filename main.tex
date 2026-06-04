@@ -4605,21 +4605,76 @@ La \autoref{fig:fm-index-backward-step-occ} mostra il meccanismo sul caso $i=9$ 
     \label{fig:fm-index-backward-step-occ}
 \end{figure}
 
-Per localizzare le occorrenze senza memorizzare tutto il \texten{suffix array}, l'FM-index campiona alcune righe. Per esempio si marcano le righe corrispondenti a posizioni del testo multiple di:
+\paragraph{Campionamento delle righe.}
+Per localizzare le occorrenze senza memorizzare tutto il \texten{suffix array}, l'FM-index campiona alcune righe della matrice BWT. Si pone:
 \[
+    d
+    =
     \left\lceil \log^{1+\varepsilon} n\right\rceil,
     \qquad
     0<\varepsilon<1,
 \]
-e per queste righe si conserva la posizione nel testo. Per localizzare una riga non marcata, si applica LF finché si raggiunge una riga marcata; se sono serviti $t$ passi e la riga marcata ha posizione $q$, allora la posizione originaria è $q+t$ modulo $n$.
+e si marcano le righe che corrispondono a suffissi che iniziano in posizioni del testo multiple di $d$. Per ogni riga marcata $r$ si conserva la sua posizione nel testo in una struttura dati che indichiamo con $S_{\operatorname{loc}}$\footnote{Nelle slide questa struttura è indicata semplicemente con $S$.}:
+\[
+    S_{\operatorname{loc}}(r)=\operatorname{pos}(r).
+\]
 
-Il numero di passi è al più:
+
+\paragraph{Algoritmo di localizzazione.}
+Se la riga $i$ è marcata, la sua posizione si legge direttamente da $S_{\operatorname{loc}}$. Se non è marcata, si applica ripetutamente il \texten{backward step}: ogni passo porta a una riga che rappresenta il suffisso spostato di una posizione verso sinistra nel testo. Quando si raggiunge una riga marcata, basta sommare il numero di passi fatti.
+
+\begin{algorithm}[H]
+    \caption{Localizzazione di una riga nell'FM-index}
+    \begin{algorithmic}[1]
+        \Require riga $i$, struttura dei campioni $S_{\operatorname{loc}}$, funzione $\operatorname{backward\_step}$
+        \Ensure posizione $\operatorname{pos}(i)$ nel testo
+        \State $r\gets i$
+        \State $t\gets 0$
+        \While{$r$ non è marcata}
+        \State $r\gets \operatorname{backward\_step}(r)$
+        \State $t\gets t+1$
+        \EndWhile
+        \State \Return $S_{\operatorname{loc}}(r)+t \pmod n$
+    \end{algorithmic}
+\end{algorithm}
+
+\paragraph{Esempio.}
+Nel caso di \texttt{mississippi\#}, la \texten{backward search} per $P=\texttt{si}$ restituisce l'intervallo $[\textit{First},\textit{Last}]=[9,10]$. Supponiamo, come nelle slide, che la riga $10$ sia marcata e che:
+\[
+    S_{\operatorname{loc}}(10)=\operatorname{pos}(10)=4.
+\]
+Quindi una delle due occorrenze è già localizzata: parte dalla posizione $4$ del testo.
+
+Per la riga $9$, invece, si procede con i \texten{backward step}:
+\[
+    9
+    \xrightarrow{\operatorname{backward\_step}}
+    11
+    \xrightarrow{\operatorname{backward\_step}}
+    4
+    \xrightarrow{\operatorname{backward\_step}}
+    10.
+\]
+Dopo $t=3$ passi si raggiunge la riga marcata $10$. Poiché ogni \texten{backward step} ha spostato la posizione testuale indietro di una unità, la posizione originaria della riga $9$ si recupera sommando i passi:
+\[
+    \operatorname{pos}(9)
+    =
+    \operatorname{pos}(10)+3
+    =
+    4+3
+    =
+    7.
+\]
+Le due occorrenze di \texttt{si} sono quindi nelle posizioni $4$ e $7$.
+
+\paragraph{Analisi.}
+Poiché le righe marcate corrispondono a posizioni del testo distanti al più $d=\lceil\log^{1+\varepsilon}n\rceil$, dopo al massimo $d$ \texten{backward step} si raggiunge una riga marcata. Se il test ``$r$ è marcata?'' e l'accesso a $S_{\operatorname{loc}}$ costano $O(1)$, e se anche $\operatorname{backward\_step}$ costa $O(1)$, allora localizzare una singola riga costa:
 \begin{equation}\label{eq:fm_marked_rows_bound}
     O(\log^{1+\varepsilon} n).
 \end{equation}
 Quindi, se il pattern compare $\operatorname{occ}$ volte, la localizzazione di tutte le occorrenze richiede:
 \[
-    O\!\left(\operatorname{occ}\log^{1+\varepsilon} n\right)
+    O\!\left(\operatorname{occ}\log^{1+\varepsilon} n\right),
 \]
 oltre al tempo $O(p)$ necessario per il conteggio.
 
@@ -4627,7 +4682,12 @@ Il parametro $\varepsilon$ controlla il compromesso spazio-tempo. Le righe marca
 \[
     O\!\left(\frac{n}{\log^{1+\varepsilon}n}\right),
 \]
-e per ciascuna bisogna conservare almeno la posizione nel testo. Aumentare $\varepsilon$ riduce il numero di campioni e quindi lo spazio, ma aumenta il numero massimo di \texten{backward step} necessari per localizzare una posizione.
+e per ciascuna si conserva una posizione del testo, cioè $O(\log n)$ bit. Lo spazio dei campioni è quindi:
+\[
+    O\!\left(\frac{n}{\log^\varepsilon n}\right)
+    \text{ bit}.
+\]
+Aumentare $\varepsilon$ riduce il numero di campioni e quindi lo spazio, ma aumenta il numero massimo di \texten{backward step} necessari per localizzare una posizione.
 
 \subsubsection{Come calcolare Occ senza decomprimere}
 La difficoltà vera è implementare $\operatorname{Occ}(c,q)$ senza conservare tutta la matrice e, nella versione compressa, senza conservare nemmeno esplicitamente tutta la colonna $L$. Dopo la compressione appena descritta, infatti, l'indice dispone principalmente di $Z$, non di $L$ già pronta da scandire. Tuttavia sia la \texten{backward search} sia il \texten{backward step} richiedono continuamente valori della forma $\operatorname{Occ}(c,q)$.
