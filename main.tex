@@ -4618,6 +4618,39 @@ e si marcano le righe che corrispondono a suffissi che iniziano in posizioni del
 \[
     S_{\operatorname{loc}}(r)=\operatorname{pos}(r).
 \]
+Per visualizzare il campionamento, consideriamo di nuovo:
+\[
+    T=\texttt{mississippi\#}.
+\]
+Nel piccolo esempio scegliamo $d=4$, così le posizioni testuali campionate sono le multiple di $4$:
+\begin{center}
+    \small
+    \setlength{\tabcolsep}{4pt}
+    \begin{tabular}{c|cccccccccccc}
+        \textbf{posizione} &
+        $1$ & $2$ & $3$ & \textcolor{red}{$4$} &
+        $5$ & $6$ & $7$ & \textcolor{red}{$8$} &
+        $9$ & $10$ & $11$ & \textcolor{red}{$12$} \\
+        \hline
+        $T$ &
+        \texttt{m} & \texttt{i} & \texttt{s} & \textcolor{red}{\texttt{s}} &
+        \texttt{i} & \texttt{s} & \texttt{s} & \textcolor{red}{\texttt{i}} &
+        \texttt{p} & \texttt{p} & \texttt{i} & \textcolor{red}{\texttt{\#}} \\
+        \textbf{campione} &
+        & & & \textcolor{red}{$\star$} &
+        & & & \textcolor{red}{$\star$} &
+        & & & \textcolor{red}{$\star$}
+    \end{tabular}
+\end{center}
+Queste sono posizioni nel testo, non righe consecutive della matrice BWT. Nell'ordine lessicografico dei suffissi, infatti, i campioni corrispondenti diventano:
+\[
+    S_{\operatorname{loc}}(10)=4,
+    \qquad
+    S_{\operatorname{loc}}(3)=8,
+    \qquad
+    S_{\operatorname{loc}}(1)=12.
+\]
+Nel seguito useremo soprattutto il primo di questi campioni, cioè $S_{\operatorname{loc}}(10)=4$.
 
 
 \paragraph{Algoritmo di localizzazione.}
