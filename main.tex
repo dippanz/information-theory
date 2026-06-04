@@ -4580,7 +4580,7 @@ La \texten{backward search} restituisce un intervallo di righe, non direttamente
 \]
 Questa operazione è spesso chiamata \textbf{\texten{backward step}}.
 
-Nella versione compressa non vogliamo memorizzare esplicitamente $L[i]$. Per calcolare comunque il \texten{backward step}, si può identificare il carattere $c=L[i]$ confrontando:
+Nella versione compressa non vogliamo memorizzare esplicitamente $L[i]$. Usando $Z$ per riuscire a calcolare comunque il \texten{backward step}, si può identificare il carattere $c=L[i]$ confrontando:
 \[
     \operatorname{Occ}(c,i)
     \quad\text{e}\quad
@@ -4594,7 +4594,16 @@ L'unico carattere per cui i due valori differiscono è proprio il carattere in p
     =
     C(c)+\operatorname{Occ}(c,i).
 \]
-Se $c=\#$, la rotazione attraversa il simbolo di fine testo e la posizione corrispondente è la prima posizione del testo, considerando il testo in modo circolare. Quando l'alfabeto è costante e $\operatorname{Occ}$ costa $O(1)$, anche il \texten{backward step} costa $O(1)$.
+Se $c=\# \rightarrow \operatorname{pos}=1$, la rotazione attraversa il simbolo di fine testo e la posizione corrispondente è la prima posizione del testo, considerando il testo in modo circolare. Quando l'alfabeto è costante e $\operatorname{Occ}$ costa $O(1)$, anche il \texten{backward step} costa $O(1)$.
+
+La \autoref{fig:fm-index-backward-step-occ} mostra il meccanismo sul caso $i=9$ della BWT di \texttt{mississippi\#}: passando da $L[1,8]$ a $L[1,9]$, l'unico conteggio che aumenta è quello di $s$, quindi $L[9]=s$.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/fm-index/backward-step-occ.pdf}
+    \caption{Identificazione del carattere $L[i]$ e calcolo del \texten{backward step}. Per $i=9$, il confronto tra $\operatorname{Occ}(c,8)$ e $\operatorname{Occ}(c,9)$ individua $c=s$; la terza occorrenza di $s$ in $L$ viene quindi allineata alla terza occorrenza di $s$ in $F$, alla riga $C(s)+\operatorname{Occ}(s,9)=8+3=11$.}
+    \label{fig:fm-index-backward-step-occ}
+\end{figure}
 
 Per localizzare le occorrenze senza memorizzare tutto il \texten{suffix array}, l'FM-index campiona alcune righe. Per esempio si marcano le righe corrispondenti a posizioni del testo multiple di:
 \[
