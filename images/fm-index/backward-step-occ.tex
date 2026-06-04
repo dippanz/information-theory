@@ -33,7 +33,7 @@
 \node[label, anchor=east] at (-0.55,0) {$L[j]$};
 \foreach \j/\ch in {1/i,2/p,3/s,4/s,5/m,6/\#,7/p,8/i,9/s,10/s,11/i,12/i} {
     \pgfmathsetmacro{\x}{0.78*(\j-1)}
-    \node[index] at (\x,0.78) {\j};
+    \node[index] at (\x,0.88) {\j};
     \ifnum\j<9
         \node[cell, fill=itlightblue] (L\j) at (\x,0) {\ch};
     \else
@@ -44,7 +44,7 @@
         \fi
     \fi
 }
-\draw[decorate, decoration={brace, amplitude=5pt}, itblue, thick]
+\draw[decorate, decoration={brace, mirror, amplitude=5pt}, itblue, thick]
     ($(L1.south west)+(0,-0.16)$) -- ($(L8.south east)+(0,-0.16)$)
     node[midway, below=5pt, label] {$L[1,8]$};
 \node[note, text=itorange, anchor=north] at (L9.south) {$i=9$};
@@ -80,7 +80,7 @@
         \fi
     \fi
 }
-\draw[decorate, decoration={brace, mirror, amplitude=5pt}, itgreen, thick]
+\draw[decorate, decoration={brace, amplitude=5pt}, itgreen, thick]
     ($(F1.north west)+(0,0.16)$) -- ($(F8.north east)+(0,0.16)$)
     node[midway, above=5pt, label] {$C(s)=8$ simboli $<s$};
 \node[note, text=itorange, anchor=north] at (F11.south) {$j=11$};
