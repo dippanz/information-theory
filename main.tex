@@ -3137,7 +3137,7 @@ Gli algoritmi studiati finora producono direttamente parole di codice: Shannon, 
 
 La BWT sta ancora dentro il tema della compressione dati, ma collega gli algoritmi di codifica con strutture dati per testi, come \textbf{\texten{suffix array}}, \textbf{\texten{suffix tree}} e indici compressi. In particolare, il legame con l'\textbf{\texten{FM-index}} spiega perché la BWT sia importante anche per il \texten{pattern matching} su testo compresso e per applicazioni in bioinformatica, dove strumenti come BWA e Bowtie2 usano idee basate sulla BWT per allineare sequenze a un genoma di riferimento.
 
-\subsection{\texorpdfstring{\texten{Burrows-Wheeler Transform}}{Burrows-Wheeler Transform}}
+\subsection{Burrows-Wheeler Transform}
 La \texten{Burrows-Wheeler Transform} fu introdotta da M. Burrows e D. Wheeler nel 1994 nel lavoro \emph{\texten{"A block sorting lossless data compression algorithm"}}. L'idea centrale è semplice: invece di comprimere direttamente il testo, si ordinano lessicograficamente le sue rotazioni cicliche e si conserva l'ultima colonna della matrice ordinata. Questa operazione non riduce ancora la dimensione del testo, ma tende a raggruppare caratteri che hanno contesti simili.
 
 \begin{definizione}
@@ -3350,7 +3350,7 @@ Lo schema classico proposto da Burrows e Wheeler applica tre fasi:
 \]
 Il compressore finale può essere Huffman oppure la codifica aritmetica. In molti sistemi pratici si aggiunge anche una fase di \texten{Run-Length Encoding}, perché dopo la BWT e la MTF compaiono spesso lunghe sequenze di zeri.
 
-\subsubsection{\texorpdfstring{\texten{Move-to-Front Encoding}}{Move-to-Front Encoding}}
+\subsubsection{Move-to-Front Encoding}
 Il \textbf{\texten{Move-to-Front Encoding}} è una tecnica di ranking dei simboli. Mantiene una lista ordinata dei simboli dell'alfabeto; ogni carattere viene sostituito dalla sua posizione corrente nella lista, poi spostato in testa. Se un carattere ricompare presto, avrà posizione piccola, spesso $0$.
 
 \begin{algorithm}[htpb]
@@ -3417,7 +3417,7 @@ può produrre molti valori $0$ e $1$ dopo la MTF. A quel punto Huffman, codifica
 \paragraph{La MTF è sempre necessaria?}
 Una questione importante è che la MTF è molto utile nella pipeline classica, ma non è teoricamente indispensabile. Giancarlo e Scaturro hanno mostrato nel 2003 che si possono ottenere buoni limiti anche senza MTF; Ferragina et al. hanno poi proposto nel 2005 una tecnica basata su partizioni, anche se non efficiente nella prima implementazione. Dal punto di vista didattico, però, la catena BWT+MTF+compressore di ordine zero resta la più semplice da interpretare.
 
-\subsubsection{\texorpdfstring{\texten{Run-Length Encoding}}{Run-Length Encoding}}
+\subsubsection{Run-Length Encoding}
 Il \textbf{\texten{Run-Length Encoding}} è una tecnica efficace quando l'input contiene lunghe sequenze dello stesso simbolo. Una \texten{run}:
 \[
     ddddd
@@ -3651,7 +3651,7 @@ minore di tutti gli altri simboli e presente una sola volta. In questo modo l'or
 
 In questa versione si calcola quindi la BWT di $T=s\texttt{\$}$, non direttamente quella della parola senza terminatore. Il simbolo \texttt{\$} sostituisce il ruolo dell'indice $I$: identifica in modo non ambiguo la fine del testo e rende la trasformazione invertibile senza dover memorizzare separatamente la riga originale.
 
-\subsubsection{\texorpdfstring{\texten{Suffix tree} e \texten{suffix array}}{Suffix tree e suffix array}}
+\subsubsection{Suffix tree e suffix array}
 Dato un testo:
 \[
     T=T[0]T[1]\cdots T[n-1],
@@ -3733,7 +3733,7 @@ Questa proprietà è importante anche per il \texten{pattern matching}: tutti i 
 \]
 cioè il \texten{suffix array}. Il sottoalbero evidenziato sotto l'arco \texttt{a} contiene proprio le foglie $5,3,1$, che corrispondono ai suffissi \texttt{a\$}, \texttt{ana\$} e \texttt{anana\$}. Questa è la versione ad albero dell'intervallo $SA[1,3]$ nella rappresentazione tramite \texten{suffix array}.
 
-\subsubsection{\texorpdfstring{BWT da \texten{suffix array}}{BWT da suffix array}}
+\subsubsection{BWT da suffix array}
 Una volta costruito il \texten{suffix array} di $T=s\texttt{\$}$, la BWT si ottiene in modo diretto. Se $SA[r]=i$, allora la riga di rango $r$ corrisponde alla rotazione che inizia in $i$, oppure, equivalentemente, al suffisso che parte da $i$. Il carattere della colonna $L$ è il carattere che precede quel suffisso nel testo:
 \begin{equation}\label{eq:bwt_from_suffix_array}
     L[r]=
@@ -3777,7 +3777,7 @@ Leggendo l'ultima colonna della tabella:
 \]
 Il vantaggio è che non abbiamo dovuto ordinare esplicitamente tutte le rotazioni: è sufficiente costruire il \texten{suffix array} e poi leggere un carattere per ogni posizione dell'array.
 
-\subsection{\texorpdfstring{Algoritmo DC3 per costruire il \texten{suffix array}}{Algoritmo DC3 per costruire il suffix array}}
+\subsection{Algoritmo DC3 per costruire il suffix array}
 Il tempo di calcolo della BWT dipende dal tempo necessario a costruire il \texten{suffix array}. Se il \texten{suffix array} si costruisce in tempo lineare, allora anche la fase BWT, una volta noto l'array, richiede solo tempo lineare.
 
 Per la costruzione di SA esistono e sono stati creati diversi algoritmi, tra cui:
@@ -4248,7 +4248,7 @@ con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una par
 
 Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Zamboni tramite la codifica di particolari traiettorie nel piano. Per gli scopi della compressione, la morale è più semplice: la BWT è efficace quando trasforma la struttura contestuale del testo in poche run visibili nella colonna $L$.
 
-\subsection{\texorpdfstring{\texten{Pattern matching} e \texten{FM-index}}{Pattern matching e FM-index}}
+\subsection{Pattern matching e FM-index}
 Finora la BWT è stata vista soprattutto come trasformazione utile alla compressione. La stessa struttura, però, permette anche di costruire indici compressi: invece di decomprimere un testo e poi cercare un pattern, si conserva una rappresentazione compressa che supporta direttamente operazioni di ricerca. L'obiettivo di questa sezione è quello di spiegare come funziona la ricerca di pattern nel testo e come un indice compresso basato sulla BWT, chiamato \textbf{\texten{FM-index}}, permette di eseguire questa ricerca in modo efficiente.
 
 Dato un testo $T[1..n]$ e un pattern $P[1..p]$, vogliamo:
@@ -4259,7 +4259,7 @@ Dato un testo $T[1..n]$ e un pattern $P[1..p]$, vogliamo:
 
 Un algoritmo classico come Knuth-Morris-Pratt cerca $P$ in tempo $O(n+p)$ senza costruire un indice. Se però il testo o la collezione sono noti in anticipo, conviene pagare una fase di preprocessing e costruire una struttura dati che renda molte ricerche successive più veloci.
 
-\subsubsection{\texorpdfstring{Ricerca tramite \texten{suffix array}}{Ricerca tramite suffix array}}
+\subsubsection{Ricerca tramite suffix array}
 Il \texten{suffix array} è un indice naturale per il \texten{pattern matching}: se $P$ compare in $T$ alla posizione $i$, allora $P$ è prefisso del suffisso $T[i..n]$. Poiché il \texten{suffix array} ordina lessicograficamente tutti i suffissi, le occorrenze di $P$ formano un intervallo contiguo dell'array.
 
 Per cercare $P$ si può quindi fare una ricerca binaria tra i suffissi ordinati. A ogni confronto si confrontano al più $p$ caratteri, quindi il tempo è:
@@ -4281,7 +4281,7 @@ Nelle implementazioni comuni, se ogni posizione occupa $4$ \texten{byte}, un tes
 
 Una compressione generica del testo non basta a risolvere questo problema. Strumenti come gzip o bzip2 possono ridurre molto lo spazio occupato, ma se il risultato è soltanto un file compresso, per cercare un pattern bisogna in genere decomprimere almeno una parte consistente del testo. Un \textbf{indice compresso} ha invece un obiettivo più ambizioso: conservare una rappresentazione vicina alla dimensione compressa del testo e supportare direttamente le operazioni di ricerca.
 
-\subsubsection{\texorpdfstring{\texten{Backward search} sulla BWT}{Backward search sulla BWT}}
+\subsubsection{Backward search sulla BWT}
 L'idea dell'\textbf{\texten{FM-index}}, introdotto da Ferragina e Manzini, è usare la BWT come se fosse un \texten{suffix array} compresso. Le righe della matrice BWT sono le rotazioni ordinate del testo, e quindi sono strettamente legate ai suffissi ordinati. Per contare le occorrenze di $P$ non serve ricostruire $T$: basta lavorare sulla colonna $L=\operatorname{BWT}(T)$ e su due strutture ausiliarie.
 
 Usiamo indici da $1$ a $n$ e indichiamo con:
@@ -4442,7 +4442,75 @@ Consideriamo infine $P=\texttt{pssi}$. Ripartiamo dall'intervallo appena ottenut
 \]
 Qui $\textit{First}>\textit{Last}$, quindi l'intervallo è vuoto: non esistono occorrenze di \texttt{ssi} precedute da \texttt{p}, e dunque \texttt{pssi} non compare nel testo.
 
-\subsubsection{\texorpdfstring{Da \texten{count} a \texten{locate}}{Da count a locate}}
+\subsubsection{Da L a Z: la compressione nell'FM-index}
+Finora la \texten{backward search} è stata descritta come se la colonna $L=\operatorname{BWT}(T)$ fosse disponibile esplicitamente. Nell'FM-index vero, però, l'obiettivo è più ambizioso: non conservare né il \texten{suffix array} completo né tutta $L$ in forma non compressa. La parte compressa dell'indice è una stringa binaria $Z$, ottenuta applicando alla BWT una pipeline di compressione:
+\[
+    Z
+    =
+    \operatorname{BW\_RLX}(T)
+    =
+    \operatorname{PC}(
+        \operatorname{RLE}(
+            \operatorname{MTF}(
+                \operatorname{BWT}(T)))).
+\]
+I passaggi hanno ruoli diversi:
+\begin{itemize}
+    \item la \textbf{BWT} produce $L$, dove caratteri con contesti simili tendono a finire vicini;
+    \item la \textbf{\texten{Move-to-Front}} trasforma questi gruppi locali in molti numeri piccoli, spesso zeri;
+    \item il \textbf{\texten{Run-Length Encoding}} comprime le run di zeri prodotte dalla MTF;
+    \item il \textbf{codice a prefisso} finale trasforma i simboli ottenuti in una stringa di bit $Z$.
+\end{itemize}
+
+Per esempio, per $T=\texttt{mississippi\#}$ si ha:
+\[
+    L=\operatorname{BWT}(T)=\texttt{ipssm\#pissii}.
+\]
+Partendo dalla lista MTF iniziale ordinata lessicograficamente:
+\[
+    (\texttt{\#},\texttt{i},\texttt{m},\texttt{p},\texttt{s}),
+\]
+la MTF produce:
+\[
+    L^{\operatorname{MTF}}
+    =
+    1,3,4,0,4,4,3,4,4,0,1,0.
+\]
+Il primo simbolo di $L$ è \texttt{i}, che inizialmente occupa la posizione $1$ nella lista; quindi si emette $1$ e \texttt{i} viene spostata in testa. Il secondo simbolo è \texttt{p}, che nella nuova lista occupa la posizione $3$, quindi si emette $3$, e così via. Quando un carattere si ripete subito, come la seconda \texttt{s}, la sua posizione diventa $0$: questo è il motivo per cui la MTF trasforma le run della BWT in run di zeri.
+
+L'esempio \texttt{mississippi\#} è piccolo e non mostra una grande compressione, perché le run di zeri sono corte. Il meccanismo però è questo: una run di $m$ zeri viene rappresentata scrivendo $m+1$ in binario, leggendo i bit dal meno significativo al più significativo e scartando il bit più significativo. Per esempio:
+\[
+    0\mapsto 0,
+    \qquad
+    00\mapsto 1,
+    \qquad
+    000\mapsto 00.
+\]
+Quindi, se in $L^{\operatorname{MTF}}$ comparisse un tratto:
+\[
+    4,0,0,5,0,5,
+\]
+dopo il RLE diventerebbe:
+\[
+    4,\mathtt{run1},5,\mathtt{run0},5,
+\]
+dove $\mathtt{run1}$ rappresenta la run $00$ e $\mathtt{run0}$ rappresenta la run $0$. La decodifica segue la stessa idea al contrario: se il codice della run è $b_0b_1\cdots b_t$, letto nell'ordine in cui è stato scritto, la lunghezza recuperata è:
+\[
+    m=\sum_{j=0}^{t}(b_j+1)2^j.
+\]
+Il codice a prefisso finale usa due codici brevi per i simboli speciali introdotti dal RLE, per esempio:
+\[
+    \mathtt{run0}\mapsto 10,
+    \qquad
+    \mathtt{run1}\mapsto 11,
+\]
+mentre un valore MTF ordinario $a\geq 1$ viene codificato con:
+\[
+    0^{\lfloor\log(a+1)\rfloor}\operatorname{bin}(a+1),
+\]
+dove $\operatorname{bin}(a+1)$ è la rappresentazione binaria di $a+1$ con $1+\lfloor\log(a+1)\rfloor$ bit. La lunghezza complessiva è quindi $1+2\lfloor\log(a+1)\rfloor$ bit.
+
+\subsubsection{Da count a locate}
 La \texten{backward search} restituisce un intervallo di righe, non direttamente le posizioni nel testo. Se la riga $i$ corrisponde al suffisso che inizia in $\operatorname{pos}(i)$, allora applicando LF si ottiene una riga $i'$ tale che:
 \[
     \operatorname{pos}(i')
@@ -4492,39 +4560,10 @@ Il parametro $\varepsilon$ controlla il compromesso spazio-tempo. Le righe marca
 \]
 e per ciascuna bisogna conservare almeno la posizione nel testo. Aumentare $\varepsilon$ riduce il numero di campioni e quindi lo spazio, ma aumenta il numero massimo di \texten{backward step} necessari per localizzare una posizione.
 
-\subsubsection{\texorpdfstring{Come calcolare \texten{Occ} senza decomprimere}{Come calcolare Occ senza decomprimere}}
-La difficoltà vera è implementare $\operatorname{Occ}(c,q)$ senza conservare tutta la matrice e, nella versione compressa, senza conservare nemmeno esplicitamente tutta la colonna $L$. Nella pipeline considerata dall'FM-index, il testo viene trasformato in:
-\[
-    \operatorname{BW\_RLX}(T)
-    =
-    \operatorname{PC}(
-        \operatorname{RLE}(
-            \operatorname{MTF}(
-                \operatorname{BWT}(T)))).
-\]
-Qui $\operatorname{PC}$ indica un codice a prefisso a lunghezza variabile applicato dopo BWT, MTF e RLE. L'RLE usato in questa pipeline codifica le run di zeri prodotte dalla MTF: una run di lunghezza $m$ viene rappresentata tramite la scrittura binaria di $m+1$, letta dal bit meno significativo e privata del bit più significativo. Per esempio:
-\[
-    0\mapsto 0,
-    \qquad
-    00\mapsto 1,
-    \qquad
-    000\mapsto 00.
-\]
-La decodifica segue la stessa idea al contrario: se il codice della run è $b_0b_1\cdots b_t$, letto nell'ordine in cui è stato scritto, la lunghezza recuperata è:
-\[
-    m=\sum_{j=0}^{t}(b_j+1)2^j.
-\]
-Il codice a prefisso finale usa due codici brevi per i simboli speciali introdotti dall'RLE, per esempio:
-\[
-    \mathtt{run0}\mapsto 10,
-    \qquad
-    \mathtt{run1}\mapsto 11,
-\]
-mentre un valore MTF ordinario $a\geq 1$ viene codificato con:
-\[
-    0^{\lfloor\log(a+1)\rfloor}\operatorname{bin}(a+1),
-\]
-dove $\operatorname{bin}(a+1)$ è la rappresentazione binaria di $a+1$ con $1+\lfloor\log(a+1)\rfloor$ bit. La lunghezza complessiva è quindi $1+2\lfloor\log(a+1)\rfloor$ bit.
+\subsubsection{Come calcolare Occ senza decomprimere}
+La difficoltà vera è implementare $\operatorname{Occ}(c,q)$ senza conservare tutta la matrice e, nella versione compressa, senza conservare nemmeno esplicitamente tutta la colonna $L$. Dopo la compressione appena descritta, infatti, l'indice dispone principalmente di $Z$, non di $L$ già pronta da scandire. Tuttavia sia la \texten{backward search} sia il \texten{backward step} richiedono continuamente valori della forma $\operatorname{Occ}(c,q)$.
+
+Il problema diventa quindi: \textbf{come contare le occorrenze di un carattere nei primi $q$ simboli di $L$ guardando solo piccole porzioni della rappresentazione compressa $Z$?}
 
 Per rendere $\operatorname{Occ}$ veloce, $L$ viene partizionata logicamente in \textbf{\texten{bucket}} di lunghezza $\ell=\Theta(\log n)$ e in \textbf{\texten{superbucket}} di lunghezza $\ell^2=\Theta(\log^2 n)$. Per semplificare l'esposizione, si fa in modo che una run di zeri non attraversi il confine tra due \texten{bucket}; altrimenti bisogna conservare anche l'informazione necessaria a proseguire la run nel blocco successivo.
 
@@ -4567,7 +4606,7 @@ bit oltre alla rappresentazione compressa principale.
 
 Il significato del teorema è forte: l'indice non è solo più piccolo del \texten{suffix array}, ma ha dimensione controllata dall'entropia empirica del testo. Quando il testo è molto comprimibile, l'indice può essere vicino alla dimensione del testo compresso e permettere comunque la ricerca.
 
-\subsubsection{\texorpdfstring{Testi ripetitivi e \texten{r-index}}{Testi ripetitivi e r-index}}
+\subsubsection{Testi ripetitivi e r-index}
 Molte collezioni moderne non sono soltanto comprimibili in senso statistico: sono \textbf{altamente ripetitive}. Succede, per esempio, in pangenomi, versioni successive di pagine web, archivi software e collezioni di documenti quasi uguali. In questi casi l'entropia empirica non sempre cattura tutta la ridondanza utile, perché la caratteristica dominante è la presenza di lunghe ripetizioni tra copie simili.
 
 Una misura molto efficace per questi testi è il numero $r$ di \textbf{run} nella BWT. Se:
@@ -4693,7 +4732,7 @@ L'idea Lempel-Ziv è proprio questa:
     \item le varianti differiscono soprattutto per il tipo di riferimento usato e per le restrizioni su ciò che può essere referenziato.
 \end{itemize}
 
-\subsection{\texorpdfstring{LZ77}{LZ77}}
+\subsection{LZ77}
 L'algoritmo LZ77, introdotto da Ziv e Lempel nel 1977, è alla base di molti compressori pratici, tra cui DEFLATE, gzip e zlib. La sua idea è usare una \textbf{finestra scorrevole} sul testo. La finestra è divisa in due parti:
 \begin{itemize}
     \item il \textbf{\texten{search buffer}}, che contiene una porzione già codificata;
