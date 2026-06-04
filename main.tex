@@ -4498,6 +4498,40 @@ dove $\mathtt{run1}$ rappresenta la run $00$ e $\mathtt{run0}$ rappresenta la ru
 \[
     m=\sum_{j=0}^{t}(b_j+1)2^j.
 \]
+\paragraph{Esempio.}
+Consideriamo una run più lunga, per esempio nove zeri:
+\[
+    000000000.
+\]
+La sua lunghezza è $m=9$, quindi si parte da $m+1=10$. In binario:
+\[
+    10=(1010)_2.
+\]
+Ora si leggono i bit dal meno significativo al più significativo:
+\[
+    1010
+    \quad\leadsto\quad
+    0101.
+\]
+Il bit finale $1$ è quello che garantisce la fine della rappresentazione e viene scartato. Rimane quindi:
+\[
+    010.
+\]
+Di conseguenza, dopo il RLE, la run di nove zeri viene rappresentata con la sequenza:
+\[
+    \mathtt{run0},\mathtt{run1},\mathtt{run0}.
+\]
+Durante la decodifica si fa il passaggio inverso. La sequenza precedente corrisponde ai bit $b_0=0$, $b_1=1$, $b_2=0$; applicando la sommatoria si recupera:
+\[
+    m
+    =
+    (0+1)2^0+(1+1)2^1+(0+1)2^2
+    =
+    1+4+4
+    =
+    9.
+\]
+Questo mostra anche perché non si introducono simboli come $\mathtt{run2}$, $\mathtt{run3}$ o $\mathtt{run9}$: le lunghezze delle run vengono scritte usando solo i due simboli $\mathtt{run0}$ e $\mathtt{run1}$, come se fossero bit. Infatti una run di tre zeri, come nell'esempio precedente $000\mapsto 00$, diventa $\mathtt{run0},\mathtt{run0}$, non un singolo simbolo $\mathtt{run2}$.
 Il codice a prefisso finale usa due codici brevi per i simboli speciali introdotti dal RLE, per esempio:
 \[
     \mathtt{run0}\mapsto 10,
@@ -4509,6 +4543,19 @@ mentre un valore MTF ordinario $a\geq 1$ viene codificato con:
     0^{\lfloor\log(a+1)\rfloor}\operatorname{bin}(a+1),
 \]
 dove $\operatorname{bin}(a+1)$ è la rappresentazione binaria di $a+1$ con $1+\lfloor\log(a+1)\rfloor$ bit. La lunghezza complessiva è quindi $1+2\lfloor\log(a+1)\rfloor$ bit.
+
+\paragraph{Esempio.}
+Per i primi valori ordinari della MTF si ottiene:
+\[
+    \begin{array}{c|c|c|c|c}
+        a & a+1 & \lfloor\log(a+1)\rfloor & \operatorname{bin}(a+1) & \text{codice} \\
+        \hline
+        1 & 2 & 1 & 10 & 010 \\
+        2 & 3 & 1 & 11 & 011 \\
+        3 & 4 & 2 & 100 & 00100
+    \end{array}
+\]
+Per esempio, quando $a=3$ si ha $a+1=4=(100)_2$ e $\lfloor\log(a+1)\rfloor=2$: quindi si mettono due zeri davanti al binario di $4$, ottenendo $00\,100=00100$. In questo modo i valori ordinari $a\geq 1$ sono distinguibili dai simboli speciali $\mathtt{run0}$ e $\mathtt{run1}$, che invece usano i codici brevi $10$ e $11$.
 
 \subsubsection{Da count a locate}
 La \texten{backward search} restituisce un intervallo di righe, non direttamente le posizioni nel testo. Se la riga $i$ corrisponde al suffisso che inizia in $\operatorname{pos}(i)$, allora applicando LF si ottiene una riga $i'$ tale che:
