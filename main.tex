@@ -4454,6 +4454,19 @@ Finora la \texten{backward search} è stata descritta come se la colonna $L=\ope
             \operatorname{MTF}(
                 \operatorname{BWT}(T)))).
 \]
+Questo passaggio va letto insieme al bound di Manzini già introdotto in \eqref{eq:manzini_bwtrl_bound}. Nella forma sintetica usata spesso nelle slide, per $n=|T|$ la lunghezza della stringa compressa soddisfa:
+\[
+    |Z|
+    \leq
+    5nH_k(T)+O(\log n).
+\]
+Il significato è che $Z$ non è una stringa compressa arbitraria: è l'output di una pipeline BWT-based la cui lunghezza è controllata dall'entropia empirica di ordine $k$ del testo. La versione più tecnica richiamata in \eqref{eq:manzini_bwtrl_bound} esprime lo stesso tipo di controllo usando l'entropia empirica modificata:
+\[
+    |Z|
+    \leq
+    (5+3\mu)nH_k^*(T)+g_k,
+\]
+dove $g_k$ raccoglie termini dipendenti da $k$ e dall'alfabeto.
 I passaggi hanno ruoli diversi:
 \begin{itemize}
     \item la \textbf{BWT} produce $L$, dove caratteri con contesti simili tendono a finire vicini;
