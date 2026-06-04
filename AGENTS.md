@@ -60,6 +60,8 @@ Keep source files in UTF-8. Indent nested LaTeX environments with 4 spaces, matc
 
 - Define reusable commands only in the preamble.
 - Keep section content focused on one topic at a time.
+- Do not add `\texten{...}` mechanically around every English technical term; use it only when explicitly requested, when it is already clearly part of the local style, or when it improves the typography of a specific phrase.
+- Do not use `\texorpdfstring{...}{...}` in section titles only because the title contains `\texten{...}` or English text. Prefer a plain title. Use `\texorpdfstring` only when the title contains math or LaTeX commands that would otherwise create bad PDF bookmarks or relevant `hyperref` warnings.
 - Use descriptive lowercase labels with stable prefixes such as `eq:...`, `fig:...`, `theorem_...`, and `example_...`.
 - Keep figure filenames descriptive and lowercase.
 
