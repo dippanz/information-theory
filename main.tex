@@ -4864,11 +4864,69 @@ Vogliamo calcolare $\operatorname{Occ}(\texttt{a},22)$. Si ha:
     \qquad
     r=6-1\cdot4=2.
 \]
+
+Prima di sommare i tre contributi, vediamo esplicitamente come si ottiene quello locale. I primi quattro bucket formano il superblocco completo e occupano:
+\[
+    W[1]=43
+\]
+bit di $Z$. Nel superblocco corrente, il bucket $BZ_5$ occupa:
+\[
+    W'[1,1]=10
+\]
+bit, mentre $BZ_5$ e $BZ_6$ insieme ne occupano $W'[1,2]=21$. Di conseguenza, usando \eqref{eq:fm_occ_bucket_start}, il primo bit di $BZ_6$ è:
+\[
+    43+10+1=54,
+\]
+e la sua lunghezza è:
+\[
+    W'[1,2]-W'[1,1]=21-10=11
+\]
+bit. Dunque non si assume di avere già $BL_6$: dalla rappresentazione compressa si estrae soltanto:
+\[
+    BZ_6
+    =
+    Z[54..64]
+    =
+    \texttt{01101010010}.
+\]
+Separando i codici a prefisso si ottiene:
+\[
+    \texttt{011}\mid\texttt{010}\mid\texttt{10}\mid\texttt{010}
+    \quad\longrightarrow\quad
+    2,1,\mathtt{run0},1
+    \quad\longrightarrow\quad
+    2,1,0,1.
+\]
+L'ultimo passaggio inverte il RLE: $\mathtt{run0}$ rappresenta una run formata da un solo zero. Lo stato salvato all'inizio del bucket è:
+\[
+    MTF_6=(\texttt{a},\texttt{b},\texttt{c}).
+\]
+Invertendo la MTF sui valori $2,1,0,1$ si ricostruisce localmente:
+\[
+    \begin{array}{c|c|c|c}
+        \textbf{valore MTF} & \textbf{lista prima} & \textbf{carattere} & \textbf{lista dopo} \\
+        \hline
+        2 & (\texttt{a},\texttt{b},\texttt{c}) & \texttt{c} & (\texttt{c},\texttt{a},\texttt{b}) \\
+        1 & (\texttt{c},\texttt{a},\texttt{b}) & \texttt{a} & (\texttt{a},\texttt{c},\texttt{b}) \\
+        0 & (\texttt{a},\texttt{c},\texttt{b}) & \texttt{a} & (\texttt{a},\texttt{c},\texttt{b}) \\
+        1 & (\texttt{a},\texttt{c},\texttt{b}) & \texttt{c} & (\texttt{c},\texttt{a},\texttt{b})
+    \end{array}
+\]
+e quindi:
+\[
+    BL_6=\texttt{caac}.
+\]
+Poiché $h=2$, interessa soltanto il prefisso \texttt{ca}, che contiene una occorrenza di \texttt{a}. Questa decodifica locale serve a capire il contenuto della tabella universale: \uline{durante la query reale non viene ripetuta passo per passo}, ma il valore:
+\[
+    S[\texttt{a},2,BZ_6,MTF_6]=1
+\]
+\uline{viene letto direttamente dalla tabella precalcolata}.
+
 Il prefisso $L[1..22]$ contiene quindi:
 \begin{itemize}
     \item il primo superblocco completo $BL_1\cdots BL_4$, con $NO_1[\texttt{a}]=8$;
     \item il bucket completo $BL_5=\texttt{abba}$, con $NO'_{1,1}[\texttt{a}]=2$;
-    \item i primi due caratteri di $BL_6$, cioè \texttt{ca}, nei quali la tabella universale restituisce una sola \texttt{a}.
+    \item il prefisso di lunghezza $h=2$ di $BL_6$, il cui contributo locale appena ricavato è pari a $1$.
 \end{itemize}
 Pertanto:
 \[
