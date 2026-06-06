@@ -6153,5 +6153,1504 @@ Per esercitarsi sui passaggi meccanici degli algoritmi, si possono usare in part
     \item decodificare sequenze LZW come $[1,2,6,3,7,9]$ oppure $[1,2,6,8,6]$ con dizionario iniziale specificato.
 \end{itemize}
 
+\section{Complessità algoritmica e compressione grammaticale}
+Le misure studiate fin qui descrivono la comprimibilità attraverso un modello
+specifico: le entropie misurano regolarità statistiche, mentre i compressori a
+dizionario o basati sulla BWT sfruttano particolari forme di ripetizione.
+Rimane però una domanda più generale:
+\begin{quote}
+    quanta informazione contiene una \emph{singola} stringa, senza assumere
+    che sia stata prodotta da una sorgente probabilistica nota?
+\end{quote}
+
+La \textbf{teoria algoritmica dell'informazione} affronta questa domanda
+collegando informazione, descrizione e calcolo. L'idea fondamentale è che una
+stringa è semplice quando esiste un procedimento breve che la genera, mentre è
+complessa quando ogni sua descrizione effettiva è quasi lunga quanto la stringa
+stessa.
+
+\subsection{Complessità di Kolmogorov}
+\subsubsection{Dall'informazione statistica alla descrizione di una stringa}
+L'entropia di Shannon misura l'incertezza media associata a una sorgente. Non
+assegna invece, da sola, una misura assoluta di complessità a un particolare
+oggetto. Questo limite emerge già confrontando tre stringhe binarie:
+\[
+    x_1=\texttt{11111111},
+    \qquad
+    x_2=\texttt{10101010},
+    \qquad
+    x_3=\texttt{1001110010}.
+\]
+
+Per $x_1$ l'entropia empirica di ordine zero è nulla, perché compare un solo
+simbolo. Anche la descrizione è breve: ``stampa otto volte \texttt{1}''. Per
+$x_2$ e $x_3$, invece, i simboli \texttt{0} e \texttt{1} sono equiprobabili,
+quindi:
+\[
+    H_0(x_2)=H_0(x_3)=1.
+\]
+Le due stringhe hanno la stessa entropia di ordine zero, ma $x_2$ possiede una
+regolarità evidente, descrivibile come ``stampa quattro volte
+\texttt{10}'', mentre per $x_3$ non è immediatamente visibile una regola
+altrettanto corta. L'entropia di ordine zero vede le frequenze, non l'ordine
+globale dei simboli.
+
+Un confronto analogo è:
+\[
+    \begin{split}
+        s_1&=\texttt{0001000100010001000100010001000100010001},\\
+        s_2&=\texttt{1110010111001101101011010011001111101101}.
+    \end{split}
+\]
+La prima stringa è generata ripetendo dieci volte \texttt{0001}; la seconda
+sembra irregolare, ma l'assenza di una regola \emph{evidente} non dimostra che
+non ne esista una. Per formalizzare la casualità bisogna considerare tutte le
+possibili descrizioni algoritmiche, non soltanto quelle che riusciamo a
+indovinare a colpo d'occhio.
+
+\subsubsection{Definizione formale}
+Fissiamo una macchina di Turing universale $U$. In modo equivalente, possiamo
+immaginare un calcolatore ideale con memoria arbitrariamente grande, capace di
+eseguire programmi espressi in un linguaggio universale.
+
+\begin{definizione}
+    Data una stringa binaria $x$, la sua \textbf{complessità di Kolmogorov}
+    rispetto a $U$ è:
+    \begin{equation}\label{eq:kolmogorov_complexity}
+        K_U(x)
+        =
+        \min\left\{
+            |p|
+            \;\middle|\;
+            U(p)=x
+        \right\},
+    \end{equation}
+    dove $p$ è un programma codificato in bit, $|p|$ è la sua lunghezza e
+    $U(p)=x$ significa che l'esecuzione di $p$ termina producendo esattamente
+    $x$.
+\end{definizione}
+
+La definizione non cerca il programma più veloce, ma quello con la descrizione
+più corta. Una stringa può quindi richiedere molto tempo per essere generata e
+avere comunque bassa complessità di Kolmogorov.
+
+Per ogni stringa vale il limite superiore elementare:
+\begin{equation}\label{eq:kolmogorov_print_bound}
+    K_U(x)\leq |x|+c_U,
+\end{equation}
+perché esiste sempre un programma del tipo ``stampa letteralmente $x$''. La
+costante $c_U$ rappresenta il codice necessario per l'operazione di stampa e
+non dipende da $x$. Quando esiste una regola più compatta, il guadagno può
+essere notevole. Per esempio, per:
+\[
+    x=(\texttt{0001})^{10}
+\]
+si può usare uno pseudoprogramma del tipo:
+\begin{verbatim}
+for i = 1 to 10
+    print "0001"
+\end{verbatim}
+La descrizione contiene il blocco, il numero di ripetizioni e una quantità
+costante di istruzioni; non deve memorizzare separatamente tutti i quaranta
+bit.
+
+\subsubsection{Invarianza rispetto alla macchina universale}
+La quantità in \eqref{eq:kolmogorov_complexity} sembra dipendere dal linguaggio
+scelto. Una macchina potrebbe avere un'istruzione specializzata per stampare
+una certa stringa, mentre un'altra potrebbe richiedere più codice. Il seguente
+teorema mostra che questa dipendenza è limitata da una costante.
+
+\begin{theorem}\label{theorem_kolmogorov_invariance}
+    Siano $U$ e $V$ due macchine di Turing universali. Esiste una costante
+    $c_{U,V}$, dipendente soltanto dalle due macchine, tale che per ogni stringa
+    $x$:
+    \[
+        \left|K_U(x)-K_V(x)\right|\leq c_{U,V}.
+    \]
+\end{theorem}
+
+\begin{proof}
+    Sia $p_V$ un programma minimo che produce $x$ sulla macchina $V$. Poiché
+    $U$ è universale, esiste un simulatore fisso di $V$ eseguibile su $U$.
+    Anteponendo a $p_V$ la descrizione del simulatore, secondo una convenzione
+    di codifica fissata una volta per tutte, si ottiene un programma per $U$ di
+    lunghezza:
+    \[
+        |p_V|+c_V,
+    \]
+    dove $c_V$ comprende il simulatore e l'eventuale costo costante necessario
+    a separarlo dal programma simulato. Quindi:
+    \[
+        K_U(x)\leq K_V(x)+c_V.
+    \]
+    Scambiando i ruoli di $U$ e $V$ si ottiene:
+    \[
+        K_V(x)\leq K_U(x)+c_U.
+    \]
+    Basta scegliere
+    $c_{U,V}=\max\{c_U,c_V\}$.
+\end{proof}
+
+Per stringhe molto lunghe una differenza costante è trascurabile. Per questo si
+scrive spesso semplicemente $K(x)$, sottintendendo una macchina universale
+fissata.
+
+\subsubsection{Incomprimibilità e casualità algoritmica}
+Una stringa è algoritmicamente casuale quando non possiede una descrizione
+significativamente più corta della propria rappresentazione letterale.
+
+\begin{definizione}
+    Una stringa $x$ è \textbf{$c$-incomprimibile} se:
+    \[
+        K(x)\geq |x|-c.
+    \]
+    In tal caso si dice anche che $x$ è
+    \textbf{algoritmicamente casuale al livello $c$}. La convenzione più
+    rigida $K(x)\geq |x|$ corrisponde al caso $c=0$.
+\end{definizione}
+
+La costante è necessaria perché il teorema di invarianza permette a due
+macchine universali di differire di un costo fisso. La nozione rilevante non è
+quindi l'uguaglianza esatta tra $K(x)$ e $|x|$, ma l'impossibilità di risparmiare
+un numero crescente di bit. Per una stringa finita la casualità va sempre
+intesa rispetto alla tolleranza $c$; la nozione di casualità per sequenze
+infinite richiede invece definizioni ulteriori, che non sono necessarie qui.
+
+\begin{theorem}\label{theorem_incompressible_strings_exist}
+    Per ogni $n>0$ esiste almeno una stringa binaria $x$ di lunghezza $n$ tale
+    che $K(x)\geq n$.
+\end{theorem}
+
+\begin{proof}
+    Le stringhe binarie di lunghezza $n$ sono $2^n$. I programmi di lunghezza
+    strettamente minore di $n$ sono:
+    \[
+        1+2+\cdots+2^{n-1}=2^n-1.
+    \]
+    Ogni programma che termina produce al più una stringa. Di conseguenza, i
+    programmi più corti di $n$ non possono produrre tutte le $2^n$ stringhe di
+    lunghezza $n$: almeno una richiede un programma lungo almeno $n$.
+\end{proof}
+
+Lo stesso conteggio dà un risultato più forte. Per ogni intero
+$0\leq c\leq n$, i programmi lunghi meno di $n-c$ sono
+$2^{n-c}-1$; dunque almeno:
+\[
+    2^n-2^{n-c}+1
+\]
+stringhe di lunghezza $n$ sono $c$-incomprimibili. Per una stringa scelta
+uniformemente a caso, l'incomprimibilità non è quindi un'eccezione, ma il
+comportamento prevalente.
+
+\subsubsection{La complessità di Kolmogorov non è calcolabile}
+La definizione è matematicamente precisa, ma non fornisce un algoritmo per
+calcolare $K(x)$.
+
+\begin{theorem}\label{theorem_kolmogorov_uncomputable}
+    Non esiste un algoritmo che, ricevuta una stringa arbitraria $x$, calcoli
+    esattamente $K(x)$.
+\end{theorem}
+
+\begin{proof}
+    Supponiamo per assurdo che $K$ sia calcolabile. Dato un intero $m$,
+    potremmo enumerare le stringhe e scegliere la prima stringa $x_m$ tale che:
+    \[
+        K(x_m)>m.
+    \]
+    Una stringa di questo tipo esiste per il teorema precedente. Tuttavia
+    $x_m$ sarebbe prodotta da un programma fisso che riceve $m$, enumera le
+    stringhe, calcola le loro complessità e restituisce la prima che supera
+    $m$. La descrizione di $m$ richiede $O(\log m)$ bit, mentre il resto del
+    programma ha lunghezza costante. Si avrebbe quindi:
+    \[
+        K(x_m)=O(\log m),
+    \]
+    in contraddizione con $K(x_m)>m$ per $m$ sufficientemente grande.
+\end{proof}
+
+La non calcolabilità è strettamente collegata all'indecidibilità del problema
+dell'arresto: per sapere se un programma è davvero il più corto bisognerebbe
+escludere tutti i programmi più brevi che potrebbero produrre $x$, compresi
+quelli per i quali non è decidibile stabilire se termineranno.
+
+\subsubsection{Stime pratiche e confronto tra stringhe}
+Un compressore reale non calcola $K(x)$, ma fornisce un limite superiore. Se
+$C(x)$ è una rappresentazione compressa decodificabile, allora esiste una
+costante $c_C$ tale che:
+\[
+    K(x)\leq |C(x)|+c_C,
+\]
+perché un programma può contenere il decoder di $C$ e i dati compressi. Un
+compressore che trova molte regolarità produce quindi una stima superiore più
+piccola, ma non certifica che non esista un programma ancora più corto.
+
+La stessa idea può essere usata per confrontare due stringhe. Indicando con
+$K(x\mid y)$ la lunghezza del programma più corto che produce $x$ quando $y$
+è già disponibile, la \textbf{distanza informativa} teorica è:
+\[
+    E(x,y)=\max\{K(x\mid y),K(y\mid x)\}.
+\]
+Due stringhe simili permettono di ricostruire l'una dall'altra con poche
+informazioni aggiuntive. Nelle applicazioni si sostituisce $K$ con un
+compressore e si usa spesso la \textbf{distanza di compressione normalizzata}:
+\[
+    \operatorname{NCD}_C(x,y)
+    =
+    \frac{
+        |C(xy)|-\min\{|C(x)|,|C(y)|\}
+    }{
+        \max\{|C(x)|,|C(y)|\}
+    }.
+\]
+Questa è una misura euristica: il risultato dipende dal compressore, dalla
+dimensione dei file e dal modo in cui viene rappresentata la concatenazione.
+
+\subsection{Dal programma minimo alla grammatica minima}
+La macchina di Turing è un modello di descrizione molto potente, ma proprio per
+questo il programma minimo non è calcolabile. Un modello più debole consiste
+nel rappresentare la stringa tramite una grammatica aciclica che genera un solo
+testo. Le ripetizioni vengono espresse una volta in una regola e poi richiamate
+mediante non terminali.
+
+\begin{definizione}
+    Uno \textbf{\texten{Straight-Line Program}} (SLP) è una grammatica libera
+    dal contesto nella quale:
+    \begin{itemize}
+        \item ogni non terminale compare a sinistra di una sola produzione;
+        \item il grafo delle dipendenze tra non terminali è aciclico;
+        \item l'assioma genera una e una sola stringa finita.
+    \end{itemize}
+\end{definizione}
+
+Un SLP non descrive un linguaggio con molte parole: è una rappresentazione
+gerarchica di un singolo testo. In forma normale di Chomsky le produzioni sono:
+\[
+    A\to BC,
+    \qquad
+    A\to a,
+\]
+con l'eventuale regola $S\to\varepsilon$ per la stringa vuota.
+
+\begin{definizione}
+    Sia:
+    \[
+        G=(\Sigma,V,P,S),
+        \qquad
+        P=\{A_1\to v_1,\ldots,A_k\to v_k\},
+    \]
+    un SLP. La sua \textbf{dimensione} è il numero totale di simboli nei lati
+    destri:
+    \begin{equation}\label{eq:grammar_size}
+        |G|=\sum_{i=1}^{k}|v_i|.
+    \end{equation}
+\end{definizione}
+
+Questa misura non coincide esattamente con il numero di bit necessari per
+serializzare la grammatica: per codificare i simboli servono anche i loro
+identificatori. Con un alfabeto di dimensione $\sigma$, una grammatica di
+dimensione $g$ può essere rappresentata con
+$O(g\log(g+\sigma))$ bit; per un alfabeto fissato il limite diventa
+$O(g\log g)$. La quantità $|G|$ misura quindi la struttura simbolica della
+grammatica, non direttamente la lunghezza finale del file compresso.
+
+\subsubsection{Esempio: una frase ripetuta}
+Consideriamo:
+\[
+    x=\texttt{a rose is a rose is a rose}.
+\]
+Una grammatica compatta è:
+\[
+    S\to BBA,
+    \qquad
+    A\to\texttt{a rose},
+    \qquad
+    B\to A\texttt{\ is\ }.
+\]
+Il non terminale $A$ rappresenta il frammento \texttt{a rose}, mentre $B$
+aggiunge \texttt{ is } e può essere riutilizzato due volte. Contando anche gli
+spazi come terminali, la grammatica ha dimensione $14$. L'esempio mostra il
+vantaggio della rappresentazione grammaticale: una sottostringa ripetuta non
+viene copiata, ma nominata.
+
+\subsubsection{Parole di Fibonacci}
+Definiamo:
+\[
+    f_0=\texttt{b},
+    \qquad
+    f_1=\texttt{a},
+    \qquad
+    f_n=f_{n-1}f_{n-2}.
+\]
+Per esempio:
+\[
+    f_6=\texttt{abaababaabaab}.
+\]
+La definizione ricorsiva si traduce direttamente nell'SLP:
+\[
+    \begin{array}{lll}
+        F_0\to\texttt{b},&
+        F_1\to\texttt{a},&
+        F_2\to F_1F_0,\\
+        F_3\to F_2F_1,&
+        F_4\to F_3F_2,&
+        F_5\to F_4F_3,\\
+        &&F_6\to F_5F_4.
+    \end{array}
+\]
+L'assioma è $F_6$ e la dimensione è:
+\[
+    |G_6|=1+1+5\cdot 2=12.
+\]
+Per $f_6$ questa grammatica è minima tra quelle in forma normale di Chomsky.
+In generale la costruzione analoga per $f_n$ ha dimensione $2n$. La lunghezza
+di $f_n$, invece, cresce come un numero di Fibonacci: una descrizione lineare
+in $n$ genera una stringa esponenzialmente più lunga.
+
+\subsubsection{Smallest Grammar Problem}
+\begin{definizione}
+    Lo \textbf{\texten{Smallest Grammar Problem}} (SGP) chiede, data una
+    stringa $x$, di trovare un SLP $G_{\min}(x)$ di dimensione minima tale che:
+    \[
+        L(G_{\min}(x))=\{x\}.
+    \]
+    Indichiamo con:
+    \[
+        g^*(x)=|G_{\min}(x)|
+    \]
+    la dimensione grammaticale minima di $x$.
+\end{definizione}
+
+Una grammatica libera dal contesto che genera una sola stringa può essere
+privata delle produzioni inutili e letta come una grammatica aciclica; per
+questo, nello SGP, il formalismo delle grammatiche singleton e quello degli SLP
+sono usati in modo equivalente.
+
+Il passaggio dai programmi alle grammatiche rende il modello meno espressivo:
+non tutte le regolarità algoritmiche sono necessariamente facili da descrivere
+con concatenazioni di non terminali. In compenso, il problema passa dalla non
+calcolabilità a un problema decidibile di ottimizzazione finita, pur rimanendo
+computazionalmente intrattabile nel caso generale.
+
+\begin{theorem}\label{theorem_sgp_np_complete}
+    La versione decisionale dello SGP, che chiede se esiste una grammatica per
+    $x$ di dimensione al più $k$, è NP-completa.
+\end{theorem}
+
+Una grammatica candidata può essere verificata in tempo polinomiale usando le
+lunghezze delle espansioni e confrontando la stringa generata con $x$. La
+difficoltà è trovare la struttura gerarchica migliore tra le molte possibili.
+
+\subsubsection{Rapporto di approssimazione}
+Poiché calcolare sempre $G_{\min}$ è impraticabile, si studiano algoritmi che
+producono grammatiche non ottime ma controllabilmente piccole. Per un algoritmo
+$A$, il rapporto di approssimazione sulle stringhe di lunghezza $n$ è:
+\begin{equation}\label{eq:sgp_approximation_ratio}
+    \rho_A(n)
+    =
+    \max_{x\in\Sigma^n}
+    \frac{|A(x)|}{g^*(x)}.
+\end{equation}
+La massimizzazione considera il caso peggiore: anche se un algoritmo funziona
+bene sui testi comuni, una famiglia artificiale di input può rivelare un
+rapporto molto più grande.
+
+Lo SGP non ammette uno schema di approssimazione arbitrariamente vicino a $1$:
+a meno che $\mathrm{P}=\mathrm{NP}$, nessun algoritmo polinomiale può garantire
+un rapporto inferiore a:
+\[
+    \frac{8569}{8568}\simeq 1.000116.
+\]
+Sono però noti algoritmi teorici con rapporto
+$O(\log(n/g^*))$. Gli algoritmi pratici discussi di seguito privilegiano una
+costruzione semplice e veloce e possono avere garanzie peggiori nel caso
+patologico.
+
+\subsection{SEQUITUR}
+SEQUITUR costruisce online una grammatica mentre legge l'input da sinistra a
+destra. Inizia con:
+\[
+    S\to\varepsilon
+\]
+e, dopo ogni nuovo simbolo, ripristina due invarianti.
+
+\begin{itemize}
+    \item \textbf{Unicità dei digrammi:} nessuna coppia di simboli adiacenti
+          deve comparire due volte senza sovrapposizione nella grammatica. Se
+          il digramma $XY$ è ripetuto, si crea o si riusa una regola
+          $A\to XY$ e le occorrenze vengono sostituite da $A$.
+    \item \textbf{Utilità delle regole:} ogni non terminale diverso
+          dall'assioma deve essere usato almeno due volte nei lati destri. Se
+          una regola viene richiamata una sola volta, viene eliminata e la sua
+          unica occorrenza viene sostituita dalla relativa espansione.
+\end{itemize}
+
+Il primo vincolo individua ripetizioni locali; il secondo impedisce che il
+dizionario costi più del riuso che introduce.
+
+\begin{algorithm}[H]
+    \caption{Schema di SEQUITUR}
+    \begin{algorithmic}[1]
+        \Require sequenza $w[1..n]$
+        \State inizializza $S\to\varepsilon$ e un indice dei digrammi
+        \For{$i=1$ \textbf{to} $n$}
+            \State aggiungi $w[i]$ alla fine del lato destro di $S$
+            \While{l'unicità dei digrammi è violata}
+                \State crea o riusa una regola per il digramma ripetuto
+                \State sostituisci le occorrenze non sovrapposte
+            \EndWhile
+            \While{esiste una regola secondaria usata una sola volta}
+                \State espandi la sua unica occorrenza ed elimina la regola
+            \EndWhile
+        \EndFor
+        \State \Return la grammatica risultante
+    \end{algorithmic}
+    \label{alg:sequitur}
+\end{algorithm}
+
+\subsubsection{Esempio: \texttt{abcdbcabcd}}
+Leggiamo:
+\[
+    w=\texttt{abcdbcabcd}.
+\]
+Fino al quinto simbolo non compare nessun digramma ripetuto. Dopo avere letto
+il sesto simbolo, \texttt{bc} appare due volte:
+\[
+    S\to\texttt{abcdbc}
+    \quad\Longrightarrow\quad
+    S\to\texttt{a}A\texttt{d}A,
+    \qquad
+    A\to\texttt{bc}.
+\]
+
+Dopo il nono simbolo il suffisso \texttt{bc} viene sostituito nuovamente da
+$A$:
+\[
+    S\to\texttt{a}A\texttt{d}A\texttt{a}A.
+\]
+Ora il digramma $\texttt{a}A$ compare due volte, quindi:
+\[
+    S\to B\texttt{d}AB,
+    \qquad
+    A\to\texttt{bc},
+    \qquad
+    B\to\texttt{a}A.
+\]
+
+L'ultimo simbolo è \texttt{d}. Il digramma $B\texttt{d}$ diventa ripetuto:
+\[
+    S\to CAC,
+    \qquad
+    A\to\texttt{bc},
+    \qquad
+    B\to\texttt{a}A,
+    \qquad
+    C\to B\texttt{d}.
+\]
+La regola di $B$ è però usata una sola volta, dentro $C$. Il vincolo di utilità
+la elimina:
+\[
+    \boxed{
+        S\to CAC,
+        \qquad
+        A\to\texttt{bc},
+        \qquad
+        C\to\texttt{a}A\texttt{d}
+    }.
+\]
+Infatti $C$ espande in \texttt{abcd}, perciò:
+\[
+    S
+    \Rightarrow
+    \texttt{abcd}\,\texttt{bc}\,\texttt{abcd}
+    =
+    \texttt{abcdbcabcd}.
+\]
+La grammatica finale ha dimensione $3+2+3=8$.
+
+\subsubsection{Complessità e qualità dell'approssimazione}
+Con un indice che associa ogni digramma alla sua occorrenza, SEQUITUR richiede
+tempo e spazio lineari nella lunghezza dell'input. Questa efficienza non implica
+però che la grammatica sia sempre vicina a quella minima.
+
+L'analisi del caso peggiore di SEQUITUR dà il limite superiore:
+\[
+    \rho_{\mathrm{SEQUITUR}}(n)
+    \in
+    O\left(
+        \left(\frac{n}{\log n}\right)^{3/4}
+    \right),
+\]
+mentre esistono famiglie di stringhe sulle quali il rapporto è almeno
+$\Omega(n^{1/3})$. I due limiti non coincidono: descrivono un intervallo noto,
+non una caratterizzazione esatta.
+
+\subsection{Re-Pair}
+Re-Pair è un algoritmo offline: a differenza di SEQUITUR, considera
+ripetutamente l'intera sequenza corrente e sceglie il digramma più frequente.
+
+\begin{algorithm}[H]
+    \caption{Schema di Re-Pair}
+    \begin{algorithmic}[1]
+        \Require stringa $w$
+        \State $S\gets w$
+        \While{esiste un digramma con almeno due occorrenze non sovrapposte}
+            \State scegli un digramma $XY$ di frequenza massima
+            \State crea un nuovo non terminale $A$ con regola $A\to XY$
+            \State sostituisci con $A$ tutte le occorrenze non sovrapposte di $XY$
+        \EndWhile
+        \State usa la sequenza residua come lato destro dell'assioma
+    \end{algorithmic}
+    \label{alg:repair}
+\end{algorithm}
+
+Se più digrammi hanno la stessa frequenza massima, il risultato può dipendere
+dalla regola usata per spezzare il pareggio. La grammatica non è quindi sempre
+univocamente determinata dall'input.
+
+\subsubsection{Esempio completo}
+Consideriamo:
+\[
+    w_0=\texttt{aaabcaabaaabcabdabd}.
+\]
+Il digramma più frequente è \texttt{ab}, con cinque occorrenze. Introduciamo
+$A\to\texttt{ab}$:
+\[
+    w_1=\texttt{aaAcaAaaAcAdAd}.
+\]
+In $w_1$ il digramma $\texttt{a}A$ compare tre volte. Ponendo
+$B\to\texttt{a}A$ si ottiene:
+\[
+    w_2=\texttt{aBcBaBcAdAd}.
+\]
+Ora scegliamo $A\texttt{d}$, che compare due volte:
+\[
+    C\to A\texttt{d},
+    \qquad
+    w_3=\texttt{aBcBaBcCC}.
+\]
+Tra i digrammi di frequenza due scegliamo $B\texttt{c}$:
+\[
+    D\to B\texttt{c},
+    \qquad
+    w_4=\texttt{aDBaDCC}.
+\]
+Infine $\texttt{a}D$ compare due volte:
+\[
+    E\to\texttt{a}D,
+    \qquad
+    w_5=\texttt{EBaECC}.
+\]
+
+La grammatica prodotta è:
+\[
+    \begin{array}{lll}
+        S\to EB\texttt{a}ECC,
+        &A\to\texttt{ab},
+        &B\to\texttt{a}A,\\
+        C\to A\texttt{d},
+        &D\to B\texttt{c},
+        &E\to\texttt{a}D.
+    \end{array}
+\]
+Espandendo i non terminali in ordine inverso si ricostruisce esattamente
+$w_0$. La dimensione, secondo \eqref{eq:grammar_size}, è:
+\[
+    |G|=6+5\cdot 2=16.
+\]
+Il testo originale ha lunghezza $20$. Il confronto è soltanto simbolico: per
+ottenere il numero effettivo di bit bisogna codificare anche gli identificatori
+dei non terminali.
+
+\subsubsection{Complessità e rapporto di approssimazione}
+L'implementazione classica di Re-Pair, con strutture dati adatte ad aggiornare
+le frequenze dei digrammi, richiede tempo e spazio lineari. Le costanti e il
+consumo di memoria restano però importanti; versioni recenti ridimensionano le
+strutture ausiliarie per lavorare su collezioni molto grandi.
+
+Il limite superiore classico sul rapporto di approssimazione è:
+\[
+    \rho_{\mathrm{RePair}}(n)
+    \in
+    O\left(
+        \left(\frac{n}{\log n}\right)^{2/3}
+    \right).
+\]
+È noto anche un limite inferiore
+$\Omega(\log n/\log\log n)$, quindi non si conosce ancora un rapporto
+asintotico esatto.
+
+\subsubsection{Conversione in forma normale di Chomsky}
+Le regole create durante le sostituzioni sono già binarie. Per ottenere una
+grammatica completamente in forma normale di Chomsky si procede così:
+\begin{enumerate}
+    \item per ogni terminale necessario in una regola mista si può introdurre
+          una produzione $X_a\to a$;
+    \item ogni regola Re-Pair $A\to XY$ viene mantenuta;
+    \item se il lato destro finale dell'assioma è
+          $X_1X_2\cdots X_h$, lo si binarizza:
+          \[
+              S\to X_1Y_1,\quad
+              Y_1\to X_2Y_2,\quad\ldots,\quad
+              Y_{h-2}\to X_{h-1}X_h.
+          \]
+\end{enumerate}
+La binarizzazione aggiunge $h-2$ regole e non modifica la stringa generata.
+Quando più digrammi hanno la stessa frequenza, anche la grammatica in forma
+normale dipende dalla scelta effettuata dall'implementazione.
+
+\paragraph{Parole di Fibonacci.}
+Per le parole di Fibonacci tutte le grammatiche prodotte da Re-Pair, qualunque
+sia la scelta tra digrammi a pari frequenza, sono minime. Inoltre le grammatiche
+minime di questa famiglia sono precisamente quelle ottenibili con Re-Pair; le
+regole recuperano la struttura ricorsiva delle parole di Fibonacci.
+
+\subsection{I parsing Lempel-Ziv come grammatiche}
+Gli algoritmi LZ studiati nella sezione precedente possono essere interpretati
+anche come generatori di grammatiche. Questa lettura mette in relazione il
+numero di frasi del parsing e la dimensione di un SLP.
+
+\subsubsection{Grammatica indotta da LZ78}
+In LZ78 ogni nuova frase è formata da una frase precedente seguita da un
+carattere. Se la $i$-esima coppia è $\langle 0,c\rangle$, si crea:
+\[
+    X_i\to c.
+\]
+Se è $\langle j,c\rangle$ con $j>0$, si crea:
+\[
+    X_i\to X_jc.
+\]
+Infine l'assioma concatena i non terminali delle frasi nell'ordine del parsing.
+
+Consideriamo:
+\[
+    w=
+    \texttt{a}\mid
+    \texttt{ab}\mid
+    \texttt{b}\mid
+    \texttt{aba}\mid
+    \texttt{ba}\mid
+    \texttt{abb}.
+\]
+Il parsing LZ78 è:
+\[
+    \langle 0,\texttt{a}\rangle,
+    \langle 1,\texttt{b}\rangle,
+    \langle 0,\texttt{b}\rangle,
+    \langle 2,\texttt{a}\rangle,
+    \langle 3,\texttt{a}\rangle,
+    \langle 2,\texttt{b}\rangle.
+\]
+La grammatica corrispondente è:
+\[
+    \begin{array}{lll}
+        X_1\to\texttt{a},&
+        X_2\to X_1\texttt{b},&
+        X_3\to\texttt{b},\\
+        X_4\to X_2\texttt{a},&
+        X_5\to X_3\texttt{a},&
+        X_6\to X_2\texttt{b},\\
+        S\to X_1X_2X_3X_4X_5X_6.&&
+    \end{array}
+\]
+L'espansione di $S$ è:
+\[
+    \texttt{aabbababaabb}.
+\]
+
+Il rapporto di approssimazione di LZ78 rispetto allo SGP è noto
+asintoticamente:
+\[
+    \rho_{\mathrm{LZ78}}(n)
+    =
+    \Theta\left(
+        \left(\frac{n}{\log n}\right)^{2/3}
+    \right).
+\]
+LZ78 può quindi essere universale nel senso probabilistico e, allo stesso
+tempo, essere lontano dalla grammatica minima su particolari stringhe.
+
+\subsubsection{LZ77 senza sovrapposizioni}
+Consideriamo una variante a coppie di LZ77 nella quale una frase copiata deve
+avere la propria sorgente completamente contenuta nel prefisso già prodotto.
+Indichiamo con $z$ il numero di frasi quando le sovrapposizioni sono ammesse e
+con $\widehat z$ il numero di frasi nella variante senza sovrapposizioni. Vale:
+\begin{equation}\label{eq:lz_overlap_relation}
+    z
+    \leq
+    \widehat z
+    \leq
+    z\cdot
+    O\left(
+        \log
+        \frac{n}{
+            z\log_{\sigma}z
+        }
+    \right).
+\end{equation}
+La prima disuguaglianza è immediata: vietare sorgenti sovrapposte non può
+ridurre il numero minimo di frasi. La seconda mostra che il costo del vincolo
+è al più logaritmico.
+
+Per la parola di Fibonacci:
+\[
+    f_6=\texttt{abaababaabaab}
+\]
+un parsing senza sovrapposizioni è:
+\[
+    \texttt{a}\mid
+    \texttt{b}\mid
+    (1,1)\mid
+    (1,3)\mid
+    (2,5)\mid
+    (1,2),
+\]
+dove $(p,\ell)$ copia $\ell$ simboli a partire dalla posizione precedente
+$p$. Le frasi sono quindi:
+\[
+    \texttt{a}\mid
+    \texttt{b}\mid
+    \texttt{a}\mid
+    \texttt{aba}\mid
+    \texttt{baaba}\mid
+    \texttt{ab}.
+\]
+
+Con la misura \eqref{eq:grammar_size} e grammatiche in forma normale di
+Chomsky, il numero di frasi del parsing LZ77 senza sovrapposizioni è un limite
+inferiore alla dimensione della grammatica minima:
+\[
+    \widehat z\leq g^*.
+\]
+Viceversa, da un parsing LZ77 di $z$ frasi si può costruire una grammatica
+bilanciata di dimensione:
+\[
+    O\left(
+        z\log\frac{n}{z}
+    \right).
+\]
+LZ77 diventa quindi un ponte tra un parsing a copie e una rappresentazione
+gerarchica: le frasi danno un limite inferiore, mentre la conversione
+bilanciata dà un'approssimazione logaritmica dello SGP.
+
+\subsubsection{Confronto tra gli algoritmi grammaticali}
+I metodi descritti cercano la stessa struttura con strategie diverse:
+\begin{itemize}
+    \item \textbf{SEQUITUR} lavora online e sostituisce un digramma appena la
+          sua unicità viene violata;
+    \item \textbf{Re-Pair} lavora offline e sceglie ogni volta il digramma
+          globalmente più frequente;
+    \item \textbf{LZ78} crea regole a partire da frasi del dizionario, ciascuna
+          uguale a una frase precedente più un carattere;
+    \item \textbf{LZ77} non produce direttamente una grammatica, ma il suo
+          parsing può essere trasformato in un SLP bilanciato.
+\end{itemize}
+
+La dimensione della grammatica non è l'unico criterio pratico. Contano anche il
+numero di bit necessario per codificare le regole, il tempo di costruzione, la
+memoria, la velocità di decompressione e la possibilità di accedere al testo
+senza espanderlo completamente.
+
+\subsubsection{Esercizi}
+\begin{enumerate}
+    \item Applicare SEQUITUR a $f_6=\texttt{abaababaabaab}$ e confrontare le
+          regole ottenute con la grammatica ricorsiva $F_i\to F_{i-1}F_{i-2}$.
+    \item Applicare SEQUITUR a \texttt{abcabcdefabcdef} e indicare, a ogni
+          sostituzione, quale dei due invarianti è stato ripristinato.
+    \item Applicare Re-Pair a $f_6$, esplicitando come vengono risolti gli
+          eventuali pareggi tra digrammi.
+    \item Applicare Re-Pair a \texttt{aaabbbccccddddaaabbb} e convertire la
+          grammatica finale in forma normale di Chomsky.
+    \item Costruire la grammatica LZ78 associata a $f_6$.
+    \item Confrontare SEQUITUR e Re-Pair su
+          \texttt{abcabcabcabcabc}: calcolare la dimensione simbolica delle
+          due grammatiche e verificare che entrambe generino soltanto l'input.
+\end{enumerate}
+
+\section{Misure di ripetitività e string attractors}
+Le entropie empiriche descrivono le statistiche locali, ma possono cambiare
+poco quando un testo viene replicato molte volte. Per misurare direttamente la
+ripetitività globale sono già comparsi diversi parametri:
+\begin{itemize}
+    \item $z$, il numero di frasi del parsing LZ77;
+    \item $r$, il numero di run nella BWT;
+    \item $g^*$, la dimensione della grammatica minima;
+    \item il numero di fattori distinti di ogni lunghezza.
+\end{itemize}
+Queste misure nascono da rappresentazioni molto diverse. La nozione di
+\textbf{\texten{string attractor}}, introdotta da Kempa e Prezza, fornisce un
+oggetto combinatorio comune: un piccolo insieme di posizioni che intercetta
+almeno un'occorrenza di ogni sottostringa distinta.
+
+\subsection{Definizione e intuizione}
+Sia $T=T[1]T[2]\cdots T[n]$ una stringa sull'alfabeto $\Sigma$. Una posizione
+$p$ \textbf{interseca} un'occorrenza $T[i..j]$ se $i\leq p\leq j$.
+
+\begin{definizione}
+    Un insieme di posizioni:
+    \[
+        \Gamma=\{j_1,\ldots,j_{\gamma}\}
+        \subseteq
+        \{1,\ldots,n\}
+    \]
+    è uno \textbf{\texten{string attractor}} per $T$ se, per ogni sottostringa
+    $T[i..j]$, esiste un'occorrenza, non necessariamente distinta da quella
+    considerata, tale che:
+    \[
+        T[i'..j']=T[i..j]
+    \]
+    che interseca una posizione dell'attrattore:
+    \[
+        [i',j']\cap\Gamma\neq\varnothing.
+    \]
+\end{definizione}
+
+Non si richiede che \emph{ogni} occorrenza di una sottostringa attraversi
+$\Gamma$: basta che ne esista almeno una. Per questo una posizione può
+``rappresentare'' molte occorrenze che si trovano altrove nel testo.
+
+L'insieme di tutte le posizioni $\{1,\ldots,n\}$ è sempre un attrattore, ma non
+comprime nessuna informazione. La quantità interessante è:
+\begin{equation}\label{eq:minimum_string_attractor}
+    \gamma^*(T)
+    =
+    \min\left\{
+        |\Gamma|
+        \;\middle|\;
+        \Gamma\text{ è uno string attractor per }T
+    \right\}.
+\end{equation}
+
+Ogni simbolo distinto deve avere un'occorrenza che attraversa l'attrattore.
+Poiché un'occorrenza di lunghezza uno contiene una sola posizione:
+\begin{equation}\label{eq:attractor_alphabet_lower_bound}
+    \gamma^*(T)\geq |\operatorname{alph}(T)|,
+\end{equation}
+dove $\operatorname{alph}(T)$ è l'insieme dei caratteri effettivamente
+presenti in $T$.
+
+\subsubsection{Esempio minimo}
+Consideriamo:
+\[
+    T=\texttt{CDABCCDABCCA}.
+\]
+Numeriamo le posizioni:
+\[
+    \begin{array}{c|cccccccccccc}
+        i    &1&2&3&4&5&6&7&8&9&10&11&12\\ \hline
+        T[i] &\texttt{C}&\texttt{D}&\texttt{A}&
+        \underline{\texttt{B}}&
+        \texttt{C}&\texttt{C}&
+        \underline{\texttt{D}}&
+        \texttt{A}&\texttt{B}&\texttt{C}&
+        \underline{\texttt{C}}&
+        \underline{\texttt{A}}
+    \end{array}
+\]
+L'insieme:
+\[
+    \Gamma=\{4,7,11,12\}
+\]
+è uno string attractor. Le sottostringhe che già attraversano una posizione
+selezionata sono coperte per definizione. Rimangono da controllare soltanto i
+fattori contenuti interamente negli intervalli tra posizioni selezionate. I
+fattori distinti rilevanti sono:
+\[
+    \texttt{A},\texttt{B},\texttt{C},\texttt{D},
+    \texttt{CD},\texttt{DA},\texttt{CC},\texttt{AB},\texttt{BC},
+    \texttt{CDA},\texttt{ABC}.
+\]
+Ognuno possiede un'occorrenza che attraversa $\Gamma$. Per esempio:
+\begin{itemize}
+    \item \texttt{CD} compare in $T[6..7]$ e attraversa la posizione $7$;
+    \item \texttt{DA} compare in $T[7..8]$ e attraversa la posizione $7$;
+    \item \texttt{CC} compare in $T[10..11]$ e attraversa la posizione $11$;
+    \item \texttt{AB} compare in $T[3..4]$ e attraversa la posizione $4$;
+    \item \texttt{CDA} compare in $T[6..8]$ e attraversa la posizione $7$;
+    \item \texttt{ABC} compare in $T[3..5]$ e attraversa la posizione $4$.
+\end{itemize}
+
+L'alfabeto è $\{\texttt{A},\texttt{B},\texttt{C},\texttt{D}\}$, quindi ogni
+attrattore ha almeno quattro posizioni per
+\eqref{eq:attractor_alphabet_lower_bound}. Poiché $|\Gamma|=4$, l'attrattore
+mostrato è minimo:
+\[
+    \gamma^*(T)=4.
+\]
+
+\subsubsection{Un esempio periodico}
+Per:
+\[
+    T=\texttt{ababab}
+\]
+l'insieme $\Gamma=\{2,3\}$ è un attrattore. I caratteri singoli
+\texttt{a} e \texttt{b} sono coperti dalle posizioni $3$ e $2$; i fattori
+\texttt{ab} e \texttt{ba} hanno occorrenze che attraversano tali posizioni;
+ogni fattore più lungo ha almeno un'occorrenza che attraversa una delle due.
+Essendo
+$|\operatorname{alph}(T)|=2$, l'attrattore è minimo.
+
+Questo esempio mostra che la periodicità può rendere $\gamma^*$ costante anche
+quando il testo viene allungato ripetendo lo stesso blocco.
+
+\subsection{Fattori distinti e misura \texorpdfstring{$\delta$}{delta}}
+Indichiamo con $\operatorname{SUB}_T(k)$ il numero di sottostringhe distinte di
+$T$ aventi lunghezza $k$, dette anche $k$-mer.
+
+\begin{theorem}\label{theorem_attractor_distinct_kmers}
+    Se $T$ possiede uno string attractor $\Gamma$ di dimensione $\gamma$, allora
+    per ogni $1\leq k\leq n$:
+    \begin{equation}\label{eq:attractor_kmer_bound}
+        \operatorname{SUB}_T(k)\leq \gamma k.
+    \end{equation}
+\end{theorem}
+
+\begin{proof}
+    Ogni $k$-mer distinto ha un'occorrenza che attraversa almeno una posizione
+    $p\in\Gamma$. Un fattore di lunghezza $k$ che attraversa $p$ può iniziare
+    soltanto in una delle posizioni:
+    \[
+        p-k+1,p-k+2,\ldots,p,
+    \]
+    quindi esistono al più $k$ fattori di lunghezza $k$ associabili a $p$.
+    Sommando sulle $\gamma$ posizioni si ottiene al più $\gamma k$. Eventuali
+    duplicati riducono il numero, quindi il risultato è un limite superiore.
+\end{proof}
+
+Il teorema suggerisce una seconda misura di ripetitività.
+
+\begin{definizione}
+    Per una stringa $T$ di lunghezza $n$ si definisce:
+    \begin{equation}\label{eq:delta_repetitiveness}
+        \delta(T)
+        =
+        \max_{1\leq k\leq n}
+        \frac{\operatorname{SUB}_T(k)}{k}.
+    \end{equation}
+\end{definizione}
+
+Dalla \eqref{eq:attractor_kmer_bound}, scegliendo un attrattore minimo, segue:
+\begin{equation}\label{eq:delta_attractor_relation}
+    \delta(T)\leq\gamma^*(T).
+\end{equation}
+La quantità $\delta$ guarda la lunghezza alla quale la stringa contiene più
+fattori distinti per unità di lunghezza. È un limite inferiore computabile per
+la dimensione di ogni attrattore e può essere calcolata in tempo lineare.
+Questa notazione non va confusa con il codice delta di Elias, indicato in
+precedenza con $\delta(x)$: qui l'argomento è una stringa e $\delta(T)$ è una
+misura di ripetitività.
+
+\subsection{Complessità del problema minimo}
+La versione decisionale del problema chiede:
+\begin{quote}
+    data una stringa $T$ e una soglia $q$, esiste uno string attractor di
+    dimensione al più $q$?
+\end{quote}
+
+\begin{theorem}\label{theorem_minimum_attractor_np_complete}
+    La versione decisionale del problema, che chiede se esiste un attrattore di
+    dimensione al più $q$, è NP-completa. Il corrispondente problema di
+    ottimizzazione è quindi NP-hard.
+\end{theorem}
+
+Un insieme candidato può essere verificato enumerando i fattori distinti e
+controllando se ciascuno ha un'occorrenza che attraversa una posizione scelta.
+La ricerca dell'insieme minimo, invece, è combinatoria e può essere vista come
+una variante di \texten{set cover}: ogni posizione copre l'insieme dei fattori
+che hanno un'occorrenza passante per essa.
+
+Come per lo SGP, l'NP-completezza non impedisce di:
+\begin{itemize}
+    \item trovare attrattori non minimi in tempo polinomiale;
+    \item ottenere limiti superiori da compressori già calcolati;
+    \item usare $\delta$, $z$, $r$ o $g$ come stime della ripetitività.
+\end{itemize}
+
+\subsection{Dai compressori agli attrattori}
+La forza della definizione emerge dal fatto che rappresentazioni molto diverse
+inducono naturalmente uno string attractor.
+
+\subsubsection{Confini delle frasi LZ77}
+\begin{theorem}\label{theorem_lz77_induces_attractor}
+    Se il parsing LZ77 di $T$ contiene $z$ frasi, allora $T$ possiede uno string
+    attractor di dimensione al più $z$.
+\end{theorem}
+
+\begin{proof}
+    Inseriamo in $\Gamma_{\mathrm{LZ}}$ la posizione finale di ogni frase.
+    Consideriamo una sottostringa distinta $P$ e scegliamo la sua occorrenza più
+    a sinistra. Se tale occorrenza fosse interamente contenuta all'interno di
+    una frase copiata e non attraversasse il suo confine finale, la sorgente
+    della frase conterrebbe un'occorrenza precedente di $P$. Questo
+    contraddirebbe la scelta dell'occorrenza più a sinistra. Di conseguenza,
+    l'occorrenza scelta attraversa la fine di una frase, cioè una posizione di
+    $\Gamma_{\mathrm{LZ}}$.
+\end{proof}
+
+Per:
+\[
+    f_6=
+    \texttt{a}\mid
+    \texttt{b}\mid
+    \texttt{a}\mid
+    \texttt{aba}\mid
+    \texttt{baaba}\mid
+    \texttt{ab}
+\]
+le posizioni finali delle frasi sono:
+\[
+    \Gamma_{\mathrm{LZ}}=\{1,2,3,6,11,13\}.
+\]
+Il teorema garantisce che questo insieme è un attrattore. Non afferma che sia
+minimo: alcune posizioni possono essere ridondanti.
+
+Segue immediatamente:
+\begin{equation}\label{eq:gamma_lz_relation}
+    \gamma^*(T)\leq z(T).
+\end{equation}
+
+\subsubsection{Inizi delle run nella BWT}
+Sia $T^\$=T\texttt{\$}$, con il terminatore minore di ogni carattere
+dell'alfabeto, e sia:
+\[
+    L=\operatorname{BWT}(T^\$).
+\]
+Indichiamo con $r$ il numero di run massimali di caratteri uguali in $L$.
+
+\begin{theorem}\label{theorem_bwt_induces_attractor}
+    La stringa $T^\$$ possiede uno string attractor di dimensione al più $r$.
+\end{theorem}
+
+Per ogni riga $i$ che inizia una run della BWT si seleziona, nel testo, la
+posizione del carattere $L[i]$ che precede il suffisso della stessa riga. In
+termini di suffix array, se $\operatorname{SA}[i]$ è l'inizio del suffisso,
+si prende la posizione precedente a $\operatorname{SA}[i]$, considerando il
+testo circolare grazie al terminatore. L'insieme di queste posizioni è
+$\Gamma_{\mathrm{BWT}}$.
+
+L'idea della dimostrazione usa la LF-mapping. Finché tutte le occorrenze di un
+pattern possono essere estese a sinistra con lo stesso carattere, il relativo
+intervallo della BWT rimane dentro una run. Quando l'estensione incontra il
+confine di una run, si ottiene un'occorrenza che attraversa una delle posizioni
+selezionate. Ogni fattore ha quindi un'occorrenza attirata da
+$\Gamma_{\mathrm{BWT}}$.
+
+Di conseguenza:
+\begin{equation}\label{eq:gamma_bwt_relation}
+    \gamma^*(T^\$)\leq r(T^\$).
+\end{equation}
+Questo risultato spiega perché il parametro $r$, già usato nell'r-index, è una
+misura di ripetitività e non soltanto una caratteristica accidentale della
+trasformata.
+
+Quando si confronta $r$ con le misure del testo non terminato, si trascura
+normalmente la differenza costante introdotta da \texttt{\$}. Nei risultati
+seguenti le formule che coinvolgono $r$ vanno quindi lette sul testo terminato
+$T^\$$, anche quando il simbolo è omesso per alleggerire la notazione.
+
+\subsubsection{Grammatiche e collage systems}
+Un SLP costruisce stringhe mediante regole terminali e concatenazioni. Un
+\textbf{\texten{collage system}} estende il modello permettendo anche:
+\begin{itemize}
+    \item ripetizioni $X\to Y^\ell$;
+    \item estrazioni $X\to Y[l..r]$ di una sottostringa già definita.
+\end{itemize}
+La sua dimensione può essere misurata come numero totale di produzioni.
+
+\begin{theorem}\label{theorem_grammar_induces_attractor}
+    Se un collage system di $c$ produzioni genera $T$, allora $T$ possiede uno
+    string attractor di dimensione al più $c$.
+\end{theorem}
+
+L'idea è scegliere una posizione rappresentativa per ogni produzione: il
+carattere prodotto da una regola terminale, oppure il punto di giunzione tra le
+parti di una concatenazione o ripetizione. Ogni fattore possiede
+un'\textbf{occorrenza primaria} che attraversa uno di questi punti; in caso
+contrario potrebbe essere spostato interamente in una componente già definita,
+ripetendo il ragionamento fino a raggiungere una regola più bassa.
+
+Gli SLP sono casi particolari di collage systems. Se $c(G)$ è il numero di
+produzioni di una grammatica, allora:
+\begin{equation}\label{eq:gamma_grammar_relation}
+    \gamma^*(T)\leq c(G)\leq |G|.
+\end{equation}
+In particolare, la dimensione dell'attrattore minimo è un limite inferiore
+anche per la grammatica minima.
+
+\subsubsection{Confronto con l'entropia empirica}
+Gli attrattori sono sensibili alle ripetizioni, ma non perdono completamente il
+legame con l'entropia. Per $k\in o(\log_{\sigma}n)$ vale:
+\begin{equation}\label{eq:attractor_entropy_bound}
+    \gamma^*(T)\log n
+    \leq
+    nH_k(T)+o(n\log\sigma).
+\end{equation}
+Quando l'entropia empirica è piccola, esiste quindi anche un attrattore
+relativamente piccolo. Il contrario non deve valere con lo stesso fattore:
+lunghe copie possono rendere $\gamma^*$ molto piccolo senza modificare
+proporzionalmente $H_k$.
+
+\subsection{Dagli attrattori alle rappresentazioni compresse}
+Le relazioni precedenti mostrano che un compressore induce un attrattore. È
+possibile anche procedere nella direzione opposta.
+
+\begin{theorem}\label{theorem_attractor_to_slp}
+    Data una stringa $T$ di lunghezza $n$ e un suo attrattore di dimensione
+    $\gamma$, si può costruire un SLP per $T$ di dimensione:
+    \begin{equation}\label{eq:attractor_to_slp_bound}
+        O\left(
+            \gamma
+            \log^2\frac{n}{\gamma}
+        \right).
+    \end{equation}
+\end{theorem}
+
+L'idea è suddividere ricorsivamente il testo in blocchi. I blocchi lontani
+dall'attrattore vengono copiati da occorrenze che attraversano posizioni di
+$\Gamma$; la lunghezza dei blocchi diminuisce geometricamente e produce
+$O(\log(n/\gamma))$ livelli. La conversione delle copie in regole grammaticali
+introduce un secondo fattore logaritmico.
+
+Applicando il teorema a un attrattore minimo:
+\begin{equation}\label{eq:gstar_from_gamma}
+    g^*(T)
+    \in
+    O\left(
+        \gamma^*(T)
+        \log^2\frac{n}{\gamma^*(T)}
+    \right).
+\end{equation}
+La stessa costruzione fornisce anche il limite, oggi non più ottimo:
+\begin{equation}\label{eq:z_from_gamma}
+    z(T)
+    \in
+    O\left(
+        \gamma^*(T)
+        \log^2\frac{n}{\gamma^*(T)}
+    \right).
+\end{equation}
+
+Un risultato successivo rafforza la stima per LZ77:
+\begin{equation}\label{eq:z_from_delta}
+    z(T)
+    \in
+    O\left(
+        \delta(T)
+        \log\frac{n}{\delta(T)}
+    \right).
+\end{equation}
+Poiché $\delta(T)\leq\gamma^*(T)$, questo conferma che il parsing LZ77 è
+controllato, a fattori logaritmici, da una misura puramente combinatoria.
+
+Occorre invece distinguere gli SLP ordinari dalle
+\textbf{grammatiche run-length}, che ammettono anche regole del tipo
+$X\to Y^\ell$. Per queste ultime si può raggiungere dimensione:
+\[
+    O\left(
+        \gamma^*(T)
+        \log\frac{n}{\gamma^*(T)}
+    \right).
+\]
+Il singolo fattore logaritmico non sostituisce
+\eqref{eq:gstar_from_gamma} per gli SLP ordinari: il modello run-length è più
+espressivo, perché una potenza viene descritta da una sola regola.
+
+Poiché le run della BWT inducono un attrattore di dimensione $r$, dal limite
+per gli SLP ordinari segue:
+\begin{equation}\label{eq:grammar_lz_from_runs}
+    g^*(T^\$),z(T^\$)
+    \in
+    O\left(
+        r(T^\$)
+        \log^2\frac{n+1}{r(T^\$)}
+    \right).
+\end{equation}
+
+Per la conversione diretta da LZ77 a grammatica è noto il limite più preciso
+già visto:
+\[
+    g^*(T)
+    \in
+    O\left(
+        z(T)\log\frac{n}{z(T)}
+    \right).
+\]
+
+\subsubsection{Relazione diretta tra \texorpdfstring{$z$}{z} e
+\texorpdfstring{$r$}{r}}
+Due importanti risultati collegano il parsing LZ77 e le run della BWT:
+\begin{equation}\label{eq:z_from_r}
+    z=O(r\log n),
+\end{equation}
+\begin{equation}\label{eq:r_from_z}
+    r=O(z\log^2 n).
+\end{equation}
+Il primo limita il numero di frasi LZ77 usando le run; il secondo, noto come
+risoluzione della congettura sulla BWT, limita le run usando il parsing LZ77.
+I due parametri possono differire, ma soltanto per fattori polilogaritmici.
+
+\subsubsection{Quadro riassuntivo}
+Separando il testo ordinario da quello terminato per la BWT, le principali
+relazioni sono:
+\[
+    \delta
+    \leq
+    \gamma^*
+    \leq
+    \min\{z,c(G)\},
+\qquad
+    \gamma^*(T^\$)\leq r(T^\$),
+\]
+e:
+\[
+    g^*
+    \in
+    O\left(
+        \gamma^*
+        \log^2\frac{n}{\gamma^*}
+    \right),
+\qquad
+    z
+    \in
+    O\left(
+        \delta
+        \log\frac{n}{\delta}
+    \right).
+\]
+
+Quindi $\gamma^*$ è un limite inferiore comune per molte rappresentazioni di
+testi ripetitivi, mentre un attrattore può essere trasformato in strutture
+compresse pagando fattori logaritmici. Non è noto, in generale, se ogni stringa
+possa essere rappresentata e indicizzata in spazio $O(\gamma^*)$. È però
+possibile ottenere grammatiche run-length di dimensione:
+\[
+    O\left(
+        \gamma^*
+        \log\frac{n}{\gamma^*}
+    \right)
+\]
+e, nello stesso ordine di spazio, strutture che supportano accesso casuale e,
+con tecniche più elaborate, ricerca indicizzata.
+
+\subsection{Proprietà combinatorie}
+La misura $\gamma^*$ non è soltanto uno strumento per confrontare compressori:
+possiede proprietà interessanti rispetto alle operazioni sulle parole.
+
+\subsubsection{Invarianza per rovesciamento}
+Indichiamo con $T^R$ la stringa ottenuta leggendo $T$ da destra verso sinistra.
+
+\begin{theorem}\label{theorem_attractor_reversal}
+    Per ogni stringa $T$:
+    \[
+        \gamma^*(T)=\gamma^*(T^R).
+    \]
+\end{theorem}
+
+\begin{proof}
+    Se $\Gamma$ è un attrattore per $T[1..n]$, riflettiamo ogni posizione:
+    \[
+        \Gamma^R=\{n+1-p\mid p\in\Gamma\}.
+    \]
+    Ogni fattore di $T^R$ è il rovescio di un fattore di $T$, e l'occorrenza che
+    attraversa $p$ viene trasformata in un'occorrenza che attraversa
+    $n+1-p$. Dunque $\Gamma^R$ è un attrattore della stessa dimensione per
+    $T^R$. Applicando lo stesso argomento da $T^R$ a $T$ si ottiene
+    l'uguaglianza.
+\end{proof}
+
+\subsubsection{Concatenazione}
+\begin{theorem}\label{theorem_attractor_concatenation}
+    Per due stringhe $u$ e $v$:
+    \begin{equation}\label{eq:attractor_concatenation}
+        \gamma^*(uv)
+        \leq
+        \gamma^*(u)+\gamma^*(v)+1.
+    \end{equation}
+\end{theorem}
+
+\begin{proof}
+    Prendiamo un attrattore minimo di $u$ e un attrattore minimo di $v$,
+    traslando le posizioni del secondo di $|u|$. Queste posizioni coprono tutti
+    i fattori contenuti interamente in una delle due stringhe. Gli unici fattori
+    eventualmente scoperti attraversano il confine tra $u$ e $v$; aggiungendo
+    la posizione $|u|$, oppure $|u|+1$, vengono coperti anch'essi.
+\end{proof}
+
+Il termine additivo può essere necessario. Per:
+\[
+    u=\texttt{baaaba},
+    \qquad
+    v=\texttt{cdcccd},
+\]
+si ha $\gamma^*(u)=\gamma^*(v)=2$, mentre:
+\[
+    \gamma^*(uv)=5.
+\]
+Per esempio, $\{2,5\}$ è minimo per $u$, $\{2,4\}$ è minimo per $v$ e,
+traslando il secondo insieme e aggiungendo il confine, si ottiene
+$\{2,5,6,8,10\}$ per $uv$.
+
+\subsubsection{La misura non è monotona}
+L'aggiunta di un carattere può creare nuove occorrenze utili e ridurre la
+dimensione dell'attrattore minimo. Per $n\geq 2$ consideriamo:
+\[
+    w_n=\texttt{abbb}\,\texttt{a}^n\texttt{ab}.
+\]
+Vale:
+\[
+    \gamma^*(w_n)=3,
+    \qquad
+    \gamma^*(w_n\texttt{b})=2.
+\]
+Infatti $\{2,4,n+5\}$ è un attrattore minimo per $w_n$, mentre
+$\{4,n+5\}$ attira tutti i fattori di:
+\[
+    w_n\texttt{b}
+    =
+    \texttt{abbb}\,\texttt{a}^n\texttt{abb}.
+\]
+Quindi, in generale:
+\[
+    u\text{ prefisso di }v
+    \nRightarrow
+    \gamma^*(u)\leq\gamma^*(v).
+\]
+
+\subsubsection{Potenze di una parola}
+\begin{theorem}\label{theorem_attractor_power}
+    Per ogni stringa $w$ e ogni intero $q\geq 2$:
+    \[
+        \gamma^*(w^q)\leq\gamma^*(w)+1.
+    \]
+    Inoltre:
+    \[
+        \gamma^*(w^q)=\gamma^*(w^2).
+    \]
+\end{theorem}
+
+Le posizioni di un attrattore di $w$ coprono i fattori contenuti in una singola
+copia. Basta aggiungere una posizione sul confine tra due copie per coprire i
+fattori che attraversano una concatenazione. Tutti i tipi di fattore che
+attraversano più copie compaiono già in $w^2$, eventualmente traslando
+l'occorrenza.
+
+Per:
+\[
+    w=\texttt{abbaab}
+\]
+gli unici attrattori minimi sono $\{2,4\}$ e $\{3,5\}$. Per:
+\[
+    w^2=\texttt{abbaababbaab}
+\]
+servono tre posizioni; un esempio minimo è:
+\[
+    \{2,4,6\}.
+\]
+La posizione $6$ copre i nuovi fattori che attraversano il confine tra le due
+copie.
+
+\subsection{Parole di Thue--Morse}
+Le parole finite di Thue--Morse sono generate dal morfismo:
+\[
+    \tau(\texttt{0})=\texttt{01},
+    \qquad
+    \tau(\texttt{1})=\texttt{10},
+\]
+partendo da $t_0=\texttt{0}$. I primi iterati sono:
+\[
+    \begin{array}{c|l}
+        i & t_i=\tau^i(\texttt{0})\\ \hline
+        0 & \texttt{0}\\
+        1 & \texttt{01}\\
+        2 & \texttt{0110}\\
+        3 & \texttt{01101001}\\
+        4 & \texttt{0110100110010110}\\
+        5 & \texttt{01101001100101101001011001101001}
+    \end{array}
+\]
+
+La seguente tabella verifica alcuni insiemi proposti:
+\begin{table}[htpb]
+    \centering
+    \small
+    \begin{tabular}{c|c|c|c}
+        \textbf{Parola} & \textbf{Lunghezza} & \textbf{Insieme} &
+        \textbf{Esito} \\ \hline
+        $t_3$ & $8$  & $\{3,5,6\}$       & attrattore minimo \\
+        $t_4$ & $16$ & $\{3,6,9,12\}$    & attrattore minimo \\
+        $t_4$ & $16$ & $\{2,6,8,12\}$    & attrattore minimo \\
+        $t_5$ & $32$ & $\{3,6,12,17,24\}$& attrattore, non minimo \\
+        $t_5$ & $32$ & $\{8,12,16,24\}$  & attrattore minimo
+    \end{tabular}
+    \caption{Esempi di string attractors per parole di Thue--Morse.}
+    \label{tab:thue_morse_attractors}
+\end{table}
+
+Per gli iterati sufficientemente lunghi la dimensione si stabilizza:
+\[
+    |t_i|\geq 25
+    \quad\Longrightarrow\quad
+    \gamma^*(t_i)=4.
+\]
+Poiché $|t_i|=2^i$, la condizione vale a partire da $i=5$. La parola continua a
+crescere e non è periodica, ma quattro posizioni ben scelte sono sufficienti a
+intercettare un'occorrenza di ogni fattore distinto. La condizione
+$|t_i|\geq25$ è sufficiente, non necessaria: la tabella mostra infatti che
+anche $t_4$, di lunghezza $16$, ha attrattore minimo di dimensione $4$.
+
+\subsection{Esercizi e soluzioni di controllo}
+Per ciascuna stringa della tabella seguente, verificare direttamente che
+l'insieme indicato sia un attrattore. Per dimostrare la minimalità si può usare
+prima il limite dato dall'alfabeto e, quando non basta, cercare un insieme di
+fattori che non possono essere coperti dalla stessa posizione.
+
+\begin{table}[htpb]
+    \centering
+    \small
+    \begin{tabular}{c|l|c}
+        \textbf{N.} & \textbf{Stringa} & \textbf{Un attrattore minimo} \\ \hline
+        1 & \texttt{0100101001001} & $\{5,8\}$ \\
+        2 & \texttt{0000001111111} & $\{1,7\}$ \\
+        3 & \texttt{0110100110010110} & $\{2,6,8,12\}$ \\
+        4 & \texttt{ababababbababa} & $\{3,8\}$ \\
+        5 & \texttt{aaababbb} & $\{1,4,6\}$ \\
+        6 & \texttt{abacabadabacaba} & $\{1,2,4,8\}$ \\
+        7 & \texttt{abacabadabacabaeabacabadabacaba}
+          & $\{1,2,4,8,16\}$
+    \end{tabular}
+    \caption{Soluzioni di controllo per gli esercizi sugli string attractors.}
+    \label{tab:string_attractor_exercises}
+\end{table}
+
+Per esempio, nel secondo esercizio la posizione $1$ copre tutte le run di
+\texttt{0}, mentre la posizione $7$ copre tutte le run di \texttt{1} e i
+fattori che attraversano il passaggio da \texttt{0} a \texttt{1}. Nel sesto e
+nel settimo esercizio le posizioni $1,2,4,8,16$ riflettono la costruzione
+ricorsiva:
+\[
+    \texttt{abacabadabacaba}
+    \quad\text{e}\quad
+    \texttt{abacabadabacabaeabacabadabacaba}.
+\]
+
+\subsubsection{Esercizi di collegamento}
+\begin{enumerate}
+    \item Calcolare un parsing LZ77 per
+          \texttt{abacabadabacaba} e verificare esplicitamente che le estremità
+          delle frasi formino uno string attractor.
+    \item Calcolare la BWT di una stringa ripetitiva, contarne le run e
+          confrontare $r$ con la dimensione dell'attrattore trovato.
+    \item Costruire un SLP per \texttt{abcabcabcabc} e selezionare una
+          posizione rappresentativa per ogni produzione, verificando il
+          \autoref{theorem_grammar_induces_attractor}.
+    \item Per ogni $k$ della stringa \texttt{ababababbababa}, contare i fattori
+          distinti di lunghezza $k$ e verificare:
+          \[
+              \operatorname{SUB}_T(k)\leq k\gamma^*(T).
+          \]
+    \item Trovare un esempio in cui l'attrattore indotto da LZ77 abbia più
+          posizioni di un attrattore minimo e spiegare quali confini di frase
+          sono ridondanti.
+\end{enumerate}
+
 
 \end{document}
