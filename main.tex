@@ -4740,36 +4740,211 @@ e per ciascuna si conserva una posizione del testo, cioè $O(\log n)$ bit. Lo sp
 Aumentare $\varepsilon$ riduce il numero di campioni e quindi lo spazio, ma aumenta il numero massimo di \texten{backward step} necessari per localizzare una posizione.
 
 \subsubsection{Come calcolare Occ senza decomprimere}
-La difficoltà vera è implementare $\operatorname{Occ}(c,q)$ senza conservare tutta la matrice e, nella versione compressa, senza conservare nemmeno esplicitamente tutta la colonna $L$. Dopo la compressione appena descritta, infatti, l'indice dispone principalmente di $Z$, non di $L$ già pronta da scandire. Tuttavia sia la \texten{backward search} sia il \texten{backward step} richiedono continuamente valori della forma $\operatorname{Occ}(c,q)$.
-
-Il problema diventa quindi: \textbf{come contare le occorrenze di un carattere nei primi $q$ simboli di $L$ guardando solo piccole porzioni della rappresentazione compressa $Z$?}
-
-Per rendere $\operatorname{Occ}$ veloce, $L$ viene partizionata logicamente in \textbf{\texten{bucket}} di lunghezza $\ell=\Theta(\log n)$ e in \textbf{\texten{superbucket}} di lunghezza $\ell^2=\Theta(\log^2 n)$. Per semplificare l'esposizione, si fa in modo che una run di zeri non attraversi il confine tra due \texten{bucket}; altrimenti bisogna conservare anche l'informazione necessaria a proseguire la run nel blocco successivo.
-
-Le strutture ausiliarie principali sono:
-\begin{itemize}
-    \item $NO_t[c]$: conteggi cumulativi dei caratteri fino alla fine del $t$-esimo \texten{superbucket};
-    \item $NO'_i[c]$: conteggi relativi all'interno del \texten{superbucket} corrente, fino alla fine del \texten{bucket} $i$;
-    \item $W_t$ e $W'_i$: informazioni sulle lunghezze compresse dei blocchi, usate per trovare in $Z$ il \texten{bucket} compresso $BZ_i$;
-    \item $MTF_i$: stato della lista MTF all'inizio del \texten{bucket} $i$;
-    \item $S[c,h,BZ_i,MTF_i]$: tabella universale che restituisce quante occorrenze di $c$ compaiono nei primi $h$ caratteri del \texten{bucket} decompresso.
-\end{itemize}
-
-Sia $i=\lceil q/\ell\rceil$ il \texten{bucket} che contiene $q$, sia $h=q-(i-1)\ell$ la posizione interna al \texten{bucket}, e sia $t$ il numero di \texten{superbucket} completi prima di $i$. Allora il calcolo di $\operatorname{Occ}(c,q)$ si divide in tre contributi:
+La difficoltà vera è implementare $\operatorname{Occ}(c,q)$ senza conservare tutta la matrice e, nella versione compressa, senza conservare nemmeno esplicitamente la colonna $L$. Dopo la pipeline descritta in precedenza, infatti, l'indice dispone principalmente della stringa di bit $Z$, non di $L$ già pronta da scandire. Tuttavia sia la \texten{backward search} sia il \texten{backward step} richiedono continuamente valori della forma:
 \[
     \operatorname{Occ}(c,q)
     =
-    NO_t[c]
-    +
-    NO'_{i-1}[c]
-    +
-    S[c,h,BZ_i,MTF_i].
+    |\{j\leq q:L[j]=c\}|.
 \]
-Il primo e il secondo contributo sono letture di tabelle; il terzo usa il \texten{bucket} compresso, lo stato MTF salvato e la tabella universale. Le strutture $NO$ e $W$ richiedono $O(n/\log n)$ bit, mentre $NO'$ e $W'$ richiedono $O((n/\log n)\log\log n)$ bit. Gli stati MTF costano ancora $O(n/\log n)$ bit. La tabella universale viene mantenuta sublineare scegliendo la dimensione effettiva del \texten{bucket} in modo che il numero di possibili blocchi compressi sia $n^\alpha$, con $\alpha<1$. Con una scelta opportuna dei parametri, $\operatorname{Occ}$ si calcola in tempo $O(1)$ usando:
+
+Il problema diventa quindi: \textbf{come contare le occorrenze di un carattere nei primi $q$ simboli di $L$ leggendo soltanto una quantità costante di informazioni ausiliarie e un piccolo blocco di $Z$?}
+
+Dire che il calcolo avviene ``senza decomprimere'' non significa che nessun bit venga mai decodificato. Significa che non si ricostruiscono né l'intero testo $T$ né l'intera BWT $L$: al più si identifica il piccolo blocco compresso che contiene la posizione $q$ e se ne ricava il contributo locale mediante una tabella precalcolata.
+
+\paragraph{Partizione in bucket e superblocchi.}
+Si sceglie una lunghezza:
 \[
-    Z+O\!\left(\frac{n\log\log n}{\log n}\right)
+    \ell=\Theta(\log n)
 \]
-bit oltre alla rappresentazione compressa principale.
+e si divide logicamente $L$ in \textbf{\texten{bucket}} di $\ell$ caratteri:
+\[
+    BL_i
+    =
+    L[(i-1)\ell+1..i\ell],
+    \qquad
+    i=1,\ldots,\left\lceil\frac{n}{\ell}\right\rceil.
+\]
+Gruppi di $\ell$ bucket consecutivi formano un \textbf{superblocco}, che contiene quindi $\ell^2=\Theta(\log^2 n)$ caratteri di $L$. Per semplicità si assume che $\ell$ divida $n$; un eventuale ultimo bucket incompleto si tratta allo stesso modo. Il termine $BL_i$ indica il bucket prima della compressione. La partizione di $L$ induce una partizione della sequenza MTF ottenuta elaborando $L$ da sinistra verso destra; applicando poi RLE e il codice a prefisso alla porzione associata a ciascun bucket si ottiene il corrispondente blocco compresso $BZ_i$.
+
+I bucket hanno tutti la stessa lunghezza logica in $L$, ma i blocchi $BZ_i$ hanno lunghezze in bit diverse, perché dipendono dal contenuto da comprimere. Per semplificare la costruzione si assume inoltre che ogni run di zeri prodotta dalla MTF sia interamente contenuta in un bucket. In alternativa, bisognerebbe salvare ai confini anche lo stato necessario a continuare una run iniziata nel bucket precedente.
+
+Per una query $\operatorname{Occ}(c,q)$, con $1\leq q\leq n$, si individuano:
+\[
+    i=\left\lceil\frac{q}{\ell}\right\rceil,
+    \qquad
+    h=q-(i-1)\ell,
+    \qquad
+    t=\left\lfloor\frac{i-1}{\ell}\right\rfloor,
+    \qquad
+    r=i-t\ell.
+\]
+L'indice $i$ identifica il bucket che contiene $L[q]$, $h$ è il numero di caratteri da considerare dentro quel bucket, $t$ è il numero di superblocchi completi che lo precedono e $r\in\{1,\ldots,\ell\}$ è la posizione locale di $BL_i$ nel superblocco corrente. Il prefisso $L[1..q]$ viene così diviso in tre parti:
+\begin{enumerate}
+    \item i primi $t$ superblocchi completi, cioè $L[1..t\ell^2]$;
+    \item i bucket completi del superblocco corrente che precedono $BL_i$;
+    \item il prefisso $BL_i[1..h]$ del bucket contenente $q$.
+\end{enumerate}
+La struttura per $\operatorname{Occ}$ deve calcolare separatamente questi tre contributi e poi sommarli.
+
+\paragraph{Conteggi ai confini dei blocchi.}
+Per non ricontare ogni volta i caratteri già attraversati si memorizzano due livelli di somme prefisse:
+\begin{itemize}
+    \item $NO_t[c]$ è il numero di occorrenze di $c$ nei primi $t$ superblocchi, quindi in $L[1..t\ell^2]$; per convenzione $NO_0[c]=0$;
+    \item $NO'_{t,r-1}[c]$ conta le occorrenze di $c$ nei primi $r-1$ bucket del superblocco corrente; per convenzione $NO'_{t,0}[c]=0$.
+\end{itemize}
+Il primo valore risponde alla parte 1 della decomposizione, mentre il secondo risponde alla parte 2. Entrambi si ottengono con un singolo accesso a una tabella.
+
+Il doppio livello è essenziale per lo spazio. Salvare un conteggio globale per ogni bucket richiederebbe $\Theta(\log n)$ bit per ogni contatore; dentro un singolo superblocco, invece, un conteggio non supera $\ell^2$, quindi bastano:
+\[
+    O(\log \ell^2)=O(\log\log n)
+\]
+bit. \uline{I superblocchi forniscono dunque pochi contatori grandi, mentre i bucket forniscono molti contatori piccoli}.
+
+\paragraph{Come trovare il bucket compresso in \(Z\).}
+La posizione logica di $BL_i$ non permette di conoscere direttamente la posizione di $BZ_i$ in $Z$, perché i blocchi compressi hanno lunghezza variabile. Si usano perciò altre due somme prefisse:
+\begin{itemize}
+    \item $W[t]$ è il numero complessivo di bit occupati in $Z$ dai primi $t$ superblocchi compressi;
+    \item $W'[t,r-1]$ è il numero di bit occupati dai primi $r-1$ bucket compressi del superblocco corrente; per convenzione $W'[t,0]=0$.
+\end{itemize}
+Il primo bit di $BZ_i$ si trova quindi nella posizione:
+\begin{equation}\label{eq:fm_occ_bucket_start}
+    W[t]+W'[t,r-1]+1.
+\end{equation}
+La lunghezza di $BZ_i$ si ricava da $W'[t,r]-W'[t,r-1]$, poiché $W'[t,r]$ include anche il bucket corrente. In questo modo si estrae da $Z$ esattamente il blocco necessario, senza scorrere tutti quelli precedenti.
+
+\paragraph{Come interpretare il contenuto di \(BZ_i\).}
+Conoscere i bit di $BZ_i$ non è ancora sufficiente. La MTF è una trasformazione con stato: lo stesso valore MTF può indicare caratteri diversi a seconda dell'ordine corrente della lista. Per ogni bucket si salva quindi:
+\[
+    MTF_i
+    =
+    \text{stato della lista MTF all'inizio di }BL_i.
+\]
+La coppia $(BZ_i,MTF_i)$ determina univocamente il bucket originale $BL_i$: il codice a prefisso permette di recuperare i simboli RLE, il RLE ricostruisce la sequenza MTF e lo stato iniziale $MTF_i$ permette di invertire la MTF.
+
+Non si esegue però questa decodifica simbolo per simbolo durante ogni query. Si costruisce una \textbf{tabella universale}:
+\[
+    S[c,h,BZ_i,MTF_i],
+\]
+che restituisce direttamente il numero di occorrenze di $c$ nei primi $h$ caratteri del bucket $BL_i$. Gli argomenti $BZ_i$ e $MTF_i$ descrivono completamente il bucket, mentre $c$ e $h$ specificano quale conteggio locale serve.
+
+\paragraph{Formula completa.}
+Riunendo i tre contributi si ottiene:
+\begin{equation}\label{eq:fm_occ_three_parts}
+    \operatorname{Occ}(c,q)
+    =
+    \underbrace{NO_t[c]}_{\text{superblocchi completi}}
+    +
+    \underbrace{NO'_{t,r-1}[c]}_{\text{bucket completi}}
+    +
+    \underbrace{S[c,h,BZ_i,MTF_i]}_{\text{prefisso del bucket}}.
+\end{equation}
+La procedura operativa è quindi:
+\begin{enumerate}
+    \item calcolare $i$, $h$, $t$ e $r$ con operazioni aritmetiche;
+    \item leggere $NO_t[c]$ e $NO'_{t,r-1}[c]$;
+    \item localizzare $BZ_i$ in $Z$ mediante \eqref{eq:fm_occ_bucket_start};
+    \item leggere lo stato $MTF_i$;
+    \item ottenere il contributo locale dalla tabella $S$;
+    \item sommare i tre valori secondo \eqref{eq:fm_occ_three_parts}.
+\end{enumerate}
+
+\paragraph{Esempio completo.}
+La \autoref{fig:fm-index-occ-buckets} usa valori piccoli soltanto per rendere visibile la struttura. Si pone $\ell=4$, quindi ogni bucket contiene $4$ caratteri e ogni superblocco ne contiene $\ell^2=16$. Consideriamo:
+\[
+    L=\texttt{abacaabbccaabacaabbacaac}.
+\]
+I blocchi $BZ_i$ mostrati nella figura sono quelli ottenuti usando la lista MTF iniziale $(\texttt{a},\texttt{b},\texttt{c})$ e i codici RLE e a prefisso definiti in precedenza.
+Vogliamo calcolare $\operatorname{Occ}(\texttt{a},22)$. Si ha:
+\[
+    i=\left\lceil\frac{22}{4}\right\rceil=6,
+    \qquad
+    h=22-(6-1)4=2,
+    \qquad
+    t=\left\lfloor\frac{6-1}{4}\right\rfloor=1,
+    \qquad
+    r=6-1\cdot4=2.
+\]
+Il prefisso $L[1..22]$ contiene quindi:
+\begin{itemize}
+    \item il primo superblocco completo $BL_1\cdots BL_4$, con $NO_1[\texttt{a}]=8$;
+    \item il bucket completo $BL_5=\texttt{abba}$, con $NO'_{1,1}[\texttt{a}]=2$;
+    \item i primi due caratteri di $BL_6$, cioè \texttt{ca}, nei quali la tabella universale restituisce una sola \texttt{a}.
+\end{itemize}
+Pertanto:
+\[
+    \operatorname{Occ}(\texttt{a},22)
+    =
+    8+2+1
+    =
+    11.
+\]
+La parte inferiore della figura mostra anche perché servono $W$ e $W'$: benché $BL_1,\ldots,BL_6$ abbiano tutti quattro caratteri, i corrispondenti $BZ_i$ occupano numeri diversi di bit.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{images/fm-index/occ-buckets.pdf}
+    \caption{Calcolo di $\operatorname{Occ}(\texttt{a},22)$ mediante un superblocco completo, un bucket completo e un prefisso del bucket corrente. I bit dei blocchi $BZ_i$ derivano dalla codifica effettiva della BWT di esempio; le strutture $W$ e $W'$ trasformano il numero logico del bucket nella posizione del corrispondente blocco a lunghezza variabile dentro $Z$.}
+    \label{fig:fm-index-occ-buckets}
+\end{figure}
+
+\paragraph{Costo delle strutture ausiliarie.}
+Assumendo che l'alfabeto $\Sigma$ abbia dimensione costante e ricordando che $\ell=\Theta(\log n)$:
+\begin{itemize}
+    \item esistono $O(n/\ell^2)$ superblocchi; i contatori $NO$ e gli offset $W$ richiedono $O(\log n)$ bit ciascuno, per un totale di $O(n/\log n)$ bit;
+    \item esistono $O(n/\ell)$ bucket; i valori relativi $NO'$ e $W'$ sono limitati dalla dimensione di un superblocco e richiedono $O(\log\log n)$ bit ciascuno, per un totale di:
+          \[
+              O\!\left(\frac{n\log\log n}{\log n}\right)
+              \text{ bit};
+          \]
+    \item uno stato MTF occupa $O(|\Sigma|\log|\Sigma|)=O(1)$ bit, quindi tutti gli stati $MTF_i$ richiedono $O(n/\log n)$ bit.
+\end{itemize}
+
+Resta da controllare la dimensione della tabella universale $S$. Un bucket compresso ha lunghezza massima:
+\[
+    \ell\bigl(1+2\lfloor\log|\Sigma|\rfloor\bigr)
+\]
+bit. Si sceglie la costante nascosta in $\ell=\Theta(\log n)$ in modo che questa quantità sia:
+\[
+    \alpha\log n,
+    \qquad
+    0<\alpha<1.
+\]
+I possibili blocchi compressi sono allora al più:
+\[
+    2^{\alpha\log n}=n^\alpha=o(n).
+\]
+Il numero di possibili stati MTF dipende soltanto da $|\Sigma|$ e viene quindi assorbito nella costante. Poiché per ogni combinazione di blocco e stato MTF si memorizzano $O(\ell)$ contatori di $O(\log\ell)$ bit, la tabella occupa:
+\[
+    O\!\left(n^\alpha\log n\log\log n\right)
+    =
+    o\!\left(\frac{n\log\log n}{\log n}\right)
+\]
+bit. La tabella non vanifica quindi la compressione dell'indice.
+
+In conclusione, tutte le operazioni della query sono accessi diretti a tabelle e parole di macchina. Nel modello RAM con parola di $\Theta(\log n)$ bit e alfabeto costante si ottiene:
+\[
+    \operatorname{Occ}(c,q)\text{ in tempo }O(1)
+\]
+con spazio complessivo:
+\begin{equation}\label{eq:fm_occ_space}
+    |Z|
+    +
+    O\!\left(\frac{n\log\log n}{\log n}\right)
+    \text{ bit}.
+\end{equation}
+Questo è il risultato tecnico che rende effettivamente lineare in $p$ la \texten{backward search}: senza questa implementazione, l'ipotesi di accesso costante a $\operatorname{Occ}$ rimarrebbe ingiustificata.
+
+Il termine \eqref{eq:fm_occ_space} va infine combinato con lo spazio:
+\[
+    O\!\left(\frac{n}{\log^\varepsilon n}\right)
+\]
+dei campioni usati per la localizzazione. Per ogni costante $0<\varepsilon<1$ vale:
+\[
+    \frac{n\log\log n}{\log n}
+    =
+    o\!\left(\frac{n}{\log^\varepsilon n}\right),
+\]
+quindi il costo delle strutture per $\operatorname{Occ}$ viene assorbito dal termine dei campioni. Si ottiene così il limite complessivo enunciato nel teorema seguente.
 
 \begin{theorem}[Ferragina-Manzini]
     Per ogni testo $T[1..n]$, per ogni $k\geq 0$ fissato e per ogni costante $0<\varepsilon<1$, esiste un indice compresso che conta le occorrenze di un pattern $P[1..p]$ in tempo $O(p)$ e localizza tutte le $\operatorname{occ}$ occorrenze in tempo:
