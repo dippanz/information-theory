@@ -4302,8 +4302,8 @@ Lo schema mentale è il seguente. Se una riga inizia con un certo testo $Q$ e ne
 \[
     \boxed{
         \begin{array}{c}
-            \text{riga } i\\
-            \text{suffisso rappresentato: } Q\\
+            \text{riga } i                    \\
+            \text{suffisso rappresentato: } Q \\
             L[i]=c
         \end{array}
     }
@@ -4312,7 +4312,7 @@ Lo schema mentale è il seguente. Se una riga inizia con un certo testo $Q$ e ne
     \quad
     \boxed{
         \begin{array}{c}
-            \text{riga } \operatorname{LF}(i)\\
+            \text{riga } \operatorname{LF}(i) \\
             \text{suffisso rappresentato: } cQ
         \end{array}
     }
@@ -4321,10 +4321,10 @@ Per esempio, se la riga corrente rappresenta un suffisso che inizia con \texttt{
 
 La \textbf{\texten{backward search}} mantiene l'intervallo di righe che hanno come prefisso il suffisso già letto del pattern. All'inizio l'intervallo è tutto $[1,n]$. Se il prossimo carattere da aggiungere a sinistra è $c=P[j]$, l'intervallo si aggiorna con:
 \begin{align}
-    \textit{First}' &=
+    \textit{First}' & =
     C(c)+\operatorname{Occ}(c,\textit{First}-1)+1,
-    \label{eq:fm_backward_first}\\
-    \textit{Last}' &=
+    \label{eq:fm_backward_first} \\
+    \textit{Last}'  & =
     C(c)+\operatorname{Occ}(c,\textit{Last}).
     \label{eq:fm_backward_last}
 \end{align}
@@ -4397,7 +4397,7 @@ Cercando $P=\texttt{si}$, il primo carattere letto da destra è \texttt{i}. Part
     [\textit{First},\textit{Last}]
     =
     [C(\texttt{i})+\operatorname{Occ}(\texttt{i},0)+1,\,
-    C(\texttt{i})+\operatorname{Occ}(\texttt{i},12)]
+        C(\texttt{i})+\operatorname{Occ}(\texttt{i},12)]
     =
     [2,5].
 \]
@@ -4406,7 +4406,7 @@ Questo è l'intervallo delle righe prefissate da \texttt{i}. Aggiungendo a sinis
     [\textit{First},\textit{Last}]
     =
     [C(\texttt{s})+\operatorname{Occ}(\texttt{s},1)+1,\,
-    C(\texttt{s})+\operatorname{Occ}(\texttt{s},5)]
+        C(\texttt{s})+\operatorname{Occ}(\texttt{s},5)]
     =
     [9,10].
 \]
@@ -4417,7 +4417,7 @@ Ora continuiamo lo stesso esempio cercando $P=\texttt{ssi}$. Abbiamo già l'inte
     [\textit{First},\textit{Last}]
     =
     [C(\texttt{s})+\operatorname{Occ}(\texttt{s},8)+1,\,
-    C(\texttt{s})+\operatorname{Occ}(\texttt{s},10)]
+        C(\texttt{s})+\operatorname{Occ}(\texttt{s},10)]
     =
     [8+2+1,\,8+4]
     =
@@ -4434,7 +4434,7 @@ Consideriamo infine $P=\texttt{pssi}$. Ripartiamo dall'intervallo appena ottenut
     [\textit{First},\textit{Last}]
     =
     [C(\texttt{p})+\operatorname{Occ}(\texttt{p},10)+1,\,
-    C(\texttt{p})+\operatorname{Occ}(\texttt{p},12)]
+        C(\texttt{p})+\operatorname{Occ}(\texttt{p},12)]
     =
     [6+2+1,\,6+2]
     =
@@ -4450,9 +4450,9 @@ Finora la \texten{backward search} è stata descritta come se la colonna $L=\ope
     \operatorname{BW\_RLX}(T)
     =
     \operatorname{PC}(
-        \operatorname{RLE}(
-            \operatorname{MTF}(
-                \operatorname{BWT}(T)))).
+    \operatorname{RLE}(
+    \operatorname{MTF}(
+    \operatorname{BWT}(T)))).
 \]
 Questo passaggio va letto insieme al bound di Manzini già introdotto in \eqref{eq:manzini_bwtrl_bound}. Nella forma sintetica usata spesso nelle slide, per $n=|T|$ la lunghezza della stringa compressa soddisfa:
 \[
@@ -4553,7 +4553,7 @@ Il codice a prefisso finale usa due codici brevi per i simboli speciali introdot
 \]
 mentre un valore MTF ordinario $a\geq 1$ viene codificato con:
 \[
-    0^{\lfloor\log(a+1)\rfloor}\operatorname{bin}(a+1),
+    ^{\lfloor\log(a+1)\rfloor}\operatorname{bin}(a+1),
 \]
 dove $\operatorname{bin}(a+1)$ è la rappresentazione binaria di $a+1$ con $1+\lfloor\log(a+1)\rfloor$ bit. La lunghezza complessiva è quindi $1+2\lfloor\log(a+1)\rfloor$ bit.
 
@@ -4563,9 +4563,9 @@ Per i primi valori ordinari della MTF si ottiene:
     \begin{array}{c|c|c|c|c}
         a & a+1 & \lfloor\log(a+1)\rfloor & \operatorname{bin}(a+1) & \text{codice} \\
         \hline
-        1 & 2 & 1 & 10 & 010 \\
-        2 & 3 & 1 & 11 & 011 \\
-        3 & 4 & 2 & 100 & 00100
+        1 & 2   & 1                       & 10                      & 010           \\
+        2 & 3   & 1                       & 11                      & 011           \\
+        3 & 4   & 2                       & 100                     & 00100
     \end{array}
 \]
 Per esempio, quando $a=3$ si ha $a+1=4=(100)_2$ e $\lfloor\log(a+1)\rfloor=2$: quindi si mettono due zeri davanti al binario di $4$, ottenendo $00\,100=00100$. In questo modo i valori ordinari $a\geq 1$ sono distinguibili dai simboli speciali $\mathtt{run0}$ e $\mathtt{run1}$, che invece usano i codici brevi $10$ e $11$.
@@ -4594,6 +4594,22 @@ L'unico carattere per cui i due valori differiscono è proprio il carattere in p
     =
     C(c)+\operatorname{Occ}(c,i).
 \]
+
+\begin{algorithm}[H]
+    \caption{Calcolo del \texten{backward step}}
+    \label{alg:fm_backward_step}
+    \begin{algorithmic}[1]
+        \Require riga $i$, strutture $C$ e $\operatorname{Occ}$
+        \Ensure riga $i'$ tale che $\operatorname{pos}(i')=\operatorname{pos}(i)-1 \pmod n$
+        \ForAll{$a\in\Sigma\cup\{\#\}$}
+        \If{$\operatorname{Occ}(a,i)-\operatorname{Occ}(a,i-1)=1$}
+        \State $c\gets a$
+        \EndIf
+        \EndFor
+        \State \Return $C(c)+\operatorname{Occ}(c,i)$
+    \end{algorithmic}
+\end{algorithm}
+
 Se $c=\# \rightarrow \operatorname{pos}=1$, la rotazione attraversa il simbolo di fine testo e la posizione corrispondente è la prima posizione del testo, considerando il testo in modo circolare. Quando l'alfabeto è costante e $\operatorname{Occ}$ costa $O(1)$, anche il \texten{backward step} costa $O(1)$.
 
 La \autoref{fig:fm-index-backward-step-occ} mostra il meccanismo sul caso $i=9$ della BWT di \texttt{mississippi\#}: passando da $L[1,8]$ a $L[1,9]$, l'unico conteggio che aumenta è quello di $s$, quindi $L[9]=s$.
@@ -4614,7 +4630,7 @@ Per localizzare le occorrenze senza memorizzare tutto il \texten{suffix array}, 
     \qquad
     0<\varepsilon<1,
 \]
-e si marcano le righe che corrispondono a suffissi che iniziano in posizioni del testo multiple di $d$. Per ogni riga marcata $r$ si conserva la sua posizione nel testo in una struttura dati che indichiamo con $S_{\operatorname{loc}}$\footnote{Nelle slide questa struttura è indicata semplicemente con $S$.}:
+e si marcano le righe che corrispondono a suffissi che iniziano in posizioni del testo multiple di $d$. Per ogni riga marcata $r$ si conserva la sua posizione nel testo in una struttura dati apposita che indichiamo con $S_{\operatorname{loc}}$\footnote{Nelle slide questa struttura è indicata semplicemente con $S$.}:
 \[
     S_{\operatorname{loc}}(r)=\operatorname{pos}(r).
 \]
@@ -4628,21 +4644,21 @@ Nel piccolo esempio scegliamo $d=4$, così le posizioni testuali campionate sono
     \setlength{\tabcolsep}{4pt}
     \begin{tabular}{c|cccccccccccc}
         \textbf{posizione} &
-        $1$ & $2$ & $3$ & \textcolor{red}{$4$} &
-        $5$ & $6$ & $7$ & \textcolor{red}{$8$} &
-        $9$ & $10$ & $11$ & \textcolor{red}{$12$} \\
+        $1$                & $2$        & $3$        & \textcolor{red}{$4$}         &
+        $5$                & $6$        & $7$        & \textcolor{red}{$8$}         &
+        $9$                & $10$       & $11$       & \textcolor{red}{$12$}          \\
         \hline
-        $T$ &
-        \texttt{m} & \texttt{i} & \texttt{s} & \textcolor{red}{\texttt{s}} &
-        \texttt{i} & \texttt{s} & \texttt{s} & \textcolor{red}{\texttt{i}} &
-        \texttt{p} & \texttt{p} & \texttt{i} & \textcolor{red}{\texttt{\#}} \\
-        \textbf{campione} &
-        & & & \textcolor{red}{$\star$} &
-        & & & \textcolor{red}{$\star$} &
-        & & & \textcolor{red}{$\star$}
+        $T$                &
+        \texttt{m}         & \texttt{i} & \texttt{s} & \textcolor{red}{\texttt{s}}  &
+        \texttt{i}         & \texttt{s} & \texttt{s} & \textcolor{red}{\texttt{i}}  &
+        \texttt{p}         & \texttt{p} & \texttt{i} & \textcolor{red}{\texttt{\#}}   \\
+        \textbf{campione}  &
+                           &            &            & \textcolor{red}{$\star$}     &
+                           &            &            & \textcolor{red}{$\star$}     &
+                           &            &            & \textcolor{red}{$\star$}
     \end{tabular}
 \end{center}
-Queste sono posizioni nel testo, non righe consecutive della matrice BWT. Nell'ordine lessicografico dei suffissi, infatti, i campioni corrispondenti diventano:
+Queste sono posizioni nel testo, non righe consecutive della matrice BWT. Nell'ordine lessicografico dei suffissi, infatti, i campioni corrispondenti diventano\footnote{Le righe della matrice BWT sono ordinate lessicograficamente e la prima colonna $F$ conserva questo stesso ordine: alla riga $r$ corrisponde quindi la cella $F[r]$. L'indice $r$ identifica la riga, e dunque il suffisso nell'ordine lessicografico, mentre $S_{\operatorname{loc}}(r)=\operatorname{pos}(r)$ conserva la posizione iniziale di quel suffisso nel testo originale.}:
 \[
     S_{\operatorname{loc}}(10)=4,
     \qquad
@@ -4654,12 +4670,13 @@ Nel seguito useremo soprattutto il primo di questi campioni, cioè $S_{\operator
 
 
 \paragraph{Algoritmo di localizzazione.}
-Se la riga $i$ è marcata, la sua posizione si legge direttamente da $S_{\operatorname{loc}}$. Se non è marcata, si applica ripetutamente il \texten{backward step}: ogni passo porta a una riga che rappresenta il suffisso spostato di una posizione verso sinistra nel testo. Quando si raggiunge una riga marcata, basta sommare il numero di passi fatti.
+Se la riga $i$ è marcata, la sua posizione si legge direttamente da $S_{\operatorname{loc}}$. Se non è marcata, si applica ripetutamente il \texten{backward step} descritto nell'Algoritmo~\ref{alg:fm_backward_step}: ogni passo porta a una riga che rappresenta il suffisso spostato di una posizione verso sinistra nel testo. Quando si raggiunge una riga marcata, basta sommare il numero di passi fatti.
 
 \begin{algorithm}[H]
     \caption{Localizzazione di una riga nell'FM-index}
+    \label{alg:fm_locate_row}
     \begin{algorithmic}[1]
-        \Require riga $i$, struttura dei campioni $S_{\operatorname{loc}}$, funzione $\operatorname{backward\_step}$
+        \Require riga $i$, struttura dei campioni $S_{\operatorname{loc}}$, procedura $\operatorname{backward\_step}$ dell'Algoritmo~\ref{alg:fm_backward_step}
         \Ensure posizione $\operatorname{pos}(i)$ nel testo
         \State $r\gets i$
         \State $t\gets 0$
@@ -4672,7 +4689,7 @@ Se la riga $i$ è marcata, la sua posizione si legge direttamente da $S_{\operat
 \end{algorithm}
 
 \paragraph{Esempio.}
-Nel caso di \texttt{mississippi\#}, la \texten{backward search} per $P=\texttt{si}$ restituisce l'intervallo $[\textit{First},\textit{Last}]=[9,10]$. Supponiamo, come nelle slide, che la riga $10$ sia marcata e che:
+Nel caso di \texttt{mississippi\#}, la \texten{backward search} per $P=\texttt{si}$ restituisce l'intervallo $[\textit{First},\textit{Last}]=[9,10]$. Supponiamo che la riga $10$ sia marcata e che:
 \[
     S_{\operatorname{loc}}(10)=\operatorname{pos}(10)=4.
 \]
@@ -4698,7 +4715,7 @@ Dopo $t=3$ passi si raggiunge la riga marcata $10$. Poiché ogni \texten{backwar
     =
     7.
 \]
-Le due occorrenze di \texttt{si} sono quindi nelle posizioni $4$ e $7$.
+Le due occorrenze di \texttt{si} sono quindi nelle posizioni a partire da $4$ e $7$ del testo $T$.
 
 \paragraph{Analisi.}
 Poiché le righe marcate corrispondono a posizioni del testo distanti al più $d=\lceil\log^{1+\varepsilon}n\rceil$, dopo al massimo $d$ \texten{backward step} si raggiunge una riga marcata. Se il test ``$r$ è marcata?'' e l'accesso a $S_{\operatorname{loc}}$ costano $O(1)$, e se anche $\operatorname{backward\_step}$ costa $O(1)$, allora localizzare una singola riga costa:
@@ -5398,10 +5415,10 @@ conviene leggere il testo da sinistra a destra, aggiornando il dizionario dopo o
     \small
     \begin{tabular}{l|l|l|l|l}
         \textbf{Passo} & \textbf{Dizionario disponibile}                                      & \textbf{$w$ trovato} & \textbf{Output}               & \textbf{Nuova frase} \\ \hline
-        $0$            & $\{\,\}$                                                             & $\epsilon$           & $\langle 0,\texttt{a}\rangle$ & $\texttt{a}$       \\
-        $1$            & $\{ 1:\texttt{a}\,\}$                                                & $\epsilon$           & $\langle 0,\texttt{b}\rangle$ & $\texttt{b}$       \\
-        $2$            & $\{ 1:\texttt{a},\ 2:\texttt{b}\,\}$                                 & \texttt{a}           & $\langle 1,\texttt{a}\rangle$ & $\texttt{aa}$      \\
-        $3$            & $\{ 1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{aa}\,\}$                 & \texttt{b}           & $\langle 2,\texttt{a}\rangle$ & $\texttt{ba}$      \\
+        $0$            & $\{\,\}$                                                             & $\epsilon$           & $\langle 0,\texttt{a}\rangle$ & $\texttt{a}$         \\
+        $1$            & $\{ 1:\texttt{a}\,\}$                                                & $\epsilon$           & $\langle 0,\texttt{b}\rangle$ & $\texttt{b}$         \\
+        $2$            & $\{ 1:\texttt{a},\ 2:\texttt{b}\,\}$                                 & \texttt{a}           & $\langle 1,\texttt{a}\rangle$ & $\texttt{aa}$        \\
+        $3$            & $\{ 1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{aa}\,\}$                 & \texttt{b}           & $\langle 2,\texttt{a}\rangle$ & $\texttt{ba}$        \\
         $4$            & $\{ 1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{aa},\ 4:\texttt{ba}\,\}$ & \texttt{ba}          & $\langle 4,\texttt{a}\rangle$ & $\texttt{baa}$
     \end{tabular}
     \caption{Costruzione passo-passo del parsing LZ78 di \texttt{abaababaa}.}
@@ -5556,19 +5573,19 @@ La codifica procede cercando ogni volta la frase più lunga $w$ già presente ne
     \centering
     \small
     \begin{tabular}{c|l|c|l}
-        \textbf{Passo} & \textbf{Input corrente} & \textbf{Output} & \textbf{Codebook} \\ \hline
-        $0$  & \texttt{bcababbcbcbaaaabbc}        & --   & $1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{c}$ \\
-        $1$  & \uline{\textcolor{red}{\texttt{b}}\texttt{c}}\texttt{ababbcbcbaaaabbc}       & $2$  & $4:\texttt{bc}$ \\
-        $2$  & \uline{\textcolor{red}{\texttt{c}}\texttt{a}}\texttt{babbcbcbaaaabbc}        & $3$  & $5:\texttt{ca}$ \\
-        $3$  & \uline{\textcolor{red}{\texttt{a}}\texttt{b}}\texttt{abbcbcbaaaabbc}         & $1$  & $6:\texttt{ab}$ \\
-        $4$  & \uline{\textcolor{red}{\texttt{b}}\texttt{a}}\texttt{bbcbcbaaaabbc}          & $2$  & $7:\texttt{ba}$ \\
-        $5$  & \uline{\textcolor{red}{\texttt{ab}}\texttt{b}}\texttt{cbcbaaaabbc}           & $6$  & $8:\texttt{abb}$ \\
-        $6$  & \uline{\textcolor{red}{\texttt{bc}}\texttt{b}}\texttt{cbaaaabbc}             & $4$  & $9:\texttt{bcb}$ \\
-        $7$  & \uline{\textcolor{red}{\texttt{bcb}}\texttt{a}}\texttt{aaaabbc}              & $9$  & $10:\texttt{bcba}$ \\
-        $8$  & \uline{\textcolor{red}{\texttt{a}}\texttt{a}}\texttt{aabbc}                  & $1$  & $11:\texttt{aa}$ \\
-        $9$  & \uline{\textcolor{red}{\texttt{aa}}\texttt{a}}\texttt{bbc}                   & $11$ & $12:\texttt{aaa}$ \\
-        $10$ & \uline{\textcolor{red}{\texttt{abb}}\texttt{c}}                              & $8$  & $13:\texttt{abbc}$ \\
-        $11$ & \textcolor{red}{\texttt{c}}                                  & $3$  & --
+        \textbf{Passo} & \textbf{Input corrente}                                                & \textbf{Output} & \textbf{Codebook}                            \\ \hline
+        $0$            & \texttt{bcababbcbcbaaaabbc}                                            & --              & $1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{c}$ \\
+        $1$            & \uline{\textcolor{red}{\texttt{b}}\texttt{c}}\texttt{ababbcbcbaaaabbc} & $2$             & $4:\texttt{bc}$                              \\
+        $2$            & \uline{\textcolor{red}{\texttt{c}}\texttt{a}}\texttt{babbcbcbaaaabbc}  & $3$             & $5:\texttt{ca}$                              \\
+        $3$            & \uline{\textcolor{red}{\texttt{a}}\texttt{b}}\texttt{abbcbcbaaaabbc}   & $1$             & $6:\texttt{ab}$                              \\
+        $4$            & \uline{\textcolor{red}{\texttt{b}}\texttt{a}}\texttt{bbcbcbaaaabbc}    & $2$             & $7:\texttt{ba}$                              \\
+        $5$            & \uline{\textcolor{red}{\texttt{ab}}\texttt{b}}\texttt{cbcbaaaabbc}     & $6$             & $8:\texttt{abb}$                             \\
+        $6$            & \uline{\textcolor{red}{\texttt{bc}}\texttt{b}}\texttt{cbaaaabbc}       & $4$             & $9:\texttt{bcb}$                             \\
+        $7$            & \uline{\textcolor{red}{\texttt{bcb}}\texttt{a}}\texttt{aaaabbc}        & $9$             & $10:\texttt{bcba}$                           \\
+        $8$            & \uline{\textcolor{red}{\texttt{a}}\texttt{a}}\texttt{aabbc}            & $1$             & $11:\texttt{aa}$                             \\
+        $9$            & \uline{\textcolor{red}{\texttt{aa}}\texttt{a}}\texttt{bbc}             & $11$            & $12:\texttt{aaa}$                            \\
+        $10$           & \uline{\textcolor{red}{\texttt{abb}}\texttt{c}}                        & $8$             & $13:\texttt{abbc}$                           \\
+        $11$           & \textcolor{red}{\texttt{c}}                                            & $3$             & --
     \end{tabular}
     \caption{Passi della codifica LZW di \texttt{bcababbcbcbaaaabbc}.}
     \label{tab:lzw_encoding_bcababb}
@@ -5625,19 +5642,19 @@ Nella tabella, il codice rosso è quello decodificato in quel passo; la colonna 
     \centering
     \small
     \begin{tabular}{c|l|c|c|l}
-        \textbf{Passo} & \textbf{Codici correnti} & \textbf{Output} & \textbf{Primo car. succ.} & \textbf{Codebook} \\ \hline
-        $0$  & $2,3,1,2,6,4,9,1,11,8,3$                   & --                            & --         & $1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{c}$ \\
-        $1$  & \textcolor{red}{$2$},$3,1,2,6,4,9,1,11,8,3$    & \textcolor{red}{\texttt{b}}   & \texttt{c} & $4:\uline{\textcolor{red}{\texttt{b}}\texttt{c}}$ \\
-        $2$  & \textcolor{red}{$3$},$1,2,6,4,9,1,11,8,3$      & \textcolor{red}{\texttt{c}}   & \texttt{a} & $5:\uline{\textcolor{red}{\texttt{c}}\texttt{a}}$ \\
-        $3$  & \textcolor{red}{$1$},$2,6,4,9,1,11,8,3$        & \textcolor{red}{\texttt{a}}   & \texttt{b} & $6:\uline{\textcolor{red}{\texttt{a}}\texttt{b}}$ \\
-        $4$  & \textcolor{red}{$2$},$6,4,9,1,11,8,3$          & \textcolor{red}{\texttt{b}}   & \texttt{a} & $7:\uline{\textcolor{red}{\texttt{b}}\texttt{a}}$ \\
-        $5$  & \textcolor{red}{$6$},$4,9,1,11,8,3$            & \textcolor{red}{\texttt{ab}}  & \texttt{b} & $8:\uline{\textcolor{red}{\texttt{ab}}\texttt{b}}$ \\
-        $6$  & \textcolor{red}{$4$},$9,1,11,8,3$              & \textcolor{red}{\texttt{bc}}  & \texttt{b} & $9:\uline{\textcolor{red}{\texttt{bc}}\texttt{b}}$ \\
-        $7$  & \textcolor{red}{$9$},$1,11,8,3$                & \textcolor{red}{\texttt{bcb}} & \texttt{a} & $10:\uline{\textcolor{red}{\texttt{bcb}}\texttt{a}}$ \\
-        $8$  & \textcolor{red}{$1$},$11,8,3$                  & \textcolor{red}{\texttt{a}}   & \texttt{a} & $11:\uline{\textcolor{red}{\texttt{a}}\texttt{a}}$ \\
-        $9$  & \textcolor{red}{$11$},$8,3$                    & \textcolor{red}{\texttt{aa}}  & \texttt{a} & $12:\uline{\textcolor{red}{\texttt{aa}}\texttt{a}}$ \\
-        $10$ & \textcolor{red}{$8$},$3$                       & \textcolor{red}{\texttt{abb}} & \texttt{c} & $13:\uline{\textcolor{red}{\texttt{abb}}\texttt{c}}$ \\
-        $11$ & \textcolor{red}{$3$}                           & \textcolor{red}{\texttt{c}}   & --         & --
+        \textbf{Passo} & \textbf{Codici correnti}                    & \textbf{Output}               & \textbf{Primo car. succ.} & \textbf{Codebook}                                    \\ \hline
+        $0$            & $2,3,1,2,6,4,9,1,11,8,3$                    & --                            & --                        & $1:\texttt{a},\ 2:\texttt{b},\ 3:\texttt{c}$         \\
+        $1$            & \textcolor{red}{$2$},$3,1,2,6,4,9,1,11,8,3$ & \textcolor{red}{\texttt{b}}   & \texttt{c}                & $4:\uline{\textcolor{red}{\texttt{b}}\texttt{c}}$    \\
+        $2$            & \textcolor{red}{$3$},$1,2,6,4,9,1,11,8,3$   & \textcolor{red}{\texttt{c}}   & \texttt{a}                & $5:\uline{\textcolor{red}{\texttt{c}}\texttt{a}}$    \\
+        $3$            & \textcolor{red}{$1$},$2,6,4,9,1,11,8,3$     & \textcolor{red}{\texttt{a}}   & \texttt{b}                & $6:\uline{\textcolor{red}{\texttt{a}}\texttt{b}}$    \\
+        $4$            & \textcolor{red}{$2$},$6,4,9,1,11,8,3$       & \textcolor{red}{\texttt{b}}   & \texttt{a}                & $7:\uline{\textcolor{red}{\texttt{b}}\texttt{a}}$    \\
+        $5$            & \textcolor{red}{$6$},$4,9,1,11,8,3$         & \textcolor{red}{\texttt{ab}}  & \texttt{b}                & $8:\uline{\textcolor{red}{\texttt{ab}}\texttt{b}}$   \\
+        $6$            & \textcolor{red}{$4$},$9,1,11,8,3$           & \textcolor{red}{\texttt{bc}}  & \texttt{b}                & $9:\uline{\textcolor{red}{\texttt{bc}}\texttt{b}}$   \\
+        $7$            & \textcolor{red}{$9$},$1,11,8,3$             & \textcolor{red}{\texttt{bcb}} & \texttt{a}                & $10:\uline{\textcolor{red}{\texttt{bcb}}\texttt{a}}$ \\
+        $8$            & \textcolor{red}{$1$},$11,8,3$               & \textcolor{red}{\texttt{a}}   & \texttt{a}                & $11:\uline{\textcolor{red}{\texttt{a}}\texttt{a}}$   \\
+        $9$            & \textcolor{red}{$11$},$8,3$                 & \textcolor{red}{\texttt{aa}}  & \texttt{a}                & $12:\uline{\textcolor{red}{\texttt{aa}}\texttt{a}}$  \\
+        $10$           & \textcolor{red}{$8$},$3$                    & \textcolor{red}{\texttt{abb}} & \texttt{c}                & $13:\uline{\textcolor{red}{\texttt{abb}}\texttt{c}}$ \\
+        $11$           & \textcolor{red}{$3$}                        & \textcolor{red}{\texttt{c}}   & --                        & --
     \end{tabular}
     \caption{Passi della decodifica LZW della sequenza $2,3,1,2,6,4,9,1,11,8,3$.}
     \label{tab:lzw_decoding_bcababb}
