@@ -4794,11 +4794,11 @@ Per non ricontare ogni volta i caratteri già attraversati si memorizzano due li
 \end{itemize}
 Il primo valore risponde alla parte 1 della decomposizione, mentre il secondo risponde alla parte 2. Entrambi si ottengono con un singolo accesso a una tabella.
 
-Il doppio livello è essenziale per lo spazio. Salvare un conteggio globale per ogni bucket richiederebbe $\Theta(\log n)$ bit per ogni contatore; dentro un singolo superblocco, invece, un conteggio non supera $\ell^2$, quindi bastano:
+Il doppio livello è essenziale per lo spazio. Salvare un conteggio globale per ogni bucket richiederebbe $\Theta(\log n)$ bit per ogni contatore; dentro un singolo superblocco, invece, ciascuna cella di $NO'$ contiene un valore non superiore a $\ell^2$, quindi per rappresentare una cella bastano:
 \[
     O(\log \ell^2)=O(\log\log n)
 \]
-bit. \uline{I superblocchi forniscono dunque pochi contatori grandi, mentre i bucket forniscono molti contatori piccoli}.
+bit. Questo bound riguarda quindi \textbf{un singolo contatore relativo di $NO'$}, non l'intera struttura. \uline{I superblocchi forniscono dunque pochi contatori grandi, mentre i bucket forniscono molti contatori piccoli}.
 
 \paragraph{Come trovare il bucket compresso in \(Z\).}
 La posizione logica di $BL_i$ non permette di conoscere direttamente la posizione di $BZ_i$ in $Z$, perché i blocchi compressi hanno lunghezza variabile. Si usano perciò altre due somme prefisse:
@@ -4946,44 +4946,167 @@ La parte inferiore della figura mostra anche perché servono $W$ e $W'$: benché
 \end{figure}
 
 \paragraph{Costo delle strutture ausiliarie.}
-Assumendo che l'alfabeto $\Sigma$ abbia dimensione costante e ricordando che $\ell=\Theta(\log n)$:
+Per evitare ambiguità, in questa analisi indichiamo con $\#X$ il \textbf{numero di celle} della struttura $X$ e con $\operatorname{space}(X)$ il suo \textbf{spazio complessivo in bit}. Ogni stima viene ottenuta come:
+\[
+    \operatorname{space}(X)
+    =
+    \#X
+    \cdot
+    \text{bit necessari per una cella}.
+\]
+Assumiamo che l'alfabeto $\Sigma$ abbia dimensione costante e ricordiamo che $\ell=\Theta(\log n)$.
+
 \begin{itemize}
-    \item esistono $O(n/\ell^2)$ superblocchi; i contatori $NO$ e gli offset $W$ richiedono $O(\log n)$ bit ciascuno, per un totale di $O(n/\log n)$ bit;
-    \item esistono $O(n/\ell)$ bucket; i valori relativi $NO'$ e $W'$ sono limitati dalla dimensione di un superblocco e richiedono $O(\log\log n)$ bit ciascuno, per un totale di:
+    \item \textbf{Contatori globali $NO$.} Esistono $O(n/\ell^2)$ superblocchi e, per ciascuno, si conservano $|\Sigma|$ contatori. Ogni contatore può arrivare fino a $n$ e richiede quindi $O(\log n)$ bit:
           \[
-              O\!\left(\frac{n\log\log n}{\log n}\right)
-              \text{ bit};
+              \#NO
+              =
+              O\!\left(\frac{n}{\ell^2}|\Sigma|\right),
+              \qquad
+              \operatorname{space}(NO)
+              =
+              O\!\left(\frac{n}{\ell^2}|\Sigma|\log n\right)
+              =
+              O\!\left(\frac{n}{\log n}\right).
           \]
-    \item uno stato MTF occupa $O(|\Sigma|\log|\Sigma|)=O(1)$ bit, quindi tutti gli stati $MTF_i$ richiedono $O(n/\log n)$ bit.
+
+    \item \textbf{Offset globali $W$.} Si conserva un offset per ciascun superblocco, dunque $\#W=O(n/\ell^2)$. Un offset è una posizione in $Z$ e richiede $O(\log n)$ bit:
+          \[
+              \operatorname{space}(W)
+              =
+              O\!\left(\frac{n}{\ell^2}\log n\right)
+              =
+              O\!\left(\frac{n}{\log n}\right).
+          \]
+
+    \item \textbf{Contatori relativi $NO'$.} Esistono $O(n/\ell)$ bucket e per ogni confine si conservano $|\Sigma|$ contatori. Ogni valore conta soltanto dentro un superblocco, quindi è al più $\ell^2$ e occupa $O(\log\ell)=O(\log\log n)$ bit:
+          \[
+              \#NO'
+              =
+              O\!\left(\frac{n}{\ell}|\Sigma|\right),
+              \qquad
+              \operatorname{space}(NO')
+              =
+              O\!\left(\frac{n}{\ell}|\Sigma|\log\ell\right)
+              =
+              O\!\left(\frac{n\log\log n}{\log n}\right).
+          \]
+
+    \item \textbf{Offset relativi $W'$.} Anche $W'$ contiene un valore per bucket, quindi $\#W'=O(n/\ell)$. L'offset misura una posizione interna a un solo superblocco compresso, la cui lunghezza massima è $O(\ell^2)$ bit; ogni cella di $W'$ richiede perciò $O(\log\ell)=O(\log\log n)$ bit:
+          \[
+              \operatorname{space}(W')
+              =
+              O\!\left(\frac{n}{\ell}\log\ell\right)
+              =
+              O\!\left(\frac{n\log\log n}{\log n}\right).
+          \]
+
+    \item \textbf{Stati $MTF_i$.} Si salva uno stato per ciascuno degli $O(n/\ell)$ bucket. Uno stato è una permutazione dell'alfabeto e occupa $O(|\Sigma|\log|\Sigma|)=O(1)$ bit:
+          \[
+              \operatorname{space}(MTF)
+              =
+              O\!\left(\frac{n}{\ell}|\Sigma|\log|\Sigma|\right)
+              =
+              O\!\left(\frac{n}{\log n}\right).
+          \]
 \end{itemize}
 
-Resta da controllare la dimensione della tabella universale $S$. Un bucket compresso ha lunghezza massima:
+Resta da analizzare separatamente la \textbf{tabella universale $S$}. Un bucket compresso ha lunghezza massima:
 \[
+    b_{\max}
+    =
     \ell\bigl(1+2\lfloor\log|\Sigma|\rfloor\bigr)
+    \text{ bit}.
 \]
-bit. Si sceglie la costante nascosta in $\ell=\Theta(\log n)$ in modo che questa quantità sia:
+Si sceglie la costante nascosta in $\ell=\Theta(\log n)$ in modo che:
 \[
+    b_{\max}
+    =
     \alpha\log n,
     \qquad
     0<\alpha<1.
 \]
-I possibili blocchi compressi sono allora al più:
+Il numero di possibili stringhe binarie $BZ_i$ di lunghezza non superiore a $b_{\max}$ è:
 \[
-    2^{\alpha\log n}=n^\alpha=o(n).
-\]
-Il numero di possibili stati MTF dipende soltanto da $|\Sigma|$ e viene quindi assorbito nella costante. Poiché per ogni combinazione di blocco e stato MTF si memorizzano $O(\ell)$ contatori di $O(\log\ell)$ bit, la tabella occupa:
-\[
-    O\!\left(n^\alpha\log n\log\log n\right)
+    O(2^{b_{\max}})
     =
-    o\!\left(\frac{n\log\log n}{\log n}\right)
+    O(2^{\alpha\log n})
+    =
+    O(n^\alpha).
 \]
-bit. La tabella non vanifica quindi la compressione dell'indice.
+Gli altri indici di $S[c,h,BZ_i,MTF_i]$ hanno:
+\begin{itemize}
+    \item $|\Sigma|=O(1)$ possibili caratteri $c$;
+    \item $\ell=O(\log n)$ possibili lunghezze $h$;
+    \item al più $|\Sigma|!=O(1)$ possibili stati MTF.
+\end{itemize}
+Di conseguenza, il numero di celle della tabella è:
+\[
+    \#S
+    =
+    O\!\left(
+        |\Sigma|
+        \cdot
+        \ell
+        \cdot
+        n^\alpha
+        \cdot
+        |\Sigma|!
+    \right)
+    =
+    O(n^\alpha\log n).
+\]
+Ogni cella contiene un conteggio compreso tra $0$ e $\ell$, quindi richiede $O(\log\ell)=O(\log\log n)$ bit. Pertanto:
+\[
+    \operatorname{space}(S)
+    =
+    \underbrace{O(n^\alpha\log n)}_{\text{numero di celle}}
+    \cdot
+    \underbrace{O(\log\log n)}_{\text{bit per cella}}
+    =
+    O\!\left(n^\alpha\log n\log\log n\right).
+\]
+\uline{Il fattore $\log\log n$ appartiene allo spazio in bit, non al numero di celle di $S$}. Inoltre, per ogni costante $\alpha<1$:
+\[
+    \frac{
+        n^\alpha\log n\log\log n
+    }{
+        n\log\log n/\log n
+    }
+    =
+    \frac{\log^2 n}{n^{1-\alpha}}
+    \longrightarrow
+    0,
+\]
+e quindi:
+\[
+    \operatorname{space}(S)
+    =
+    o\!\left(\frac{n\log\log n}{\log n}\right).
+\]
+La tabella universale è dunque asintoticamente più piccola delle strutture relative $NO'$ e $W'$.
 
-In conclusione, tutte le operazioni della query sono accessi diretti a tabelle e parole di macchina. Nel modello RAM con parola di $\Theta(\log n)$ bit e alfabeto costante si ottiene:
+\paragraph{Riepilogo dei costi.}
+Considerando soltanto le strutture ausiliarie necessarie a $\operatorname{Occ}$, e non ancora la stringa compressa $Z$, si ha:
+\begin{itemize}
+    \item $NO$ e $W$ occupano ciascuna $O(n/\log n)$ bit;
+    \item $NO'$ e $W'$ occupano ciascuna $O(n\log\log n/\log n)$ bit e costituiscono il termine dominante;
+    \item gli stati MTF occupano complessivamente $O(n/\log n)$ bit;
+    \item la tabella universale $S$ occupa $O(n^\alpha\log n\log\log n)$ bit, che è $o(n\log\log n/\log n)$ per $\alpha<1$.
+\end{itemize}
+Questi sono \textbf{spazi complessivi in bit}, non numeri di celle. Sommando i quattro contributi:
+\[
+    \operatorname{space}(NO,NO',W,W',MTF,S)
+    =
+    O\!\left(\frac{n\log\log n}{\log n}\right)
+    \text{ bit}.
+\]
+
+Tutte le operazioni della query sono accessi diretti a tabelle e parole di macchina. Nel modello RAM con parola di $\Theta(\log n)$ bit e alfabeto costante si ottiene:
 \[
     \operatorname{Occ}(c,q)\text{ in tempo }O(1)
 \]
-con spazio complessivo:
+Aggiungendo la stringa compressa $Z$, lo spazio della componente dell'indice che supporta il conteggio è:
 \begin{equation}\label{eq:fm_occ_space}
     |Z|
     +
@@ -4992,11 +5115,13 @@ con spazio complessivo:
 \end{equation}
 Questo è il risultato tecnico che rende effettivamente lineare in $p$ la \texten{backward search}: senza questa implementazione, l'ipotesi di accesso costante a $\operatorname{Occ}$ rimarrebbe ingiustificata.
 
-Il termine \eqref{eq:fm_occ_space} va infine combinato con lo spazio:
+Il termine \eqref{eq:fm_occ_space} va infine combinato con lo spazio dei campioni usati per la localizzazione:
 \[
+    \operatorname{space}(\text{campioni})
+    =
     O\!\left(\frac{n}{\log^\varepsilon n}\right)
 \]
-dei campioni usati per la localizzazione. Per ogni costante $0<\varepsilon<1$ vale:
+bit. Per ogni costante $0<\varepsilon<1$ vale:
 \[
     \frac{n\log\log n}{\log n}
     =
