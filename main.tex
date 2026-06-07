@@ -4904,12 +4904,12 @@ L'ultimo passaggio inverte il RLE: $\mathtt{run0}$ rappresenta una run formata d
 Invertendo la MTF sui valori $2,1,0,1$ si ricostruisce localmente:
 \[
     \begin{array}{c|c|c|c}
-        \textbf{valore MTF} & \textbf{lista prima} & \textbf{carattere} & \textbf{lista dopo} \\
+        \textbf{valore MTF} & \textbf{lista prima}               & \textbf{carattere} & \textbf{lista dopo}                \\
         \hline
-        2 & (\texttt{a},\texttt{b},\texttt{c}) & \texttt{c} & (\texttt{c},\texttt{a},\texttt{b}) \\
-        1 & (\texttt{c},\texttt{a},\texttt{b}) & \texttt{a} & (\texttt{a},\texttt{c},\texttt{b}) \\
-        0 & (\texttt{a},\texttt{c},\texttt{b}) & \texttt{a} & (\texttt{a},\texttt{c},\texttt{b}) \\
-        1 & (\texttt{a},\texttt{c},\texttt{b}) & \texttt{c} & (\texttt{c},\texttt{a},\texttt{b})
+        2                   & (\texttt{a},\texttt{b},\texttt{c}) & \texttt{c}         & (\texttt{c},\texttt{a},\texttt{b}) \\
+        1                   & (\texttt{c},\texttt{a},\texttt{b}) & \texttt{a}         & (\texttt{a},\texttt{c},\texttt{b}) \\
+        0                   & (\texttt{a},\texttt{c},\texttt{b}) & \texttt{a}         & (\texttt{a},\texttt{c},\texttt{b}) \\
+        1                   & (\texttt{a},\texttt{c},\texttt{b}) & \texttt{c}         & (\texttt{c},\texttt{a},\texttt{b})
     \end{array}
 \]
 e quindi:
@@ -5045,13 +5045,13 @@ Di conseguenza, il numero di celle della tabella è:
     \#S
     =
     O\!\left(
-        |\Sigma|
-        \cdot
-        \ell
-        \cdot
-        n^\alpha
-        \cdot
-        |\Sigma|!
+    |\Sigma|
+    \cdot
+    \ell
+    \cdot
+    n^\alpha
+    \cdot
+    |\Sigma|!
     \right)
     =
     O(n^\alpha\log n).
@@ -6198,8 +6198,8 @@ globale dei simboli.
 Un confronto analogo è:
 \[
     \begin{split}
-        s_1&=\texttt{0001000100010001000100010001000100010001},\\
-        s_2&=\texttt{1110010111001101101011010011001111101101}.
+        s_1 & =\texttt{0001000100010001000100010001000100010001}, \\
+        s_2 & =\texttt{1110010111001101101011010011001111101101}.
     \end{split}
 \]
 La prima stringa è generata ripetendo dieci volte \texttt{0001}; la seconda
@@ -6220,9 +6220,9 @@ eseguire programmi espressi in un linguaggio universale.
         K_U(x)
         =
         \min\left\{
-            |p|
-            \;\middle|\;
-            U(p)=x
+        |p|
+        \;\middle|\;
+        U(p)=x
         \right\},
     \end{equation}
     dove $p$ è un programma codificato in bit, $|p|$ è la sua lunghezza e
@@ -6230,8 +6230,8 @@ eseguire programmi espressi in un linguaggio universale.
     $x$.
 \end{definizione}
 
-La definizione non cerca il programma più veloce, ma quello con la descrizione
-più corta. Una stringa può quindi richiedere molto tempo per essere generata e
+\uline{La definizione non cerca il programma più veloce, ma quello con la descrizione
+    più corta}. Una stringa può quindi richiedere molto tempo per essere generata e
 avere comunque bassa complessità di Kolmogorov.
 
 Per ogni stringa vale il limite superiore elementare:
@@ -6296,25 +6296,67 @@ scrive spesso semplicemente $K(x)$, sottintendendo una macchina universale
 fissata.
 
 \subsubsection{Incomprimibilità e casualità algoritmica}
-Una stringa è algoritmicamente casuale quando non possiede una descrizione
-significativamente più corta della propria rappresentazione letterale.
+Nel contesto della complessità di Kolmogorov, la parola \textbf{casuale} non descrive il modo in cui una stringa è stata generata e non significa semplicemente che i suoi simboli ``sembrano disordinati''. \uline{Indica invece l'assenza di una descrizione algoritmica sensibilmente più corta della stringa}.
+
+Consideriamo, per esempio, una stringa alternata di lunghezza $n$:
+\[
+    x=\texttt{010101}\cdots\texttt{01}.
+\]
+Non è necessario memorizzarne tutti gli $n$ bit: basta descrivere $n$ e
+specificare di ripetere il blocco \texttt{01}. La sua complessità è quindi
+dell'ordine di $O(\log n)$, oltre a un costo costante per il programma. Una
+stringa priva di una regola analoga può invece richiedere una descrizione lunga
+quasi quanto i suoi $n$ bit.
+
+Il confronto corretto è dunque tra $K(x)$ e $|x|$. Se
+$K(x)\ll |x|$, la stringa contiene una regolarità sfruttabile; se
+$K(x)$ è circa $|x|$, nessun programma riesce a ottenere un risparmio
+significativo.
 
 \begin{definizione}
-    Una stringa $x$ è \textbf{$c$-incomprimibile} se:
+    Una stringa binaria $x$ è \textbf{incomprimibile}, o
+    \textbf{casuale secondo Kolmogorov}, se:
     \[
-        K(x)\geq |x|-c.
+        K(x)\geq |x|
     \]
-    In tal caso si dice anche che $x$ è
-    \textbf{algoritmicamente casuale al livello $c$}. La convenzione più
-    rigida $K(x)\geq |x|$ corrisponde al caso $c=0$.
 \end{definizione}
+in altre parole, significa che \uline{nessun programma più corto di $|x|$ bit produce $x$}. La rappresentazione esplicita dei bit è quindi, a meno del costo fisso dell'istruzione di stampa, la descrizione migliore disponibile.
 
-La costante è necessaria perché il teorema di invarianza permette a due
-macchine universali di differire di un costo fisso. La nozione rilevante non è
-quindi l'uguaglianza esatta tra $K(x)$ e $|x|$, ma l'impossibilità di risparmiare
-un numero crescente di bit. Per una stringa finita la casualità va sempre
-intesa rispetto alla tolleranza $c$; la nozione di casualità per sequenze
-infinite richiede invece definizioni ulteriori, che non sono necessarie qui.
+\medskip
+
+La definizione può essere generalizzata introducendo una tolleranza
+$c\geq 0$. Una stringa è \textbf{$c$-incomprimibile} se:
+\[
+    K(x)\geq |x|-c.
+\]
+Per interpretare la disuguaglianza, definiamo il numero di bit risparmiati
+dalla descrizione minima:
+\[
+    d(x)=|x|-K(x).
+\]
+La condizione precedente equivale a:
+\[
+    d(x)\leq c.
+\]
+Il parametro $c$ è quindi il \textbf{massimo risparmio tollerato}: una stringa
+è $c$-incomprimibile quando il suo programma minimo consente di risparmiare al
+più $c$ bit rispetto alla lunghezza della stringa.
+
+Il caso $c=0$ è il più rigido, perché richiede $K(x)\geq |x|$ e non tollera
+alcun risparmio. Se $c$ aumenta, la soglia $|x|-c$ diminuisce: la condizione
+diventa più facile da soddisfare e un numero maggiore di stringhe viene
+classificato come $c$-incomprimibile. Al contrario, diminuire $c$ alza la
+soglia e rende il criterio più selettivo.
+
+Per esempio, se $|x|=100$ e $K(x)=97$, la descrizione minima risparmia tre bit:
+\[
+    d(x)=100-97=3.
+\]
+La stringa non è $0$-incomprimibile né $2$-incomprimibile, ma è
+$3$-incomprimibile e, di conseguenza, anche $4$-, $5$- e
+$10$-incomprimibile. Valori costanti di $c$ permettono di ignorare piccoli
+costi o risparmi fissi dovuti alla macchina universale scelta; ciò che conta è
+che il numero di bit risparmiati non cresca con la lunghezza della stringa.
 
 \begin{theorem}\label{theorem_incompressible_strings_exist}
     Per ogni $n>0$ esiste almeno una stringa binaria $x$ di lunghezza $n$ tale
@@ -6332,15 +6374,27 @@ infinite richiede invece definizioni ulteriori, che non sono necessarie qui.
     lunghezza $n$: almeno una richiede un programma lungo almeno $n$.
 \end{proof}
 
+È un'applicazione del principio dei cassetti: ci sono meno programmi brevi che
+stringhe di lunghezza $n$. In realtà le uscite distinte possono essere ancora
+meno, perché alcuni programmi non terminano e programmi diversi possono
+produrre la stessa stringa.
+
 Lo stesso conteggio dà un risultato più forte. Per ogni intero
 $0\leq c\leq n$, i programmi lunghi meno di $n-c$ sono
 $2^{n-c}-1$; dunque almeno:
 \[
     2^n-2^{n-c}+1
 \]
-stringhe di lunghezza $n$ sono $c$-incomprimibili. Per una stringa scelta
-uniformemente a caso, l'incomprimibilità non è quindi un'eccezione, ma il
-comportamento prevalente.
+stringhe di lunghezza $n$ sono $c$-incomprimibili. Dividendo per le $2^n$
+stringhe possibili, la frazione di stringhe $c$-incomprimibili è almeno:
+\[
+    1-2^{-c}+2^{-n}.
+\]
+Per esempio, con $c=10$, più del $99{,}9\%$ delle stringhe di lunghezza $n$
+non può essere compresso di oltre dieci bit. Quindi una stringa estratta
+uniformemente a caso è molto probabilmente $c$-incomprimibile, anche se il
+teorema non indica quali siano queste stringhe e, come vedremo, non esiste un
+algoritmo generale capace di calcolare esattamente $K(x)$.
 
 \subsubsection{La complessità di Kolmogorov non è calcolabile}
 La definizione è matematicamente precisa, ma non fornisce un algoritmo per
@@ -6410,7 +6464,7 @@ La macchina di Turing è un modello di descrizione molto potente, ma proprio per
 questo il programma minimo non è calcolabile. Un modello più debole consiste
 nel rappresentare la stringa tramite una grammatica aciclica che genera un solo
 testo. Le ripetizioni vengono espresse una volta in una regola e poi richiamate
-mediante non terminali.
+mediante segnaposti/non-terminali.
 
 \begin{definizione}
     Uno \textbf{\texten{Straight-Line Program}} (SLP) è una grammatica libera
@@ -6460,11 +6514,11 @@ Consideriamo:
 \]
 Una grammatica compatta è:
 \[
-    S\to BBA,
+    S\to BBA
     \qquad
-    A\to\texttt{a rose},
+    A\to\texttt{a rose}
     \qquad
-    B\to A\texttt{\ is\ }.
+    B\to A\texttt{\ is\ }
 \]
 Il non terminale $A$ rappresenta il frammento \texttt{a rose}, mentre $B$
 aggiunge \texttt{ is } e può essere riutilizzato due volte. Contando anche gli
@@ -6488,13 +6542,13 @@ Per esempio:
 La definizione ricorsiva si traduce direttamente nell'SLP:
 \[
     \begin{array}{lll}
-        F_0\to\texttt{b},&
-        F_1\to\texttt{a},&
-        F_2\to F_1F_0,\\
-        F_3\to F_2F_1,&
-        F_4\to F_3F_2,&
-        F_5\to F_4F_3,\\
-        &&F_6\to F_5F_4.
+        F_0\to\texttt{b}, &
+        F_1\to\texttt{a}, &
+        F_2\to F_1F_0,                         \\
+        F_3\to F_2F_1,    &
+        F_4\to F_3F_2,    &
+        F_5\to F_4F_3,                         \\
+                          &   & F_6\to F_5F_4.
     \end{array}
 \]
 L'assioma è $F_6$ e la dimensione è:
@@ -6593,14 +6647,14 @@ dizionario costi più del riuso che introduce.
         \Require sequenza $w[1..n]$
         \State inizializza $S\to\varepsilon$ e un indice dei digrammi
         \For{$i=1$ \textbf{to} $n$}
-            \State aggiungi $w[i]$ alla fine del lato destro di $S$
-            \While{l'unicità dei digrammi è violata}
-                \State crea o riusa una regola per il digramma ripetuto
-                \State sostituisci le occorrenze non sovrapposte
-            \EndWhile
-            \While{esiste una regola secondaria usata una sola volta}
-                \State espandi la sua unica occorrenza ed elimina la regola
-            \EndWhile
+        \State aggiungi $w[i]$ alla fine del lato destro di $S$
+        \While{l'unicità dei digrammi è violata}
+        \State crea o riusa una regola per il digramma ripetuto
+        \State sostituisci le occorrenze non sovrapposte
+        \EndWhile
+        \While{esiste una regola secondaria usata una sola volta}
+        \State espandi la sua unica occorrenza ed elimina la regola
+        \EndWhile
         \EndFor
         \State \Return la grammatica risultante
     \end{algorithmic}
@@ -6677,7 +6731,7 @@ L'analisi del caso peggiore di SEQUITUR dà il limite superiore:
     \rho_{\mathrm{SEQUITUR}}(n)
     \in
     O\left(
-        \left(\frac{n}{\log n}\right)^{3/4}
+    \left(\frac{n}{\log n}\right)^{3/4}
     \right),
 \]
 mentre esistono famiglie di stringhe sulle quali il rapporto è almeno
@@ -6694,9 +6748,9 @@ ripetutamente l'intera sequenza corrente e sceglie il digramma più frequente.
         \Require stringa $w$
         \State $S\gets w$
         \While{esiste un digramma con almeno due occorrenze non sovrapposte}
-            \State scegli un digramma $XY$ di frequenza massima
-            \State crea un nuovo non terminale $A$ con regola $A\to XY$
-            \State sostituisci con $A$ tutte le occorrenze non sovrapposte di $XY$
+        \State scegli un digramma $XY$ di frequenza massima
+        \State crea un nuovo non terminale $A$ con regola $A\to XY$
+        \State sostituisci con $A$ tutte le occorrenze non sovrapposte di $XY$
         \EndWhile
         \State usa la sequenza residua come lato destro dell'assioma
     \end{algorithmic}
@@ -6745,11 +6799,11 @@ La grammatica prodotta è:
 \[
     \begin{array}{lll}
         S\to EB\texttt{a}ECC,
-        &A\to\texttt{ab},
-        &B\to\texttt{a}A,\\
+         & A\to\texttt{ab},
+         & B\to\texttt{a}A,  \\
         C\to A\texttt{d},
-        &D\to B\texttt{c},
-        &E\to\texttt{a}D.
+         & D\to B\texttt{c},
+         & E\to\texttt{a}D.
     \end{array}
 \]
 Espandendo i non terminali in ordine inverso si ricostruisce esattamente
@@ -6772,7 +6826,7 @@ Il limite superiore classico sul rapporto di approssimazione è:
     \rho_{\mathrm{RePair}}(n)
     \in
     O\left(
-        \left(\frac{n}{\log n}\right)^{2/3}
+    \left(\frac{n}{\log n}\right)^{2/3}
     \right).
 \]
 È noto anche un limite inferiore
@@ -6843,13 +6897,13 @@ Il parsing LZ78 è:
 La grammatica corrispondente è:
 \[
     \begin{array}{lll}
-        X_1\to\texttt{a},&
-        X_2\to X_1\texttt{b},&
-        X_3\to\texttt{b},\\
-        X_4\to X_2\texttt{a},&
-        X_5\to X_3\texttt{a},&
-        X_6\to X_2\texttt{b},\\
-        S\to X_1X_2X_3X_4X_5X_6.&&
+        X_1\to\texttt{a},        &
+        X_2\to X_1\texttt{b},    &
+        X_3\to\texttt{b},              \\
+        X_4\to X_2\texttt{a},    &
+        X_5\to X_3\texttt{a},    &
+        X_6\to X_2\texttt{b},          \\
+        S\to X_1X_2X_3X_4X_5X_6. &   &
     \end{array}
 \]
 L'espansione di $S$ è:
@@ -6863,7 +6917,7 @@ asintoticamente:
     \rho_{\mathrm{LZ78}}(n)
     =
     \Theta\left(
-        \left(\frac{n}{\log n}\right)^{2/3}
+    \left(\frac{n}{\log n}\right)^{2/3}
     \right).
 \]
 LZ78 può quindi essere universale nel senso probabilistico e, allo stesso
@@ -6881,10 +6935,10 @@ con $\widehat z$ il numero di frasi nella variante senza sovrapposizioni. Vale:
     \leq
     z\cdot
     O\left(
-        \log
-        \frac{n}{
-            z\log_{\sigma}z
-        }
+    \log
+    \frac{n}{
+        z\log_{\sigma}z
+    }
     \right).
 \end{equation}
 La prima disuguaglianza è immediata: vietare sorgenti sovrapposte non può
@@ -6925,7 +6979,7 @@ Viceversa, da un parsing LZ77 di $z$ frasi si può costruire una grammatica
 bilanciata di dimensione:
 \[
     O\left(
-        z\log\frac{n}{z}
+    z\log\frac{n}{z}
     \right).
 \]
 LZ77 diventa quindi un ponte tra un parsing a copie e una rappresentazione
@@ -7014,9 +7068,9 @@ comprime nessuna informazione. La quantità interessante è:
     \gamma^*(T)
     =
     \min\left\{
-        |\Gamma|
-        \;\middle|\;
-        \Gamma\text{ è uno string attractor per }T
+    |\Gamma|
+    \;\middle|\;
+    \Gamma\text{ è uno string attractor per }T
     \right\}.
 \end{equation}
 
@@ -7036,13 +7090,13 @@ Consideriamo:
 Numeriamo le posizioni:
 \[
     \begin{array}{c|cccccccccccc}
-        i    &1&2&3&4&5&6&7&8&9&10&11&12\\ \hline
-        T[i] &\texttt{C}&\texttt{D}&\texttt{A}&
-        \underline{\texttt{B}}&
-        \texttt{C}&\texttt{C}&
-        \underline{\texttt{D}}&
-        \texttt{A}&\texttt{B}&\texttt{C}&
-        \underline{\texttt{C}}&
+        i                      & 1          & 2          & 3          & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 \\ \hline
+        T[i]                   & \texttt{C} & \texttt{D} & \texttt{A} &
+        \underline{\texttt{B}} &
+        \texttt{C}             & \texttt{C} &
+        \underline{\texttt{D}} &
+        \texttt{A}             & \texttt{B} & \texttt{C} &
+        \underline{\texttt{C}} &
         \underline{\texttt{A}}
     \end{array}
 \]
@@ -7298,8 +7352,8 @@ possibile anche procedere nella direzione opposta.
     $\gamma$, si può costruire un SLP per $T$ di dimensione:
     \begin{equation}\label{eq:attractor_to_slp_bound}
         O\left(
-            \gamma
-            \log^2\frac{n}{\gamma}
+        \gamma
+        \log^2\frac{n}{\gamma}
         \right).
     \end{equation}
 \end{theorem}
@@ -7315,8 +7369,8 @@ Applicando il teorema a un attrattore minimo:
     g^*(T)
     \in
     O\left(
-        \gamma^*(T)
-        \log^2\frac{n}{\gamma^*(T)}
+    \gamma^*(T)
+    \log^2\frac{n}{\gamma^*(T)}
     \right).
 \end{equation}
 La stessa costruzione fornisce anche il limite, oggi non più ottimo:
@@ -7324,8 +7378,8 @@ La stessa costruzione fornisce anche il limite, oggi non più ottimo:
     z(T)
     \in
     O\left(
-        \gamma^*(T)
-        \log^2\frac{n}{\gamma^*(T)}
+    \gamma^*(T)
+    \log^2\frac{n}{\gamma^*(T)}
     \right).
 \end{equation}
 
@@ -7334,8 +7388,8 @@ Un risultato successivo rafforza la stima per LZ77:
     z(T)
     \in
     O\left(
-        \delta(T)
-        \log\frac{n}{\delta(T)}
+    \delta(T)
+    \log\frac{n}{\delta(T)}
     \right).
 \end{equation}
 Poiché $\delta(T)\leq\gamma^*(T)$, questo conferma che il parsing LZ77 è
@@ -7346,8 +7400,8 @@ Occorre invece distinguere gli SLP ordinari dalle
 $X\to Y^\ell$. Per queste ultime si può raggiungere dimensione:
 \[
     O\left(
-        \gamma^*(T)
-        \log\frac{n}{\gamma^*(T)}
+    \gamma^*(T)
+    \log\frac{n}{\gamma^*(T)}
     \right).
 \]
 Il singolo fattore logaritmico non sostituisce
@@ -7360,8 +7414,8 @@ per gli SLP ordinari segue:
     g^*(T^\$),z(T^\$)
     \in
     O\left(
-        r(T^\$)
-        \log^2\frac{n+1}{r(T^\$)}
+    r(T^\$)
+    \log^2\frac{n+1}{r(T^\$)}
     \right).
 \end{equation}
 
@@ -7371,12 +7425,12 @@ già visto:
     g^*(T)
     \in
     O\left(
-        z(T)\log\frac{n}{z(T)}
+    z(T)\log\frac{n}{z(T)}
     \right).
 \]
 
 \subsubsection{Relazione diretta tra \texorpdfstring{$z$}{z} e
-\texorpdfstring{$r$}{r}}
+    \texorpdfstring{$r$}{r}}
 Due importanti risultati collegano il parsing LZ77 e le run della BWT:
 \begin{equation}\label{eq:z_from_r}
     z=O(r\log n),
@@ -7397,7 +7451,7 @@ relazioni sono:
     \gamma^*
     \leq
     \min\{z,c(G)\},
-\qquad
+    \qquad
     \gamma^*(T^\$)\leq r(T^\$),
 \]
 e:
@@ -7405,15 +7459,15 @@ e:
     g^*
     \in
     O\left(
-        \gamma^*
-        \log^2\frac{n}{\gamma^*}
+    \gamma^*
+    \log^2\frac{n}{\gamma^*}
     \right),
-\qquad
+    \qquad
     z
     \in
     O\left(
-        \delta
-        \log\frac{n}{\delta}
+    \delta
+    \log\frac{n}{\delta}
     \right).
 \]
 
@@ -7424,8 +7478,8 @@ possa essere rappresentata e indicizzata in spazio $O(\gamma^*)$. È però
 possibile ottenere grammatiche run-length di dimensione:
 \[
     O\left(
-        \gamma^*
-        \log\frac{n}{\gamma^*}
+    \gamma^*
+    \log\frac{n}{\gamma^*}
     \right)
 \]
 e, nello stesso ordine di spazio, strutture che supportano accesso casuale e,
@@ -7558,12 +7612,12 @@ Le parole finite di Thue--Morse sono generate dal morfismo:
 partendo da $t_0=\texttt{0}$. I primi iterati sono:
 \[
     \begin{array}{c|l}
-        i & t_i=\tau^i(\texttt{0})\\ \hline
-        0 & \texttt{0}\\
-        1 & \texttt{01}\\
-        2 & \texttt{0110}\\
-        3 & \texttt{01101001}\\
-        4 & \texttt{0110100110010110}\\
+        i & t_i=\tau^i(\texttt{0})                    \\ \hline
+        0 & \texttt{0}                                \\
+        1 & \texttt{01}                               \\
+        2 & \texttt{0110}                             \\
+        3 & \texttt{01101001}                         \\
+        4 & \texttt{0110100110010110}                 \\
         5 & \texttt{01101001100101101001011001101001}
     \end{array}
 \]
@@ -7573,13 +7627,13 @@ La seguente tabella verifica alcuni insiemi proposti:
     \centering
     \small
     \begin{tabular}{c|c|c|c}
-        \textbf{Parola} & \textbf{Lunghezza} & \textbf{Insieme} &
-        \textbf{Esito} \\ \hline
-        $t_3$ & $8$  & $\{3,5,6\}$       & attrattore minimo \\
-        $t_4$ & $16$ & $\{3,6,9,12\}$    & attrattore minimo \\
-        $t_4$ & $16$ & $\{2,6,8,12\}$    & attrattore minimo \\
-        $t_5$ & $32$ & $\{3,6,12,17,24\}$& attrattore, non minimo \\
-        $t_5$ & $32$ & $\{8,12,16,24\}$  & attrattore minimo
+        \textbf{Parola} & \textbf{Lunghezza} & \textbf{Insieme}   &
+        \textbf{Esito}                                                                     \\ \hline
+        $t_3$           & $8$                & $\{3,5,6\}$        & attrattore minimo      \\
+        $t_4$           & $16$               & $\{3,6,9,12\}$     & attrattore minimo      \\
+        $t_4$           & $16$               & $\{2,6,8,12\}$     & attrattore minimo      \\
+        $t_5$           & $32$               & $\{3,6,12,17,24\}$ & attrattore, non minimo \\
+        $t_5$           & $32$               & $\{8,12,16,24\}$   & attrattore minimo
     \end{tabular}
     \caption{Esempi di string attractors per parole di Thue--Morse.}
     \label{tab:thue_morse_attractors}
@@ -7607,15 +7661,15 @@ fattori che non possono essere coperti dalla stessa posizione.
     \centering
     \small
     \begin{tabular}{c|l|c}
-        \textbf{N.} & \textbf{Stringa} & \textbf{Un attrattore minimo} \\ \hline
-        1 & \texttt{0100101001001} & $\{5,8\}$ \\
-        2 & \texttt{0000001111111} & $\{1,7\}$ \\
-        3 & \texttt{0110100110010110} & $\{2,6,8,12\}$ \\
-        4 & \texttt{ababababbababa} & $\{3,8\}$ \\
-        5 & \texttt{aaababbb} & $\{1,4,6\}$ \\
-        6 & \texttt{abacabadabacaba} & $\{1,2,4,8\}$ \\
-        7 & \texttt{abacabadabacabaeabacabadabacaba}
-          & $\{1,2,4,8,16\}$
+        \textbf{N.} & \textbf{Stringa}                         & \textbf{Un attrattore minimo} \\ \hline
+        1           & \texttt{0100101001001}                   & $\{5,8\}$                     \\
+        2           & \texttt{0000001111111}                   & $\{1,7\}$                     \\
+        3           & \texttt{0110100110010110}                & $\{2,6,8,12\}$                \\
+        4           & \texttt{ababababbababa}                  & $\{3,8\}$                     \\
+        5           & \texttt{aaababbb}                        & $\{1,4,6\}$                   \\
+        6           & \texttt{abacabadabacaba}                 & $\{1,2,4,8\}$                 \\
+        7           & \texttt{abacabadabacabaeabacabadabacaba}
+                    & $\{1,2,4,8,16\}$
     \end{tabular}
     \caption{Soluzioni di controllo per gli esercizi sugli string attractors.}
     \label{tab:string_attractor_exercises}
