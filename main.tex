@@ -6792,13 +6792,13 @@ Infine $\texttt{a}D$ compare due volte:
 \[
     E\to\texttt{a}D,
     \qquad
-    w_5=\texttt{EBaECC}.
+    w_5=\texttt{EBECC}.
 \]
 
 La grammatica prodotta è:
 \[
     \begin{array}{lll}
-        S\to EB\texttt{a}ECC,
+        S\to EBECC,
          & A\to\texttt{ab},
          & B\to\texttt{a}A,  \\
         C\to A\texttt{d},
@@ -6809,7 +6809,7 @@ La grammatica prodotta è:
 Espandendo i non terminali in ordine inverso si ricostruisce esattamente
 $w_0$. La dimensione, secondo \eqref{eq:grammar_size}, è:
 \[
-    |G|=6+5\cdot 2=16.
+    |G|=5+5\cdot 2=15.
 \]
 Il testo originale ha lunghezza $20$. Il confronto è soltanto simbolico: per
 ottenere il numero effettivo di bit bisogna codificare anche gli identificatori
@@ -6834,23 +6834,145 @@ $\Omega(\log n/\log\log n)$, quindi non si conosce ancora un rapporto
 asintotico esatto.
 
 \subsubsection{Conversione in forma normale di Chomsky}
-Le regole create durante le sostituzioni sono già binarie. Per ottenere una
-grammatica completamente in forma normale di Chomsky si procede così:
-\begin{enumerate}
-    \item per ogni terminale necessario in una regola mista si può introdurre
-          una produzione $X_a\to a$;
-    \item ogni regola Re-Pair $A\to XY$ viene mantenuta;
-    \item se il lato destro finale dell'assioma è
-          $X_1X_2\cdots X_h$, lo si binarizza:
-          \[
-              S\to X_1Y_1,\quad
-              Y_1\to X_2Y_2,\quad\ldots,\quad
-              Y_{h-2}\to X_{h-1}X_h.
-          \]
-\end{enumerate}
-La binarizzazione aggiunge $h-2$ regole e non modifica la stringa generata.
-Quando più digrammi hanno la stessa frequenza, anche la grammatica in forma
-normale dipende dalla scelta effettuata dall'implementazione.
+Le regole create dal Re-Pair standard possono contenere terminali, per esempio
+$A\to\texttt{ab}$ o $B\to\texttt{a}A$, e il lato destro finale dell'assioma
+può avere più di due simboli. Queste produzioni non sono ancora tutte nella
+forma:
+\[
+    A\to BC
+    \qquad\text{oppure}\qquad
+    A\to a
+\]
+richiesta dalla forma normale di Chomsky.
+
+La \textbf{variante CNF di Re-Pair} evita le regole miste sostituendo, prima di
+iniziare, ogni terminale $a$ con un non terminale dedicato $X_a$ e aggiungendo:
+\[
+    X_a\to a.
+\]
+Il lato destro ha lunghezza uno, ma contiene un terminale: questa è una
+produzione ammessa dalla forma normale di Chomsky e non va confusa con una
+produzione unitaria $A\to B$, che avrebbe invece un solo non terminale a
+destra.
+
+Re-Pair lavora quindi su una sequenza formata soltanto da non terminali. Ogni
+sostituzione successiva crea una regola binaria $A\to XY$, già nella forma
+corretta. Al termine rimane soltanto da binarizzare la sequenza residua.
+
+\begin{algorithm}[H]
+    \caption{Variante di Re-Pair in forma normale di Chomsky}
+    \begin{algorithmic}[1]
+        \Require stringa non vuota $w$
+        \ForAll{$a\in\operatorname{alph}(w)$}
+            \State crea il non terminale $X_a$ e la produzione $X_a\to a$
+        \EndFor
+        \State sostituisci ogni terminale $a$ di $w$ con $X_a$ e chiama $u$ la sequenza ottenuta
+        \While{esiste un digramma con almeno due occorrenze non sovrapposte}
+            \State scegli un digramma $XY$ di frequenza massima
+            \State crea un nuovo non terminale $A$ con produzione $A\to XY$
+            \State sostituisci con $A$ tutte le occorrenze non sovrapposte di $XY$ in $u$
+        \EndWhile
+        \If{$u=X_1$}
+            \State usa $X_1$ come assioma
+        \ElsIf{$u=X_1X_2$}
+            \State crea l'assioma con produzione $S\to X_1X_2$
+        \Else
+            \State scrivi $u=X_1X_2\cdots X_h$
+            \State crea $S\to X_1Y_1$
+            \For{$i=1$ \textbf{to} $h-3$}
+                \State crea $Y_i\to X_{i+1}Y_{i+1}$
+            \EndFor
+            \State crea $Y_{h-2}\to X_{h-1}X_h$
+        \EndIf
+        \State \Return l'assioma e tutte le produzioni create
+    \end{algorithmic}
+    \label{alg:repair_cnf}
+\end{algorithm}
+
+Per esempio, se la sequenza residua è $X_1X_2X_3X_4$, la fase finale produce:
+\[
+    S\to X_1Y_1,
+    \qquad
+    Y_1\to X_2Y_2,
+    \qquad
+    Y_2\to X_3X_4.
+\]
+Se la sequenza residua contiene $h\geq 2$ simboli, questa binarizzazione
+richiede complessivamente $h-1$ produzioni, delle quali $h-2$ introducono i
+nuovi non terminali $Y_i$. Non modifica la stringa generata e non introduce
+produzioni unitarie del tipo $A\to B$.
+
+Come nel Re-Pair standard, quando più digrammi hanno la stessa frequenza
+massima la grammatica ottenuta può dipendere dalla regola con cui
+l'implementazione risolve i pareggi.
+
+\subsubsection{Confronto sullo stesso esempio}
+Riprendiamo:
+\[
+    w_0=\texttt{aaabcaabaaabcabdabd}
+\]
+e manteniamo le stesse scelte di digrammi dell'esempio Re-Pair standard. La
+variante CNF introduce innanzitutto:
+\[
+    X_a\to\texttt{a},
+    \qquad
+    X_b\to\texttt{b},
+    \qquad
+    X_c\to\texttt{c},
+    \qquad
+    X_d\to\texttt{d}.
+\]
+La sequenza iniziale diventa quindi una sequenza di soli non terminali. Le
+sostituzioni di Re-Pair corrispondono esattamente a quelle già eseguite, con i
+terminali rimpiazzati dai rispettivi simboli:
+\[
+    \begin{array}{c|c|l}
+        \textbf{Passo}
+        & \textbf{Regola standard}
+        & \textbf{Regola nella variante CNF} \\ \hline
+        1 & A\to\texttt{ab}   & A\to X_aX_b \\
+        2 & B\to\texttt{a}A   & B\to X_aA   \\
+        3 & C\to A\texttt{d}  & C\to AX_d   \\
+        4 & D\to B\texttt{c}  & D\to BX_c   \\
+        5 & E\to\texttt{a}D   & E\to X_aD
+    \end{array}
+\]
+In entrambi i casi la sequenza residua è:
+\[
+    EBECC.
+\]
+Nel Re-Pair standard può diventare direttamente il lato destro
+$S\to EBECC$. Nella variante CNF, invece, deve essere binarizzata:
+\[
+    S\to EY_1,
+    \qquad
+    Y_1\to BY_2,
+    \qquad
+    Y_2\to EY_3,
+    \qquad
+    Y_3\to CC.
+\]
+La grammatica CNF completa è dunque formata da:
+\begin{itemize}
+    \item le quattro regole terminali $X_a\to\texttt{a}$,
+          $X_b\to\texttt{b}$, $X_c\to\texttt{c}$ e
+          $X_d\to\texttt{d}$;
+    \item le cinque regole binarie $A,B,C,D,E$ della tabella;
+    \item le quattro regole binarie $S,Y_1,Y_2,Y_3$ che concatenano la
+          sequenza residua.
+\end{itemize}
+La dimensione della grammatica CNF è:
+\[
+    |G_{\mathrm{CNF}}|
+    =
+    4\cdot 1+5\cdot 2+4\cdot 2
+    =
+    22.
+\]
+La grammatica standard aveva invece dimensione $15$. L'aumento non indica una
+compressione peggiore dell'algoritmo di sostituzione: è il costo strutturale
+necessario per rappresentare separatamente i terminali e imporre che ogni
+produzione non terminale sia binaria.
 
 \paragraph{Parole di Fibonacci.}
 Per le parole di Fibonacci tutte le grammatiche prodotte da Re-Pair, qualunque
