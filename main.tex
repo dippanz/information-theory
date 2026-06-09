@@ -7162,7 +7162,7 @@ Sia $T=T[1]T[2]\cdots T[n]$ una stringa sull'alfabeto $\Sigma$. Una posizione
 $p$ \textbf{interseca} un'occorrenza $T[i..j]$ se $i\leq p\leq j$.
 
 \begin{definizione}
-    Un insieme di posizioni:
+    Un insieme di posizioni (leggasi gamma):
     \[
         \Gamma=\{j_1,\ldots,j_{\gamma}\}
         \subseteq
@@ -7377,7 +7377,14 @@ le posizioni finali delle frasi sono:
     \Gamma_{\mathrm{LZ}}=\{1,2,3,6,11,13\}.
 \]
 Il teorema garantisce che questo insieme è un attrattore. Non afferma che sia
-minimo: alcune posizioni possono essere ridondanti.
+minimo: in questo caso $\{5,8\}$ è già uno string attractor.
+Poiché l'alfabeto è binario, il limite
+\eqref{eq:attractor_alphabet_lower_bound} mostra che:
+\[
+    \gamma^*(f_6)=2.
+\]
+L'attrattore ottenuto dal parsing contiene dunque quattro posizioni
+ridondanti.
 
 Segue immediatamente:
 \begin{equation}\label{eq:gamma_lz_relation}
@@ -7418,10 +7425,10 @@ Questo risultato spiega perché il parametro $r$, già usato nell'r-index, è un
 misura di ripetitività e non soltanto una caratteristica accidentale della
 trasformata.
 
-Quando si confronta $r$ con le misure del testo non terminato, si trascura
-normalmente la differenza costante introdotta da \texttt{\$}. Nei risultati
-seguenti le formule che coinvolgono $r$ vanno quindi lette sul testo terminato
-$T^\$$, anche quando il simbolo è omesso per alleggerire la notazione.
+Il terminatore aumenta la lunghezza del testo di una unità ed è parte della
+definizione della BWT usata in questo risultato. Nei risultati seguenti le
+formule che coinvolgono $r$ vanno quindi lette sul testo terminato $T^\$$,
+anche quando il simbolo è omesso per alleggerire la notazione.
 
 \subsubsection{Grammatiche e collage systems}
 Un SLP costruisce stringhe mediante regole terminali e concatenazioni. Un
@@ -7437,12 +7444,13 @@ La sua dimensione può essere misurata come numero totale di produzioni.
     string attractor di dimensione al più $c$.
 \end{theorem}
 
-L'idea è scegliere una posizione rappresentativa per ogni produzione: il
-carattere prodotto da una regola terminale, oppure il punto di giunzione tra le
-parti di una concatenazione o ripetizione. Ogni fattore possiede
-un'\textbf{occorrenza primaria} che attraversa uno di questi punti; in caso
-contrario potrebbe essere spostato interamente in una componente già definita,
-ripetendo il ragionamento fino a raggiungere una regola più bassa.
+L'idea è scegliere al più una posizione rappresentativa per ogni produzione:
+il carattere prodotto da una regola terminale, oppure un punto di giunzione tra
+le parti di una concatenazione o tra due copie consecutive di una ripetizione.
+Una regola di estrazione non richiede invece una nuova posizione: ogni fattore
+contenuto nell'estratto può essere riportato alla corrispondente occorrenza
+nella stringa sorgente. Ripetendo questo trasferimento si raggiunge
+un'\textbf{occorrenza primaria} che attraversa uno dei punti selezionati.
 
 Gli SLP sono casi particolari di collage systems. Se $c(G)$ è il numero di
 produzioni di una grammatica, allora:
@@ -7519,16 +7527,29 @@ controllato, a fattori logaritmici, da una misura puramente combinatoria.
 
 Occorre invece distinguere gli SLP ordinari dalle
 \textbf{grammatiche run-length}, che ammettono anche regole del tipo
-$X\to Y^\ell$. Per queste ultime si può raggiungere dimensione:
-\[
+$X\to Y^\ell$. Indicando con $g^*_{\mathrm{rl}}(T)$ la dimensione minima in
+questo modello, vale il limite più forte:
+\begin{equation}\label{eq:run_length_grammar_from_delta}
+    g^*_{\mathrm{rl}}(T)
+    \in
     O\left(
-    \gamma^*(T)
-    \log\frac{n}{\gamma^*(T)}
+    \delta(T)
+    \log\frac{n}{\delta(T)}
+    \right).
+\end{equation}
+È questo il risultato con un solo fattore logaritmico. Non sostituisce
+\eqref{eq:gstar_from_gamma} per gli SLP ordinari: il modello run-length è più
+espressivo, perché una potenza viene descritta da una sola regola. Per gli SLP
+ordinari, combinando la conversione da LZ77 con
+\eqref{eq:z_from_delta}, si ottiene invece anche:
+\[
+    g^*(T)
+    \in
+    O\left(
+    \delta(T)
+    \log^2\frac{n}{\delta(T)}
     \right).
 \]
-Il singolo fattore logaritmico non sostituisce
-\eqref{eq:gstar_from_gamma} per gli SLP ordinari: il modello run-length è più
-espressivo, perché una potenza viene descritta da una sola regola.
 
 Poiché le run della BWT inducono un attrattore di dimensione $r$, dal limite
 per gli SLP ordinari segue:
@@ -7578,6 +7599,13 @@ relazioni sono:
 \]
 e:
 \[
+    g^*_{\mathrm{rl}}
+    \in
+    O\left(
+    \delta
+    \log\frac{n}{\delta}
+    \right),
+    \qquad
     g^*
     \in
     O\left(
@@ -7597,15 +7625,10 @@ Quindi $\gamma^*$ è un limite inferiore comune per molte rappresentazioni di
 testi ripetitivi, mentre un attrattore può essere trasformato in strutture
 compresse pagando fattori logaritmici. Non è noto, in generale, se ogni stringa
 possa essere rappresentata e indicizzata in spazio $O(\gamma^*)$. È però
-possibile ottenere grammatiche run-length di dimensione:
-\[
-    O\left(
-    \gamma^*
-    \log\frac{n}{\gamma^*}
-    \right)
-\]
-e, nello stesso ordine di spazio, strutture che supportano accesso casuale e,
-con tecniche più elaborate, ricerca indicizzata.
+possibile ottenere, nel limite
+\eqref{eq:run_length_grammar_from_delta}, grammatiche run-length e strutture
+dello stesso ordine di spazio che supportano accesso casuale e, con tecniche
+più elaborate, ricerca indicizzata.
 
 \subsection{Proprietà combinatorie}
 La misura $\gamma^*$ non è soltanto uno strumento per confrontare compressori:
@@ -7705,9 +7728,15 @@ Quindi, in generale:
 
 Le posizioni di un attrattore di $w$ coprono i fattori contenuti in una singola
 copia. Basta aggiungere una posizione sul confine tra due copie per coprire i
-fattori che attraversano una concatenazione. Tutti i tipi di fattore che
-attraversano più copie compaiono già in $w^2$, eventualmente traslando
-l'occorrenza.
+fattori che attraversano una concatenazione, ottenendo il primo limite.
+
+L'uguaglianza con $w^2$ richiede un argomento più sottile: non è vero che ogni
+fattore di $w^q$ compaia già in $w^2$, perché i fattori possono essere più
+lunghi di $2|w|$. Si usa invece la periodicità di $w^q$ per traslare, modulo
+$|w|$, le posizioni di un attrattore entro copie consecutive di $w$. In questo
+modo un attrattore di $w^q$ induce un attrattore non più grande per $w^2$ e,
+viceversa, un attrattore di $w^2$ può essere collocato in $w^q$ senza aumentare
+la cardinalità. Ne segue l'uguaglianza delle due dimensioni minime.
 
 Per:
 \[
@@ -7762,16 +7791,27 @@ La seguente tabella verifica alcuni insiemi proposti:
 \end{table}
 
 Per gli iterati sufficientemente lunghi la dimensione si stabilizza:
-\[
-    |t_i|\geq 25
+\begin{equation}\label{eq:thue_morse_attractor_size}
+    i\geq 4
     \quad\Longrightarrow\quad
     \gamma^*(t_i)=4.
+\end{equation}
+Una costruzione esplicita di un attrattore minimo è:
+\[
+    \Gamma_i
+    =
+    \left\{
+    2^{i-2},
+    3\cdot 2^{i-3},
+    2^{i-1},
+    3\cdot 2^{i-2}
+    \right\}.
 \]
-Poiché $|t_i|=2^i$, la condizione vale a partire da $i=5$. La parola continua a
-crescere e non è periodica, ma quattro posizioni ben scelte sono sufficienti a
-intercettare un'occorrenza di ogni fattore distinto. La condizione
-$|t_i|\geq25$ è sufficiente, non necessaria: la tabella mostra infatti che
-anche $t_4$, di lunghezza $16$, ha attrattore minimo di dimensione $4$.
+Per $i=4$ produce $\{4,6,8,12\}$, mentre per $i=5$ produce
+$\{8,12,16,24\}$. La parola continua a crescere e non è periodica, ma quattro
+posizioni ben scelte sono sufficienti a intercettare un'occorrenza di ogni
+fattore distinto. Gli altri insiemi di cardinalità quattro riportati nella
+tabella mostrano che l'attrattore minimo non è necessariamente unico.
 
 \subsection{Esercizi e soluzioni di controllo}
 Per ciascuna stringa della tabella seguente, verificare direttamente che
