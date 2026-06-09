@@ -79,7 +79,7 @@ I criteri fondamentali per una misura del \textbf{contenuto informativo} accetta
     \item \textbf{Eventi indipendenti:} Se due eventi sono statisticamente indipendenti, il contenuto informativo totale sarà dato dalla \textbf{somma} dei contenuti informativi dei singoli eventi.
 \end{itemize}
 
-\subsubsection{Esempio}
+\subsubsection{Urna e moneta: rarità e informazione}
 Un esempio, supponiamo di avere un urna con 100 palline numerate ognuna con la stessa probabilità di essere estratta. La probabilità di estrarne una è $\frac{1}{100}$. Ora supponiamo di tirare una moneta e la probabilità che esca testa o croce è $\frac{1}{2}$. Se venisse comunicato il messaggio contenente cosa è stato estratto o se è uscito testa o croce, quale contenuto ha \textbf{maggiore informazione}?
 
 Il messaggio dell'estrazione della pallina dall'urna è quello che ha il maggior contenuto informativo rispetto al lancio della moneta. Questo perché nella scelta dell'urna c'era molta più incertezza avendo una probabilità più bassa di estrarre ogni singola pallina. Per cui, più sono le possibilità è più incertezza c'è prima di ricevere il messaggio. Il contenuto informativo del lancio della moneta è il minimo possibile visto che ci sono solo due possibilità equiprobabili; il contenuto informativo è precisamente 1 bit.
@@ -135,7 +135,7 @@ Dalla definizione precedente si può assumere che se la probabilità di un simbo
               \item $I(a_ia_j)=I(a_i)+I(a_j)$
           \end{itemize}
 \end{itemize}
-\subsubsection{Esempio}
+\subsubsection{Auto-informazione di una sorgente binaria}
 Se consideriamo il caso binario ($b=2$) allora $I_i=\log_2(\frac{1}{p_i})$ e per una sorgente $S$ di due simboli equiprobabili:
 \begin{equation*}
     S=\begin{pmatrix}
@@ -193,7 +193,7 @@ L'entropia può essere interpretata come la \textbf{quantità di informazione me
         \item Estendiamo la dimostrazione precedente a tutti gli $n$ per induzione e troviamo $ H(S)=C\sum_{i=1}^np_i\log_b\left(\frac{1}{p_i}\right)$.
     \end{enumerate}
 \end{proof}
-\subsubsection{Esempi}
+\subsubsection{Calcolo dell'entropia su sorgenti discrete}
 Vengono qui elencati alcuni esempi di calcolo di entropia. Consideriamo una sorgente $S$ con i seguenti simboli e probabilità associate:
 \begin{equation*}
     S=\begin{pmatrix}
@@ -219,7 +219,7 @@ allora:
     H(S)=0.4\log_2 \left(\frac{1}{0.4}\right)+0.3\log_2 \left(\frac{1}{0.3}\right)+0.3\log_2 \left(\frac{1}{0.3}\right)=0.84 \text{ bits/symbol}
 \end{equation*}
 
-\section{Codifica di sorgente}
+\section{Codici di sorgente: decodificabilità e limiti}
 \subsection{Codici univocamente decodificabili}
 Solitamente, l'alfabeto di una sorgente non è trasmesso direttamente. Un encoder, prima di trasmettere, si occupa di codificare il messaggio trasformando i simboli del vecchio alfabeto in quelli del nuovo cosi da rendere agevole la loro trasmissione attraverso il canale di comunicazione. Una volta arrivato il messaggio deve essere decodificato per poter tornare al contenuto originale.
 \begin{definizione}
@@ -371,7 +371,7 @@ Come già accennato in precedenza la decodifica può avere un ritardo finito o i
           Nell'esempio precedente \eqref{example_sardinas_patterson_ud} si nota come l'algoritmo si arresti ad un certo punto, quel punto indica proprio quanto si dovrà attendere prima di poter decodificare una parola.
     \item Se $\exists i,j>0, S_i=S_j$ allora il ritardo è infinito. Come già spiegato, la presenza di un secondo insieme dei residui identico ad uno precedente comporta la presenza di un ciclo infinito. Questo accade perché l'ambiguità si propaga ciclicamente. Chi riceve potrebbe essere costretto ad aspettare l'intero messaggio prima di poter decodificare la prima parola e questa attesa appunto non ha un limite.
 \end{itemize}
-\subsubsection{Esempio}
+\subsubsection{Verifica di un codice istantaneo}
 Dall'esempio \eqref{example_sardinas_patterson_ud} proviamo a vedere se il codice A è istantaneo applicando sempre il solito algoritmo. Si nota subito come nessun simbolo di codifica è prefisso di un altro, da questo il primo insieme dei residui sarebbe già vuoto. Allora è ovvio che il codice A è a prefisso e questo implica che il codice A è istantaneo.
 
 \subsection{Disuguaglianza di Kraft-McMillan}
@@ -471,7 +471,7 @@ Questa lettura rende più intuitiva la selezione dei nodi e il taglio dei discen
     \]
 \end{proof}
 
-\subsubsection{Proprietà}
+\subsubsection{Codici completi e somma di Kraft}
 Un aspetto rilevante da considerare è distinguere il caso in cui la disequazione sia strettamente minore di $1$ da quello in cui sia esattamente uguale a $1$.
 
 \begin{itemize}
@@ -497,7 +497,7 @@ Nel codice C, invece, una situazione del genere non si verifica. La parola $10$ 
 
 Si noti però che la sequenza $101$ \textbf{non è decodificabile} né nel codice B né nel codice C. Nel codice B ciò accade perché le uniche parole che iniziano con $1$ sono $100$, $110$ e $111$; di conseguenza, né $101$ né una sequenza che inizi con tale prefisso possono essere riconosciute nel loro tratto iniziale come parole valide del codice (proprio per questo è incompleto). Nel codice C, invece, il prefisso $10$ è effettivamente una parola di codice: per questo una sequenza che inizi con $101$ non è immediatamente impossibile, ma richiede la ricezione di ulteriori simboli per verificare se la parte rimanente possa completare una concatenazione valida. La differenza essenziale è quindi che il codice B lascia alcune \uline{combinazioni inutilizzate  senza poterle interpretare}, mentre il codice C \uline{sfrutta in modo più completo la propria struttura}.
 
-\subsubsection{Esempi}
+\subsubsection{Verifica della disuguaglianza su codici assegnati}
 Data la tabella con i seguenti codici:
 \begin{table}[htbp]
     \centering
@@ -540,7 +540,7 @@ grazie alla disuguaglianza di Kraft-McMillan possiamo capire quali tra questi po
           questo codice non soddisfa la disuguaglianza, possiamo quindi concludere che non è istantaneo.
 \end{itemize}
 % Fare esercizio direttamente qua per fare capire come si costruisce il codice
-\subsubsection{Esercizio guidato}
+\subsubsection{Costruzione di un codice ternario a prefisso}
 Si vuole codificare una sorgente con 9 simboli usando un codice a prefisso. L'alfabeto per le parole di codifica è {0,1,2} con delle lunghezze di 1,2,2,2,2,2,3,3,3.
 
 Per prima cosa applichiamo il teorema di Kraft-McMillan per capire se con queste premesse può essere creato un codice a prefisso.
@@ -731,7 +731,7 @@ basta scegliere $l_i=\alpha_i$ per ogni $i$ per ottenere un codice compatto. Inf
     \sum_{i=1}^m d^{-l_i} = \sum_{i=1}^m d^{-\alpha_i} = \sum_{i=1}^m p_i = 1
 \]
 
-\subsubsection{Esempio}
+\subsubsection{Confronto tra codice compatto e non compatto}
 Dato la seguente sorgente con 4 simboli:
 \begin{table}[htpb]
     \centering
@@ -765,7 +765,7 @@ Calcoliamo ora la lunghezza media per ciascun codice:
           La lunghezza media del Codice 2 è superiore all'entropia della sorgente, quindi il Codice 2 non è un codice compatto.
 \end{itemize}
 \newpage
-\subsubsection{Esercizio}
+\subsubsection{Costruzione di un codice compatto ternario}
 Data la seguente sorgente:
 \begin{table}[htpb]
     \centering
@@ -828,10 +828,10 @@ verificando che la lunghezza media di questo codice è:
 \]
 allora si conclude che il codice costruito è compatto.
 
-\section{Algoritmi di codifica}
+\section{Algoritmi di codifica statistica}
 Nel seguente capitolo verranno affrontati le teorie e i relativi algoritmi per costruire codici a prefisso e ottimali.
 
-\subsection{Codifica Shannon}
+\subsection{Codifica di Shannon}
 Nelle condizioni di esistenza viste nel paragrafo \eqref{condizioni_codici_compatti} abbiamo visto che, per ottenere un codice compatto, le lunghezze ideali devono soddisfare:
 \[
     l_i = \log_d\!\left(\frac{1}{p_i}\right).
@@ -975,7 +975,7 @@ Il termine $\frac{1}{n}$ rappresenta quindi un limite superiore dell'eccesso del
 
 Va però osservato che il numero di simboli della sorgente estesa cresce rapidamente con $n$: se la sorgente originaria ha $m$ simboli, allora $S^n$ contiene $m^n$ blocchi distinti. Per questo motivo, sebbene la codifica a blocchi abbia un grande valore teorico, essa diventa presto difficile da gestire in pratica.
 
-\subsubsection{Esempi}
+\subsubsection{Sorgenti per cui il codice di Shannon non è compatto}
 Vediamo ora due esempi in cui la codifica di Shannon non produce un codice compatto.
 
 \paragraph{Sorgente con tre simboli}
@@ -1245,7 +1245,7 @@ La distinzione più importante è la seguente:
 \end{itemize}
 entrambe producono codici a prefisso, ma nessuna delle due garantisce in generale un codice ottimale.
 
-\subsection{Codifica Huffman}
+\subsection{Codifica di Huffman}
 Prima di affrontare la codifica vera e propria è meglio soffermarsi su delle proprietà che caratterizzano i codici ottimali (quei codici a prefisso che minimizzano la lunghezza media). Sia $S$ una sorgente con una distribuzione di probabilità data, supponiamo che $p_1 \geq p_2 \geq \cdots \geq p_m$, e sia $c_i$ la parola di codice associata al simbolo di probabilità $p_i$, allora:
 \begin{enumerate}
     \item \uline{I simboli con probabilità più alta devono essere associati a parole di codice più corte}. Infatti, se $p_i > p_j$, allora $|c_j| \geq |c_i|$.
@@ -1606,8 +1606,7 @@ La ridondanza dei codici di Huffman può essere studiata anche con bound più pr
 \paragraph{Esempio concettuale.}
 Consideriamo una sorgente binaria con $p(a)=0.99$ e $p(b)=0.01$. In questo caso l'entropia è molto piccola, perché quasi sempre viene emesso $a$; tuttavia un codice di Huffman binario deve comunque assegnare, ad esempio, $a\mapsto 0$ e $b\mapsto 1$, quindi la lunghezza media resta pari a $1$ bit per simbolo. Questo esempio mostra bene perché, per sorgenti molto sbilanciate, Huffman può essere ottimale tra i codici a prefisso e allo stesso tempo non essere particolarmente vicino all'entropia.
 
-\subsection{Esercizio guidato}
-** scrivere questo esercizio guidato che riassume tutte le codifiche fatte fino ad ora **
+% TODO: aggiungere un esercizio guidato che riassuma le codifiche viste fin qui.
 
 \subsection{Codifica di Huffman canonica}
 Abbiamo già visto come la codifica classica di Huffman ha delle limitazioni, riassumendo:
@@ -1956,7 +1955,7 @@ Il messaggio decodificato è dunque:
     \texttt{dhebad}.
 \]
 
-\subsubsection{Osservazioni}
+\subsubsection{Costo di rappresentazione del codice canonico}
 Il risparmio ottenuto attraverso l'uso del codice canonico è significativo, a maggior ragione quando l'alfabeto è grande. Invece di dover memorizzare o trasmettere un albero con puntatori, è sufficiente memorizzare le lunghezze delle parole di codice e costruire il codice canonico in modo ordinato. Infatti, l'array $\text{num}$ serve durante la costruzione di $\text{fc}$, ma non deve essere salvato nel file compresso: per trasmettere la codifica canonica è sufficiente inviare gli array $\text{fc}$ e $\text{symb}$. Questo significa che:
 \begin{itemize}
     \item per l'array $\text{fc}$ servono al massimo $L_{\max}^2$ bit, perché ci sono al più $L_{\max}$ valori di \emph{firstcode} e ciascuno può essere rappresentato con al più $L_{\max}$ bit;
@@ -2529,7 +2528,7 @@ Rispetto a Huffman, la codifica aritmetica ha un vantaggio teorico molto forte: 
 
 In pratica, se il modello probabilistico è accurato, la codifica aritmetica può comprimere meglio, specialmente su sorgenti molto sbilanciate o dati come immagini. Se invece il modello è povero o il costo computazionale è prioritario, Huffman resta una scelta robusta e conveniente.
 
-\subsection{Codifica universale degli interi}
+\section{Codifica universale degli interi}
 Finora abbiamo studiato codici per simboli di una sorgente discreta, assumendo di conoscere o stimare una distribuzione di probabilità. In molti algoritmi di compressione, però, nasce un problema leggermente diverso: bisogna rappresentare una sequenza di \textbf{interi positivi}
 \[
     S=s_1,s_2,\ldots,s_n,
@@ -2567,7 +2566,7 @@ conviene memorizzare non direttamente gli identificativi, ma i \textbf{gap}
 \]
 Questi gap tendono spesso a essere piccoli, quindi un codice a lunghezza variabile può risparmiare molto spazio rispetto a una rappresentazione fissa a $32$ o $64$ bit. Lo stesso tipo di esigenza appare anche in algoritmi come LZ77, LZ78 o in passaggi intermedi di schemi basati su trasformate: il compressore produce interi, e gli interi piccoli sono generalmente più frequenti di quelli grandi.
 
-\subsubsection{Perché il binario semplice non basta}
+\subsection{Perché il binario semplice non basta}
 La rappresentazione binaria naturale di un intero $x$ ha lunghezza:
 \[
     |B(x)|=\left\lfloor\log_2 x\right\rfloor+1.
@@ -2602,7 +2601,7 @@ L'aggettivo \emph{universale} va quindi letto in questo senso: non si pretende d
 
 Se la distribuzione è nota sia all'encoder sia al decoder, un codice di Huffman può essere più conveniente. Se invece la distribuzione non è nota con precisione, oppure è nota solo al mittente ma non al ricevente, Huffman richiederebbe anche il costo di comunicare l'albero o le lunghezze delle parole di codice. I codici universali per interi evitano proprio questo costo: \uline{encoder e decoder condividono una regola fissa}.
 
-\subsubsection{Lunghezze ideali e distribuzioni compatibili}
+\subsection{Lunghezze ideali e distribuzioni compatibili}
 Prima di vedere i codici concreti conviene chiarire il criterio usato. L'idea è la stessa vista con il teorema di Shannon: se un intero $x$ ha probabilità $p(x)$, allora la sua lunghezza ideale dovrebbe essere:
 \begin{equation}\label{eq:ideal_integer_code_length}
     l^*(x)=\log_2\frac{1}{p(x)}.
@@ -2635,7 +2634,7 @@ allora:
 \]
 che è uguale per ogni $x$. Per questo la codifica fissa è sensata quando i valori sono distribuiti in modo circa uniforme dentro un intervallo noto. Se invece molti valori sono piccoli e pochi sono grandi, la lunghezza fissa spreca spazio sui valori piccoli.
 
-\subsubsection{Codice unario}
+\subsection{Codice unario}
 Il codice unario è il più semplice codice istantaneo per interi positivi. L'intero $x$ viene rappresentato da $x-1$ zeri seguiti da un uno:
 \begin{equation}\label{eq:unary_code}
     U(x)=^{x-1}1.
@@ -2681,7 +2680,7 @@ Dunque il codice unario è adatto quando le probabilità decrescono molto rapida
 \]
 In questa situazione quasi tutto il peso probabilistico è concentrato sui primi interi, quindi pagare $x$ bit per rappresentare $x$ non è troppo grave. Appena però gli interi grandi diventano abbastanza frequenti, l'unario diventa inefficiente: per rappresentare $1000$ usa $1000$ bit, mentre la rappresentazione binaria naturale ne usa solo $\left\lfloor\log_2 1000\right\rfloor+1=10$.
 
-\subsubsection{Codici di Elias: gamma e delta}
+\subsection{Codici di Elias: gamma e delta}
 I due codici universali più classici sono i codici di Elias, introdotti da Peter Elias nel 1975: il \textbf{codice gamma} e il \textbf{codice delta}. Entrambi partono da una stessa idea: la rappresentazione binaria di $x$ è compatta, ma non dice dove finisce; allora si codifica anche la sua lunghezza in modo autolimitante.
 
 \paragraph{Codice gamma.}
@@ -2891,7 +2890,7 @@ il codice delta è adatto a distribuzioni circa del tipo:
     Anche nel delta, dunque, il decoder sa dove fermarsi: prima legge una parola gamma completa, poi legge un numero fissato di bit successivi. La fine della parola di codice è determinata dalla parola stessa, quindi anche il codice delta è a prefisso.
 \end{proof}
 
-\subsubsection{Codice di Fibonacci}
+\subsection{Codice di Fibonacci}
 Il codice di Fibonacci usa una struttura diversa. Si basa sul seguente risultato.
 
 \begin{theorem}[Teorema di Zeckendorf]
@@ -3050,7 +3049,7 @@ bit, dove:
     Il termine dominante è $\log_2 x$, mentre $\log_2\log_2 x$ cresce più lentamente; dunque anche $|\delta(x)|=O(\log x)$. Per Fibonacci, il limite \eqref{eq:fibonacci_length_bound} è logaritmico in $x$, quindi anche quel codice è universale.
 \end{proof}
 
-\subsubsection{Codici di Rice}
+\subsection{Codici di Rice}
 I \textbf{codici di Rice} sono codici per interi molto usati in compressione audio e immagine, ma vanno distinti dai codici universali in senso stretto: per un parametro fissato, la lunghezza di un codice di Rice può crescere linearmente con $x$. Sono però estremamente utili quando gli interi sono concentrati attorno a un valore caratteristico e si vuole una decodifica veloce.
 
 Un codice di Rice dipende da un intero $k\geq 0$. Dato $x\geq 1$, si definiscono:
@@ -3114,7 +3113,7 @@ Nel caso geometrico, una scelta approssimata è:
 \]
 che produce un codice a prefisso ottimale per quella famiglia di distribuzioni.
 
-\subsubsection{Confronto tra i codici}
+\subsection{Confronto tra i codici}
 I codici visti nella sezione rispondono a esigenze diverse:
 \begin{itemize}
     \item \textbf{unario}: semplicissimo e istantaneo, ottimo solo quando quasi tutti i valori sono molto piccoli;
@@ -3132,7 +3131,7 @@ Un buon modo per fissare le differenze tra questi codici è scrivere una funzion
 ** provare ad implementarli **
 
 
-\section{Trasformazioni per la compressione e indicizzazione}
+\section{Burrows--Wheeler Transform e compressione}
 Gli algoritmi studiati finora producono direttamente parole di codice: Shannon, Shannon-Fano, Huffman, codifica aritmetica e codici universali trasformano simboli o interi in bit. La \textbf{\texten{Burrows-Wheeler Transform}} ha una natura diversa. Non è, da sola, un codice di compressione: è una \textbf{trasformazione reversibile} che riordina i caratteri di un testo in modo da rendere più evidente la ridondanza locale. Per questo motivo viene usata come fase di pre-processing prima di tecniche come \texten{Move-to-Front}, \texten{Run-Length Encoding}, Huffman o codifica aritmetica.
 
 La BWT sta ancora dentro il tema della compressione dati, ma collega gli algoritmi di codifica con strutture dati per testi, come \textbf{\texten{suffix array}}, \textbf{\texten{suffix tree}} e indici compressi. In particolare, il legame con l'\textbf{\texten{FM-index}} spiega perché la BWT sia importante anche per il \texten{pattern matching} su testo compresso e per applicazioni in bioinformatica, dove strumenti come BWA e Bowtie2 usano idee basate sulla BWT per allineare sequenze a un genoma di riferimento.
@@ -3640,7 +3639,37 @@ dove $g_k$ dipende solo da $k$ e dalla dimensione dell'alfabeto $h$. Questo seco
 \paragraph{Nota:}
 Questi risultati non dicono soltanto che la BWT ``funziona bene in pratica'': mostrano che una pipeline BWT-based può essere analizzata rispetto a misure empiriche del testo, quindi senza assumere una sorgente probabilistica prefissata. Il confronto non è con una sorgente ideale scelta a priori, ma con la regolarità effettivamente presente nella singola stringa da comprimere.
 
-\subsection{Calcolo efficiente della BWT}
+\subsection{Proprietà combinatorie della BWT}
+La BWT ha anche proprietà combinatorie indipendenti dall'uso come compressore. Due parole $x$ e $y$ su un alfabeto finito $\Sigma$ si dicono \textbf{coniugate} se una è una rotazione ciclica dell'altra.
+
+Se non si considera l'indice $I$ nella BWT, allora valgono le seguenti proprietà:
+\begin{itemize}
+    \item due testi $x$ e $y$ sono coniugati se e solo se:
+          \[
+              \operatorname{BWT}(x)=\operatorname{BWT}(y);
+          \]
+    \item dati due testi $u$ e $v$, $u$ è coniugato di $v^d$ se e solo se, ponendo:
+          \[
+              \operatorname{BWT}(v)=a_0a_1\cdots a_{n-1},
+          \]
+          si ha:
+          \[
+              \operatorname{BWT}(u)=a_0^d a_1^d\cdots a_{n-1}^d.
+          \]
+\end{itemize}
+
+Queste proprietà chiariscono anche un punto pratico: i testi più favorevoli a una compressione BWT-based sono quelli la cui trasformata contiene poche run di lettere uguali. In altre parole, la BWT è particolarmente utile quando l'ordinamento dei contesti produce \textbf{clustering}.
+
+\paragraph{Perfect clustering nel caso binario.}
+Nel caso di alfabeti binari, è stato dimostrato che la BWT produce un clustering perfetto, cioè una stringa del tipo:
+\[
+    1^p0^q,
+\]
+con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una parola Sturmiana standard. Le parole di Fibonacci sono un caso particolare di parole Sturmiane standard. Questo collegamento è naturale perché le parole Sturmiane codificano linee digitali, cioè traiettorie discrete che approssimano rette nel piano.
+
+Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Zamboni tramite la codifica di particolari traiettorie nel piano. Per gli scopi della compressione, la morale è più semplice: la BWT è efficace quando trasforma la struttura contestuale del testo in poche run visibili nella colonna $L$.
+
+\section{Costruzione della BWT e suffix array}
 La definizione tramite rotazioni è chiara ma inefficiente. Per una parola lunga $n$, costruire e ordinare esplicitamente $n$ rotazioni di lunghezza $n$ significa confrontare molte stringhe lunghe: il collo di bottiglia della BWT è proprio l'ordinamento delle rotazioni cicliche.
 
 La strategia standard consiste nell'aggiungere al testo un simbolo speciale di fine stringa:
@@ -3651,7 +3680,7 @@ minore di tutti gli altri simboli e presente una sola volta. In questo modo l'or
 
 In questa versione si calcola quindi la BWT di $T=s\texttt{\$}$, non direttamente quella della parola senza terminatore. Il simbolo \texttt{\$} sostituisce il ruolo dell'indice $I$: identifica in modo non ambiguo la fine del testo e rende la trasformazione invertibile senza dover memorizzare separatamente la riga originale.
 
-\subsubsection{Suffix tree e suffix array}
+\subsection{Suffix tree e suffix array}
 Dato un testo:
 \[
     T=T[0]T[1]\cdots T[n-1],
@@ -3733,7 +3762,7 @@ Questa proprietà è importante anche per il \texten{pattern matching}: tutti i 
 \]
 cioè il \texten{suffix array}. Il sottoalbero evidenziato sotto l'arco \texttt{a} contiene proprio le foglie $5,3,1$, che corrispondono ai suffissi \texttt{a\$}, \texttt{ana\$} e \texttt{anana\$}. Questa è la versione ad albero dell'intervallo $SA[1,3]$ nella rappresentazione tramite \texten{suffix array}.
 
-\subsubsection{BWT da suffix array}
+\subsection{BWT da suffix array}
 Una volta costruito il \texten{suffix array} di $T=s\texttt{\$}$, la BWT si ottiene in modo diretto. Se $SA[r]=i$, allora la riga di rango $r$ corrisponde alla rotazione che inizia in $i$, oppure, equivalentemente, al suffisso che parte da $i$. Il carattere della colonna $L$ è il carattere che precede quel suffisso nel testo:
 \begin{equation}\label{eq:bwt_from_suffix_array}
     L[r]=
@@ -4218,37 +4247,7 @@ Infatti, modulo $3$, le differenze tra elementi di $D_3$ producono tutte le clas
 \]
 La generalizzazione dell'algoritmo seleziona posizioni congruenti agli elementi di un difference cover modulo $q$, forma $q$-uple invece di triplette, costruisce una stringa ridotta $R$, la ordina ricorsivamente e poi fonde i suffissi. La complessità diventa $O(qn)$; questa generalizzazione è utile soprattutto per implementazioni più attente allo spazio.
 
-\subsection{Proprietà combinatorie della BWT}
-La BWT ha anche proprietà combinatorie indipendenti dall'uso come compressore. Due parole $x$ e $y$ su un alfabeto finito $\Sigma$ si dicono \textbf{coniugate} se una è una rotazione ciclica dell'altra.
-
-Se non si considera l'indice $I$ nella BWT, allora valgono le seguenti proprietà:
-\begin{itemize}
-    \item due testi $x$ e $y$ sono coniugati se e solo se:
-          \[
-              \operatorname{BWT}(x)=\operatorname{BWT}(y);
-          \]
-    \item dati due testi $u$ e $v$, $u$ è coniugato di $v^d$ se e solo se, ponendo:
-          \[
-              \operatorname{BWT}(v)=a_0a_1\cdots a_{n-1},
-          \]
-          si ha:
-          \[
-              \operatorname{BWT}(u)=a_0^d a_1^d\cdots a_{n-1}^d.
-          \]
-\end{itemize}
-
-Queste proprietà chiariscono anche un punto pratico: i testi più favorevoli a una compressione BWT-based sono quelli la cui trasformata contiene poche run di lettere uguali. In altre parole, la BWT è particolarmente utile quando l'ordinamento dei contesti produce \textbf{clustering}.
-
-\paragraph{Perfect clustering nel caso binario.}
-Nel caso di alfabeti binari, è stato dimostrato che la BWT produce un clustering perfetto, cioè una stringa del tipo:
-\[
-    1^p0^q,
-\]
-con $p$ e $q$ coprimi, se e solo se il testo è una rotazione ciclica di una parola Sturmiana standard. Le parole di Fibonacci sono un caso particolare di parole Sturmiane standard. Questo collegamento è naturale perché le parole Sturmiane codificano linee digitali, cioè traiettorie discrete che approssimano rette nel piano.
-
-Per alfabeti più grandi, il problema è stato risolto nel 2013 da Ferenczi e Zamboni tramite la codifica di particolari traiettorie nel piano. Per gli scopi della compressione, la morale è più semplice: la BWT è efficace quando trasforma la struttura contestuale del testo in poche run visibili nella colonna $L$.
-
-\subsection{Pattern matching e FM-index}
+\section{Indicizzazione compressa con FM-index}
 Finora la BWT è stata vista soprattutto come trasformazione utile alla compressione. La stessa struttura, però, permette anche di costruire indici compressi: invece di decomprimere un testo e poi cercare un pattern, si conserva una rappresentazione compressa che supporta direttamente operazioni di ricerca. L'obiettivo di questa sezione è quello di spiegare come funziona la ricerca di pattern nel testo e come un indice compresso basato sulla BWT, chiamato \textbf{\texten{FM-index}}, permette di eseguire questa ricerca in modo efficiente.
 
 Dato un testo $T[1..n]$ e un pattern $P[1..p]$, vogliamo:
@@ -4259,7 +4258,7 @@ Dato un testo $T[1..n]$ e un pattern $P[1..p]$, vogliamo:
 
 Un algoritmo classico come Knuth-Morris-Pratt cerca $P$ in tempo $O(n+p)$ senza costruire un indice. Se però il testo o la collezione sono noti in anticipo, conviene pagare una fase di preprocessing e costruire una struttura dati che renda molte ricerche successive più veloci.
 
-\subsubsection{Ricerca tramite suffix array}
+\subsection{Ricerca tramite suffix array}
 Il \texten{suffix array} è un indice naturale per il \texten{pattern matching}: se $P$ compare in $T$ alla posizione $i$, allora $P$ è prefisso del suffisso $T[i..n]$. Poiché il \texten{suffix array} ordina lessicograficamente tutti i suffissi, le occorrenze di $P$ formano un intervallo contiguo dell'array.
 
 Per cercare $P$ si può quindi fare una ricerca binaria tra i suffissi ordinati. A ogni confronto si confrontano al più $p$ caratteri, quindi il tempo è:
@@ -4281,7 +4280,7 @@ Nelle implementazioni comuni, se ogni posizione occupa $4$ \texten{byte}, un tes
 
 Una compressione generica del testo non basta a risolvere questo problema. Strumenti come gzip o bzip2 possono ridurre molto lo spazio occupato, ma se il risultato è soltanto un file compresso, per cercare un pattern bisogna in genere decomprimere almeno una parte consistente del testo. Un \textbf{indice compresso} ha invece un obiettivo più ambizioso: conservare una rappresentazione vicina alla dimensione compressa del testo e supportare direttamente le operazioni di ricerca.
 
-\subsubsection{Backward search sulla BWT}
+\subsection{Backward search sulla BWT}
 L'idea dell'\textbf{\texten{FM-index}}, introdotto da Ferragina e Manzini, è usare la BWT come se fosse un \texten{suffix array} compresso. Le righe della matrice BWT sono le rotazioni ordinate del testo, e quindi sono strettamente legate ai suffissi ordinati. Per contare le occorrenze di $P$ non serve ricostruire $T$: basta lavorare sulla colonna $L=\operatorname{BWT}(T)$ e su due strutture ausiliarie.
 
 Usiamo indici da $1$ a $n$ e indichiamo con:
@@ -4442,7 +4441,7 @@ Consideriamo infine $P=\texttt{pssi}$. Ripartiamo dall'intervallo appena ottenut
 \]
 Qui $\textit{First}>\textit{Last}$, quindi l'intervallo è vuoto: non esistono occorrenze di \texttt{ssi} precedute da \texttt{p}, e dunque \texttt{pssi} non compare nel testo.
 
-\subsubsection{Da L a Z: la compressione nell'FM-index}
+\subsection{Da L a Z: la compressione nell'FM-index}
 Finora la \texten{backward search} è stata descritta come se la colonna $L=\operatorname{BWT}(T)$ fosse disponibile esplicitamente. Nell'FM-index vero, però, l'obiettivo è più ambizioso: non conservare né il \texten{suffix array} completo né tutta $L$ in forma non compressa. La parte compressa dell'indice è una stringa binaria $Z$, ottenuta applicando alla BWT una pipeline di compressione:
 \[
     Z
@@ -4570,7 +4569,7 @@ Per i primi valori ordinari della MTF si ottiene:
 \]
 Per esempio, quando $a=3$ si ha $a+1=4=(100)_2$ e $\lfloor\log(a+1)\rfloor=2$: quindi si mettono due zeri davanti al binario di $4$, ottenendo $00\,100=00100$. In questo modo i valori ordinari $a\geq 1$ sono distinguibili dai simboli speciali $\mathtt{run0}$ e $\mathtt{run1}$, che invece usano i codici brevi $10$ e $11$.
 
-\subsubsection{Da count a locate}
+\subsection{Da count a locate}
 La \texten{backward search} restituisce un intervallo di righe, non direttamente le posizioni nel testo. Se la riga $i$ corrisponde al suffisso che inizia in $\operatorname{pos}(i)$, allora applicando LF si ottiene una riga $i'$ tale che:
 \[
     \operatorname{pos}(i')
@@ -4739,7 +4738,7 @@ e per ciascuna si conserva una posizione del testo, cioè $O(\log n)$ bit. Lo sp
 \]
 Aumentare $\varepsilon$ riduce il numero di campioni e quindi lo spazio, ma aumenta il numero massimo di \texten{backward step} necessari per localizzare una posizione.
 
-\subsubsection{Come calcolare Occ senza decomprimere}
+\subsection{Come calcolare Occ senza decomprimere}
 La difficoltà vera è implementare $\operatorname{Occ}(c,q)$ senza conservare tutta la matrice e, nella versione compressa, senza conservare nemmeno esplicitamente la colonna $L$. Dopo la pipeline descritta in precedenza, infatti, l'indice dispone principalmente della stringa di bit $Z$, non di $L$ già pronta da scandire. Tuttavia sia la \texten{backward search} sia il \texten{backward step} richiedono continuamente valori della forma:
 \[
     \operatorname{Occ}(c,q)
@@ -5143,7 +5142,7 @@ quindi il costo delle strutture per $\operatorname{Occ}$ viene assorbito dal ter
 
 Il significato del teorema è forte: l'indice non è solo più piccolo del \texten{suffix array}, ma ha dimensione controllata dall'entropia empirica del testo. Quando il testo è molto comprimibile, l'indice può essere vicino alla dimensione del testo compresso e permettere comunque la ricerca.
 
-\subsubsection{Testi ripetitivi e r-index}
+\subsection{Testi ripetitivi e r-index}
 Molte collezioni moderne non sono soltanto comprimibili in senso statistico: sono \textbf{altamente ripetitive}. Succede, per esempio, in pangenomi, versioni successive di pagine web, archivi software e collezioni di documenti quasi uguali. In questi casi l'entropia empirica non sempre cattura tutta la ridondanza utile, perché la caratteristica dominante è la presenza di lunghe ripetizioni tra copie simili.
 
 Una misura molto efficace per questi testi è il numero $r$ di \textbf{run} nella BWT. Se:
@@ -5619,16 +5618,16 @@ Non specifica però in modo unico come queste triple debbano essere rappresentat
     \item Il \textbf{simbolo esplicito} $s$, è ancora più delicata. Nella forma base di LZ77 ogni riferimento contiene sempre anche il simbolo successivo al match. Questo è comodo perché garantisce l'avanzamento della codifica, ma non è sempre necessario: se il match è abbastanza lungo, quel simbolo può essere trattato come inizio della frase successiva; se invece non c'è un match utile, scrivere una tripla del tipo $\langle 0,0,c\rangle$ significa pagare due componenti nulle solo per trasmettere un letterale.
 \end{itemize}
 
-Per questo alcune varianti aggiungono la terza componente solo quando serve, usando un bit di flag per indicare se essa è presente oppure assente. La variante \textbf{LZss} nasce proprio da questa idea: invece di forzare sempre la forma a tre componenti, distingue tra letterali e riferimenti, rappresentando ciascun caso nel modo più economico.
+Per questo alcune varianti aggiungono la terza componente solo quando serve, usando un bit di flag per indicare se essa è presente oppure assente. La variante \textbf{LZSS} nasce proprio da questa idea: invece di forzare sempre la forma a tre componenti, distingue tra letterali e riferimenti, rappresentando ciascun caso nel modo più economico.
 
-\subsection{LZss}
-Storer e Szymanski proposero nel 1982 una variante di LZ77, chiamata \textbf{LZss}. L'osservazione è che una tripla LZ77 contiene sempre tre componenti, anche quando non tutte sono davvero utili:
+\subsection{LZSS}
+Storer e Szymanski proposero nel 1982 una variante di LZ77, chiamata \textbf{LZSS}. L'osservazione è che una tripla LZ77 contiene sempre tre componenti, anche quando non tutte sono davvero utili:
 \begin{itemize}
     \item se è stato trovato un match lungo, il carattere successivo può essere gestito come inizio della frase successiva, quindi non è sempre necessario aggiungerlo nella stessa tripla;
     \item se non è stato trovato un match, emettere $\langle 0,0,c\rangle$ spreca due componenti nulle.
 \end{itemize}
 
-LZss emette quindi sempre una coppia, ma di due tipi:
+LZSS emette quindi sempre una coppia, ma di due tipi:
 \[
     \langle d,\ell\rangle
     \quad\text{oppure}\quad
@@ -5640,7 +5639,7 @@ Per la stringa:
 \[
     \texttt{aabbabab},
 \]
-una possibile codifica LZss è:
+una possibile codifica LZSS è:
 \[
     \langle 0,\texttt{a}\rangle
     \langle 1,1\rangle
@@ -5651,14 +5650,14 @@ una possibile codifica LZss è:
 \]
 L'idea è la stessa di LZ77, ma i letterali e i riferimenti sono trattati in modo più economico.
 
-\subsubsection{Confronto tra parsing LZ77 e LZss}
-Indichiamo con $z$ il numero di frasi nel parsing LZ77 di una stringa $s$ e con $z'$ il numero di frasi nel parsing LZss. Consideriamo una decomposizione di $s$ in stringhe non vuote:
+\subsubsection{Confronto tra parsing LZ77 e LZSS}
+Indichiamo con $z$ il numero di frasi nel parsing LZ77 di una stringa $s$ e con $z'$ il numero di frasi nel parsing LZSS. Consideriamo una decomposizione di $s$ in stringhe non vuote:
 \[
     s=t_1t_2\cdots t_r
 \]
 Distinguiamo due tipi di fattorizzazione:
 \begin{itemize}
-    \item Una fattorizzazione è di tipo \textbf{LZss} se ogni $t_i$ è:
+    \item Una fattorizzazione è di tipo \textbf{LZSS} se ogni $t_i$ è:
           \begin{itemize}
               \item un singolo carattere;
               \item una stringa che ha un'occorrenza nel prefisso che termina prima dell'ultimo simbolo di $t_i$:
@@ -5679,7 +5678,7 @@ Distinguiamo due tipi di fattorizzazione:
 \end{itemize}
 
 \begin{theorem}[Lempel-Ziv, 1976]
-    Per ogni stringa $s$, il numero $z'$ di frasi prodotte dal parsing LZss è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZss. Analogamente, il numero $z$ di frasi prodotte dal parsing LZ77 è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZ77.
+    Per ogni stringa $s$, il numero $z'$ di frasi prodotte dal parsing LZSS è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZSS. Analogamente, il numero $z$ di frasi prodotte dal parsing LZ77 è minore o uguale alla dimensione di qualunque fattorizzazione di tipo LZ77.
 \end{theorem}
 
 \begin{theorem}[Kosolobov-Shur, 2019]
@@ -5689,23 +5688,23 @@ Distinguiamo due tipi di fattorizzazione:
     \]
 \end{theorem}
 \begin{proof}
-    La disuguaglianza $z\leq z'$ segue dal fatto che una fattorizzazione di tipo LZss è automaticamente anche una fattorizzazione di tipo LZ77. Infatti LZss richiede che sia copiabile tutta la frase, oppure che la frase sia un singolo carattere; LZ77 richiede solo che sia copiabile la frase senza l'ultimo carattere. È quindi una richiesta più debole. Il parsing LZss, che ha $z'$ frasi, è allora una fattorizzazione LZ77 valida; poiché il parsing LZ77 è minimo tra le fattorizzazioni LZ77, deve valere $z\leq z'$.
+    La disuguaglianza $z\leq z'$ segue dal fatto che una fattorizzazione di tipo LZSS è automaticamente anche una fattorizzazione di tipo LZ77. Infatti LZSS richiede che sia copiabile tutta la frase, oppure che la frase sia un singolo carattere; LZ77 richiede solo che sia copiabile la frase senza l'ultimo carattere. È quindi una richiesta più debole. Il parsing LZSS, che ha $z'$ frasi, è allora una fattorizzazione LZ77 valida; poiché il parsing LZ77 è minimo tra le fattorizzazioni LZ77, deve valere $z\leq z'$.
 
     Per l'altra disuguaglianza, partiamo invece dal parsing LZ77 di $s$, formato da $z$ frasi. Ogni frase LZ77 può essere vista come:
     \begin{itemize}
         \item una parte iniziale copiata dal testo disponibile;
         \item un carattere finale scritto esplicitamente.
     \end{itemize}
-    La parte copiata, se non è vuota, è una frase valida per una fattorizzazione LZss; il carattere finale è comunque valido come letterale. Dunque ogni frase LZ77 può essere sostituita da al più due frasi LZss.
+    La parte copiata, se non è vuota, è una frase valida per una fattorizzazione LZSS; il carattere finale è comunque valido come letterale. Dunque ogni frase LZ77 può essere sostituita da al più due frasi LZSS.
 
-    La prima frase LZ77, però, non può copiare nulla da sinistra, perché all'inizio non esiste testo già disponibile: quindi è necessariamente un solo carattere e contribuisce una sola frase LZss. In totale otteniamo una fattorizzazione LZss con al più $2z-1$ frasi. Per la minimalità del parsing LZss:
+    La prima frase LZ77, però, non può copiare nulla da sinistra, perché all'inizio non esiste testo già disponibile: quindi è necessariamente un solo carattere e contribuisce una sola frase LZSS. In totale otteniamo una fattorizzazione LZSS con al più $2z-1$ frasi. Per la minimalità del parsing LZSS:
     \[
         z' \leq 2z-1 < 2z,
     \]
     da cui segue $\frac{1}{2}z' < z$.
 \end{proof}
 
-Il significato è che LZ77 non produce più frasi di LZss, ma il vantaggio non può essere arbitrariamente grande: il numero di frasi LZss è al più quasi il doppio del numero di frasi LZ77.
+Il significato è che LZ77 non produce più frasi di LZSS, ma il vantaggio non può essere arbitrariamente grande: il numero di frasi LZSS è al più quasi il doppio del numero di frasi LZ77.
 
 \subsection{Gzip e DEFLATE}
 Gzip è una variante pratica molto importante della famiglia LZ77. Usa l'algoritmo \textbf{DEFLATE}, che combina LZ77 con codifica di Huffman. In modo schematico:
@@ -6125,11 +6124,11 @@ Un compressore LZ, invece, può sfruttare il fatto che dopo la prima copia le co
 
 Nelle misure sperimentali, per confrontare compressori diversi non basta guardare il rapporto di compressione. Contano anche la velocità di compressione, il tempo di decompressione e il \textbf{\texten{compression saving}}, cioè la percentuale di spazio risparmiata rispetto alla dimensione originale. Compressori come LZMA, LZO, ZIP e varianti BWT-based occupano punti diversi di questo compromesso: alcuni comprimono di più ma sono più lenti, altri decomprimono rapidamente ma risparmiano meno spazio.
 
-\subsection{Confronto finale}
-Le tre famiglie discusse fin qui possono essere riassunte così:
+\subsection{Confronto tra LZ77, LZSS, LZ78 e LZW}
+Le quattro varianti discusse fin qui possono essere riassunte così:
 \begin{itemize}
     \item \textbf{LZ77} referenzia sottostringhe nel testo precedente tramite distanza e lunghezza. Decodifica velocemente, ma l'encoder deve cercare match in una finestra.
-    \item \textbf{LZss} elimina alcune ridondanze di LZ77 distinguendo meglio letterali e riferimenti.
+    \item \textbf{LZSS} elimina alcune ridondanze di LZ77 distinguendo meglio letterali e riferimenti.
     \item \textbf{LZ78} costruisce un dizionario esplicito di frasi e referenzia solo frasi complete già parse.
     \item \textbf{LZW} parte da un dizionario iniziale con i simboli dell'alfabeto ed emette solo indici, rendendo implicito il carattere aggiuntivo.
 \end{itemize}
@@ -6141,7 +6140,7 @@ Per esercitarsi sui passaggi meccanici degli algoritmi, si possono usare in part
 \begin{itemize}
     \item trovare la codifica LZ77 di $\texttt{aacaacabcabaaac}$;
     \item ripetere la codifica LZ77 della stessa stringa con finestra di $8$ caratteri e match lungo al massimo $4$;
-    \item codificare con LZss $\texttt{abcabcabcabcabc}$ e confrontare il risultato con LZ77;
+    \item codificare con LZSS $\texttt{abcabcabcabcabc}$ e confrontare il risultato con LZ77;
     \item simulare LZ78 su $\texttt{ababcababaaaa}$ mostrando il dizionario crescente;
     \item decodificare l'output LZ78
           $\langle 0,\texttt{a}\rangle
@@ -6153,7 +6152,7 @@ Per esercitarsi sui passaggi meccanici degli algoritmi, si possono usare in part
     \item decodificare sequenze LZW come $[1,2,6,3,7,9]$ oppure $[1,2,6,8,6]$ con dizionario iniziale specificato.
 \end{itemize}
 
-\section{Complessità algoritmica e compressione grammaticale}
+\section{Informazione algoritmica}
 Le misure studiate fin qui descrivono la comprimibilità attraverso un modello
 specifico: le entropie misurano regolarità statistiche, mentre i compressori a
 dizionario o basati sulla BWT sfruttano particolari forme di ripetizione.
@@ -6459,6 +6458,7 @@ compressore e si usa spesso la \textbf{distanza di compressione normalizzata}:
 Questa è una misura euristica: il risultato dipende dal compressore, dalla
 dimensione dei file e dal modo in cui viene rappresentata la concatenazione.
 
+\section{Compressione grammaticale}
 \subsection{Dal programma minimo alla grammatica minima}
 La macchina di Turing è un modello di descrizione molto potente, ma proprio per
 questo il programma minimo non è calcolabile. Un modello più debole consiste
@@ -7753,7 +7753,7 @@ servono tre posizioni; un esempio minimo è:
 La posizione $6$ copre i nuovi fattori che attraversano il confine tra le due
 copie.
 
-\subsection{Parole di Thue--Morse}
+\subsection{Caso di studio: parole di Thue--Morse}
 Le parole finite di Thue--Morse sono generate dal morfismo:
 \[
     \tau(\texttt{0})=\texttt{01},
@@ -7813,7 +7813,8 @@ posizioni ben scelte sono sufficienti a intercettare un'occorrenza di ogni
 fattore distinto. Gli altri insiemi di cardinalità quattro riportati nella
 tabella mostrano che l'attrattore minimo non è necessariamente unico.
 
-\subsection{Esercizi e soluzioni di controllo}
+\subsection{Esercizi sugli string attractors}
+\subsubsection{Verifica di attrattori minimi}
 Per ciascuna stringa della tabella seguente, verificare direttamente che
 l'insieme indicato sia un attrattore. Per dimostrare la minimalità si può usare
 prima il limite dato dall'alfabeto e, quando non basta, cercare un insieme di
